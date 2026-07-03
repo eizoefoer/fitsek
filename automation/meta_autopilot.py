@@ -27,7 +27,7 @@ def load_env():
         for line in ENV_PATH.read_text(errors='ignore').splitlines():
             line=line.strip()
             if not line or line.startswith('#') or '=' not in line: continue
-            k,v=line.split('=',1); os.environ.setdefault(k.strip(), v.strip().strip('"').strip("'"))
+            k,v=line.split('=',1); os.environ[k.strip()] = v.strip().strip('"').strip("'")
 
 def env(name): return os.environ.get(name,'').strip()
 
@@ -53,13 +53,14 @@ def graph(method, path, token, params=None, data=None):
 def short_token(): return env('META_FITSEK_ACCESS_TOKEN_SHORT_TERM') or env('META_FITSEK_USER_ACCESS_TOKEN')
 def long_user_token(): return env('META_FITSEK_LONG_USER_ACCESS_TOKEN')
 def page_token(): return env('META_FITSEK_PAGE_ACCESS_TOKEN')
+def user_token(): return long_user_token() or short_token()
 
 def exchange_user_token(token):
     app_id, app_secret = env('META_FITSEK_APP_ID'), env('META_FITSEK_APP_SECRET')
     if not (app_id and app_secret): raise SystemExit('Missing META_FITSEK_APP_ID / META_FITSEK_APP_SECRET')
     return graph('GET','oauth/access_token', token='', params={'grant_type':'fb_exchange_token','client_id':app_id,'client_secret':app_secret,'fb_exchange_token':token})
 
-def get_user_token(): return page_token() or long_user_token() or short_token()
+def get_user_token(): return user_token()
 
 def upsert_env(updates: dict[str, str]):
     ENV_PATH.parent.mkdir(parents=True, exist_ok=True)
@@ -76,21 +77,35 @@ def upsert_env(updates: dict[str, str]):
     ENV_PATH.write_text('\n'.join(out)+'\n')
 
 def refresh_tokens(write_env=False):
-    token=short_token() or long_user_token()
-    if not token: raise SystemExit('Missing META_FITSEK_ACCESS_TOKEN_SHORT_TERM')
-    exchanged=exchange_user_token(token)
-    user_token=exchanged.get('access_token') or token
-    accounts=graph('GET','me/accounts',user_token,{'fields':'id,name,category,tasks,access_token,instagram_business_account{id,username,name}'})
-    pages=accounts.get('data',[])
-    fit_pages=[p for p in pages if 'fitsek' in (p.get('name','').lower())] or pages
-    if not fit_pages: raise SystemExit('No manageable pages returned for this token')
-    page=fit_pages[0]
-    updates={'META_FITSEK_LONG_USER_ACCESS_TOKEN':user_token,'META_FITSEK_PAGE_ACCESS_TOKEN':page.get('access_token',''),'META_FITSEK_PAGE_ID':page.get('id','')}
-    ig=page.get('instagram_business_account') or {}
-    if ig.get('id'): updates['META_FITSEK_IG_USER_ID']=ig['id']
-    if write_env: upsert_env({k:v for k,v in updates.items() if v})
-    safe={'long_user_token_present':bool(user_token),'page_access_token_present':bool(page.get('access_token')),'page':{k:v for k,v in page.items() if k!='access_token'},'ig_user':ig or None,'wrote_env':write_env}
-    print(json.dumps(safe, indent=2))
+    candidates=[]
+    for label, tok in [('short', short_token()), ('long_user', long_user_token())]:
+        if tok and tok not in [t for _, t in candidates]: candidates.append((label, tok))
+    if not candidates: raise SystemExit('Missing META_FITSEK_ACCESS_TOKEN_SHORT_TERM or META_FITSEK_LONG_USER_ACCESS_TOKEN')
+    errors=[]
+    last=None
+    for label, token in candidates:
+        for mode in ['exchange', 'direct']:
+            try:
+                user_tok=token
+                if mode == 'exchange':
+                    exchanged=exchange_user_token(token)
+                    user_tok=exchanged.get('access_token') or token
+                accounts=graph('GET','me/accounts',user_tok,{'fields':'id,name,category,tasks,access_token,instagram_business_account{id,username,name}'})
+                pages=accounts.get('data',[])
+                fit_pages=[p for p in pages if 'fitsek' in (p.get('name','').lower())] or pages
+                if not fit_pages: raise RuntimeError('No manageable pages returned for this token')
+                page=fit_pages[0]
+                updates={'META_FITSEK_LONG_USER_ACCESS_TOKEN':user_tok,'META_FITSEK_PAGE_ACCESS_TOKEN':page.get('access_token',''),'META_FITSEK_PAGE_ID':page.get('id','')}
+                ig=page.get('instagram_business_account') or {}
+                if ig.get('id'): updates['META_FITSEK_IG_USER_ID']=ig['id']
+                if write_env: upsert_env({k:v for k,v in updates.items() if v})
+                safe={'source_token':label,'refresh_mode':mode,'long_user_token_present':bool(user_tok),'page_access_token_present':bool(page.get('access_token')),'page':{k:v for k,v in page.items() if k!='access_token'},'ig_user':ig or None,'wrote_env':write_env}
+                print(json.dumps(safe, indent=2))
+                return safe
+            except Exception as exc:
+                errors.append(f'{label}/{mode}: {str(exc)[:220]}')
+                last=exc
+    raise RuntimeError('Unable to refresh/discover Meta tokens. Attempts: ' + ' | '.join(errors))
 
 def discover(write_state=True):
     token=get_user_token()
@@ -140,13 +155,19 @@ def caption(row, platform):
     parts=[lead, '', f"CTA: {row.get('cta','Get the free reset').strip()}", dest, '', row.get('hashtags','').strip()]
     return '\n'.join([p for p in parts if p is not None]).strip()
 
+def asset_url_for(day, row):
+    base=env('META_FITSEK_ASSET_BASE_URL').rstrip('/')
+    if base:
+        return f'{base}/post-{day:02d}.png'
+    return row.get('asset_url') or f'https://fitsek.com/assets/social/post-{day:02d}.png'
+
 def build_outbox(days=7):
     posts=[]
     for r in load_posts(days):
         day=int(r['day'])
         item={
             'day':day,'date':r.get('date'),'title':r.get('post_title'),'format':r.get('format'),'pillar':r.get('pillar'),
-            'asset_url':r.get('asset_url') or f'https://fitsek.com/assets/social/post-{day:02d}.png',
+            'asset_url':asset_url_for(day, r),
             'asset_path':r.get('asset_path') or f'site/assets/social/post-{day:02d}.png',
             'facebook_caption':caption(r,'facebook'),'instagram_caption':caption(r,'instagram'),
             'suggested_scheduled_publish_time_utc':schedule_time(day),
@@ -175,8 +196,12 @@ def fb_create(mode, days, confirm=False):
         print(f'Outbox: {OUTBOX_PATH}')
         return
     state, missing, _, page_access = discover(write_state=True)
-    if missing: raise SystemExit('Missing required Facebook permissions: '+', '.join(missing))
     page=state.get('selected_page')
+    page_tasks=set((page or {}).get('tasks') or [])
+    if missing and 'CREATE_CONTENT' not in page_tasks:
+        raise SystemExit('Missing required Facebook permissions: '+', '.join(missing))
+    if missing and 'CREATE_CONTENT' in page_tasks:
+        print('Warning: user token is missing '+', '.join(missing)+' but the selected Page grants CREATE_CONTENT; attempting the API call and letting Meta enforce permissions.', file=sys.stderr)
     if not page or not page_access: raise SystemExit('No manageable Fitsek Facebook Page with page access token found')
     created=[]
     for item in posts:
@@ -223,7 +248,7 @@ if __name__=='__main__':
         main()
     except RuntimeError as exc:
         msg=str(exc)
-        if 'Error validating access token' in msg or 'OAuthException' in msg:
+        if 'Error validating access token' in msg or 'Session has expired' in msg:
             print('Meta API token error: the configured token is invalid or expired. Generate a fresh token with pages_show_list, pages_manage_posts, pages_read_engagement, instagram_basic, and instagram_content_publish, then rerun `python3 automation/meta_autopilot.py check`.', file=sys.stderr)
         else:
             print(msg, file=sys.stderr)

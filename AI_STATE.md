@@ -22,4 +22,11 @@ Traffic → `fitsek.com` → free lead magnet → email/list → paid digital pr
 
 ## Automation
 - `automation/business_review.py` writes daily/weekly/monthly reports to `analytics/reports/`.
+- `automation/meta_autopilot.py` prepares Meta social outbox and can create FB Page drafts/scheduled posts once Meta grants `pages_manage_posts`.
+- `automation/meta_token_watch.py` validates/refreshes Meta tokens where Meta permits and alerts for manual re-auth; no tokens in git.
 - Cron jobs should be approval/report mode only; do not auto-post social content without explicit user approval.
+
+## Meta state
+- FB Page verified by API: `FitSek` (`100185022163250`), category `Shopping & retail`, Page tasks include `CREATE_CONTENT`.
+- Linked IG Business Account was not returned by API as of 2026-07-03; check Page↔IG linking and token permissions.
+- Current blocking permission: token/app lacks `pages_manage_posts`; Meta API rejected draft creation with App Review/permission error.
