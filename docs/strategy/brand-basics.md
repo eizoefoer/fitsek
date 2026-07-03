@@ -18,10 +18,11 @@ Practical body recomposition for busy desk workers. Strength, steps, protein, tr
 Simple, practical, evidence-aware, direct, encouraging. Avoid hardcore influencer bro-science, medical claims, hormone claims, fake transformations, and guaranteed outcomes.
 
 ## Colour/style direction
-- Background: deep navy/black (`#07111f`, `#050b14`).
-- Accent: mint (`#58f0a7`) and blue (`#6ab7ff`).
-- Supporting: warm yellow for warnings/insights (`#ffd166`).
-- Style: clean dashboards, checklist cards, tracker screenshots, dark-mode carousels, simple diagrams, desk-worker context.
+- Background: near-black graphite (`#05070c`, `#080d16`) with subtle blue/violet glow.
+- Primary accent: volt green (`#b9ff4a`) for conversion CTAs.
+- Secondary accents: mint (`#42f5a7`), cyan (`#42d9ff`), electric blue (`#5b8cff`), violet (`#7c5cff`).
+- Surfaces: glassy dark cards with thin translucent borders.
+- Style: premium dark fitness-tech, tracker/dashboard cards, checklist primitives, mobile-first CTA, no fake transformations.
 
 ## Logo direction
 A simple “F” mark inside a rounded square/circle with mint-blue gradient. No mascot needed. Prioritise legibility as a social avatar.
