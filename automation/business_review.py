@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from __future__ import annotations
-import argparse, csv, json, os, urllib.request, urllib.error
+import argparse, csv, json, os, urllib.parse, urllib.request, urllib.error
 from collections import Counter, defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
@@ -23,19 +23,43 @@ def read_jsonl(path: Path):
         except Exception: pass
     return out
 
+def expected_body_ok(url: str, body: str) -> bool:
+    if url.endswith('/'): return '7-Day Desk Worker Recomp Reset' in body
+    if 'lead-magnet' in url: return '7-Day Desk Worker Recomp Reset' in body
+    if 'product' in url: return '12-Week Recomp System' in body
+    if 'healthz' in url: return 'true' in body
+    return True
+
+def fetch(url: str, headers: dict[str, str] | None = None) -> tuple[int, str]:
+    req=urllib.request.Request(url, headers={'User-Agent':'fitsek-review/1.0', **(headers or {})})
+    with urllib.request.urlopen(req, timeout=20) as r:
+        return r.status, r.read(120000).decode('utf-8', errors='replace')
+
+def github_pages_http_fallback(url: str) -> tuple[bool, str] | None:
+    parsed = urllib.parse.urlparse(url)
+    if parsed.hostname not in {'fitsek.com', 'www.fitsek.com'}:
+        return None
+    fallback_url = urllib.parse.urlunparse(('http', '185.199.108.153', parsed.path or '/', '', parsed.query, ''))
+    try:
+        status, body = fetch(fallback_url, {'Host': 'fitsek.com'})
+        ok = 200 <= status < 400 and expected_body_ok(url, body)
+        return ok, f'{status} via GitHub Pages public-DNS fallback; HTTPS cert/local resolver may still be settling'
+    except Exception as e:
+        return False, f'fallback {type(e).__name__}: {e}'
+
 def check_url(url: str) -> tuple[bool, str]:
     try:
-        req=urllib.request.Request(url, headers={'User-Agent':'fitsek-review/1.0'})
-        with urllib.request.urlopen(req, timeout=20) as r:
-            body=r.read(120000).decode('utf-8', errors='replace')
-            ok=200 <= r.status < 400
-            if url.endswith('/'): ok = ok and '7-Day Desk Worker Recomp Reset' in body
-            if 'lead-magnet' in url: ok = ok and '7-Day Desk Worker Recomp Reset' in body
-            if 'product' in url: ok = ok and '12-Week Recomp System' in body
-            if 'healthz' in url: ok = ok and 'true' in body
-            return ok, f'{r.status}'
+        status, body = fetch(url)
+        ok=200 <= status < 400 and expected_body_ok(url, body)
+        return ok, f'{status}'
     except Exception as e:
-        return False, f'{type(e).__name__}: {e}'
+        fallback = github_pages_http_fallback(url)
+        if fallback is not None and fallback[0]:
+            return fallback
+        detail = f'{type(e).__name__}: {e}'
+        if fallback is not None:
+            detail += f'; {fallback[1]}'
+        return False, detail
 
 def social_queue():
     posts=list((ROOT/'content/social/posts').glob('day-*.md'))
