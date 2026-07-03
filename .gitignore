@@ -13,3 +13,7 @@ node_modules/
 .pytest_cache/
 __pycache__/
 var/
+
+# Generated analytics reports (local runtime output)
+analytics/reports/*.md
+!analytics/reports/.gitkeep
