@@ -1,0 +1,19 @@
+[Unit]
+Description=Fitsek lead and event capture API
+After=network-online.target
+
+[Service]
+Type=simple
+Environment=FITSEK_ALLOWED_ORIGINS=https://fitsek.com,https://www.fitsek.com
+Environment=FITSEK_DATA_DIR=/var/lib/fitsek
+Environment=FITSEK_API_PORT=8765
+ExecStart=/usr/bin/python3 /home/ubuntu/fitsek/server/lead_api.py
+Restart=always
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ReadWritePaths=/var/lib/fitsek
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,15 @@
+# Secrets / local runtime
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.token
+*.sqlite
+*.db
+*.log
+.DS_Store
+node_modules/
+.pytest_cache/
+__pycache__/
+var/
