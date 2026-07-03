@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1350" viewBox="0 0 1080 1350">
+  <defs><linearGradient id="g" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#58f0a7"/><stop offset="1" stop-color="#6ab7ff"/></linearGradient></defs>
+  <rect width="1080" height="1350" fill="#07111f"/>
+  <circle cx="940" cy="160" r="210" fill="#12345a" opacity="0.45"/>
+  <rect x="60" y="70" width="960" height="1210" rx="54" fill="#0d1b2e" stroke="#20344d" stroke-width="3"/>
+  <text x="80" y="150" font-family="Inter,Arial" font-size="40" font-weight="800" fill="url(#g)">FITSEK</text>
+  <text x="80" y="230" font-family="Inter,Arial" font-size="34" font-weight="700" fill="#8be9c6">What I’d Do Starting at 25–30% Body Fat</text>
+  <text x="80" y="330" class="hook">Starting at 25–30% body fat? I</text><text x="80" y="388" class="hook">would not crash diet first.</text>
+  <rect x="80" y="920" width="920" height="170" rx="28" fill="#07111f" stroke="#29425f"/>
+  <text x="120" y="985" font-family="Inter,Arial" font-size="34" font-weight="800" fill="#eef6ff">Desk-day recomp system</text>
+  <text x="120" y="1045" font-family="Inter,Arial" font-size="28" fill="#cfe2f3">Strength • steps • protein • weekly review</text>
+  <rect x="80" y="1140" width="920" height="88" rx="44" fill="url(#g)"/>
+  <text x="130" y="1197" font-family="Inter,Arial" font-size="31" font-weight="900" fill="#06101e">Download the free 7-Day Desk Worker Recomp Reset</text>
+  <text x="80" y="1260" font-family="Inter,Arial" font-size="22" fill="#91a7bc">Illustrative fitness education only. Results vary.</text>
+</svg>

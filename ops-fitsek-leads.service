@@ -4,6 +4,8 @@ After=network-online.target
 
 [Service]
 Type=simple
+User=ubuntu
+Group=ubuntu
 Environment=FITSEK_ALLOWED_ORIGINS=https://fitsek.com,https://www.fitsek.com
 Environment=FITSEK_DATA_DIR=/var/lib/fitsek
 Environment=FITSEK_API_PORT=8765

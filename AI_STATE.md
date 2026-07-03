@@ -6,18 +6,20 @@ Last updated: 2026-07-03
 Fitsek is a faceless desk-worker body recomposition brand: simple, practical, evidence-aware, direct, encouraging, and general wellness only.
 
 ## Funnel
-- Traffic: faceless short-form social posts and UTM-tagged links.
-- Landing page: `https://fitsek.com/` on GitHub Pages.
-- Free lead magnet: “7-Day Desk Worker Recomp Reset”.
-- Paid product/waitlist: “Fitsek 12-Week Recomp System”.
-- Email/lead capture: posts to `https://leads.fitsek.com/signup` when backend is deployed; otherwise page degrades gracefully and tells the visitor to email `hello@fitsek.com`.
-- Analytics: Cloudflare Web Analytics plus first-party event posts to `https://leads.fitsek.com/event` when backend is deployed.
+Traffic → `fitsek.com` → free lead magnet → email/list → paid digital product/waitlist → weekly analytics improvement.
 
-## Infrastructure target
-- Public static site: GitHub Pages from this repository.
-- Custom domain: `fitsek.com`; `www.fitsek.com` should redirect via GitHub Pages after DNS is moved.
-- Lead/event API: loopback Python service on the VM behind Caddy at `leads.fitsek.com`.
+- Free lead magnet: `7-Day Desk Worker Recomp Reset`.
+- Paid product: `Fitsek 12-Week Recomp System` MVP files exist under `products/paid-recomp-system/`.
+- Email/lead capture: posts to `https://leads.fitsek.com/signup`; first-party events post to `/event`.
+- Analytics: Cloudflare Web Analytics plus first-party events/leads in `/var/lib/fitsek` on the VM.
+- Social channels: Instagram + Facebook Page first, manual Meta Business Suite scheduling/approval mode for at least 30 days.
 
-## Product status
-- Free guide and product preview are static pages.
-- Paid checkout link is not configured yet; do not add Stripe/Gumroad/Payhip/Lemon Squeezy secrets to the repo. Use environment/secrets only when selected.
+## Infrastructure
+- Public static site: GitHub Pages from `site/` in this repository.
+- Custom domain: `fitsek.com`; `www.fitsek.com` CNAME to GitHub Pages.
+- Lead/event API: `server/lead_api.py`, systemd service `fitsek-leads.service`, proxied by Caddy as `leads.fitsek.com`.
+- No payment checkout is connected yet. Use no-monthly-fee option when user sets account: Stripe Payment Link, Gumroad, Payhip, Lemon Squeezy, or Ko-fi.
+
+## Automation
+- `automation/business_review.py` writes daily/weekly/monthly reports to `analytics/reports/`.
+- Cron jobs should be approval/report mode only; do not auto-post social content without explicit user approval.

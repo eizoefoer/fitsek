@@ -2,19 +2,30 @@
 
 Faceless, low-friction body recomposition funnel for busy desk workers.
 
-## Local check
+## Repo structure
+
+- `site/` — GitHub Pages static landing site.
+- `content/social/` — 30-day social calendar and post drafts for Instagram/Facebook approval-mode scheduling.
+- `content/email/` — email/nurture copy.
+- `products/free-lead-magnet/` — free lead magnet source.
+- `products/paid-recomp-system/` — minimum viable paid product files.
+- `assets/social/` — generated faceless social visuals/templates.
+- `automation/` — reporting/check scripts; no secrets.
+- `analytics/` — schema, manual metrics template, generated reports.
+- `docs/` — strategy, compliance, operations.
+- `server/` — optional VM lead/event API.
+
+## Local checks
 
 ```bash
 python3 scripts/validate_site.py
-python3 -m http.server 8080
+python3 -m http.server 8080 -d site
 ```
 
-Open <http://127.0.0.1:8080>.
+## Release
 
-## Deploy
+GitHub Pages deploys `site/` after `scripts/validate_site.py` passes.
 
-Public site deploys with GitHub Pages. The optional lead/event API runs separately on the VM from `server/lead_api.py` behind Caddy.
+## Security
 
-## Secrets
-
-Never commit `.env`, API keys, lead exports, logs, Stripe keys, email provider keys, or Meta tokens.
+Never commit `.env`, API keys, lead exports, logs with emails, Meta tokens, Stripe/payment keys, or email provider credentials.
