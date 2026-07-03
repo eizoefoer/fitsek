@@ -134,7 +134,10 @@ def schedule_time(day, hour=19, minute=30):
 
 def caption(row, platform):
     dest=row.get(f'destination_url_{platform.lower()}') or row.get('destination_url_facebook') or 'https://fitsek.com/'
-    parts=[row.get('hook','').strip(), '', row.get('caption','').strip(), '', f"CTA: {row.get('cta','Get the free reset').strip()}", dest, '', row.get('hashtags','').strip()]
+    hook=(row.get('hook','') or '').strip()
+    body=(row.get('caption','') or '').strip()
+    lead = body if body.lower().startswith(hook.lower()[:40]) else '\n\n'.join([hook, body]).strip()
+    parts=[lead, '', f"CTA: {row.get('cta','Get the free reset').strip()}", dest, '', row.get('hashtags','').strip()]
     return '\n'.join([p for p in parts if p is not None]).strip()
 
 def build_outbox(days=7):
@@ -166,15 +169,15 @@ def print_safe_state(state, missing, ig_missing):
     }, indent=2))
 
 def fb_create(mode, days, confirm=False):
+    posts=build_outbox(days)
+    if not confirm:
+        print(f'DRY RUN: would create {len(posts)} Facebook {mode} photo posts. Use --confirm with a valid page token to call Meta API.')
+        print(f'Outbox: {OUTBOX_PATH}')
+        return
     state, missing, _, page_access = discover(write_state=True)
     if missing: raise SystemExit('Missing required Facebook permissions: '+', '.join(missing))
     page=state.get('selected_page')
     if not page or not page_access: raise SystemExit('No manageable Fitsek Facebook Page with page access token found')
-    posts=build_outbox(days)
-    if not confirm:
-        print(f'DRY RUN: would create {len(posts)} Facebook {mode} photo posts for page {page.get("name")} ({page.get("id")}). Use --confirm to call Meta API.')
-        print(f'Outbox: {OUTBOX_PATH}')
-        return
     created=[]
     for item in posts:
         data={'url':item['asset_url'],'caption':item['facebook_caption'],'published':'false'}
@@ -186,9 +189,14 @@ def fb_create(mode, days, confirm=False):
     print(json.dumps({'created':created,'note':'Review in Meta Business Suite / Page publishing tools before the posts go live. For unpublished mode, publish/schedule manually.'}, indent=2))
 
 def ig_plan(days):
-    state, _, ig_missing, _ = discover(write_state=True)
     posts=build_outbox(days)
-    print(json.dumps({'ig_user':state.get('ig_user'),'permissions_missing_for_ig':ig_missing,'note':'Instagram Graph API supports immediate publish via media container + publish, but not persistent future drafts in Meta Business Suite. Use this outbox for manual schedule approval, or run a future cron publisher after explicit approval.','outbox':str(OUTBOX_PATH),'posts':posts}, indent=2))
+    state={}; ig_missing=[]; token_status='not_checked'
+    try:
+        state, _, ig_missing, _ = discover(write_state=True)
+        token_status='ok'
+    except Exception as exc:
+        token_status='unavailable_or_expired'
+    print(json.dumps({'ig_user':state.get('ig_user'),'token_status':token_status,'permissions_missing_for_ig':ig_missing,'note':'Instagram Graph API supports immediate publish via media container + publish, but not persistent future drafts in Meta Business Suite. Use this outbox for manual schedule approval, or run a future cron publisher after explicit approval.','outbox':str(OUTBOX_PATH),'posts':posts}, indent=2))
 
 def main():
     load_env()
