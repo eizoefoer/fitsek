@@ -1,0 +1,51 @@
+{
+  "artifacts": [
+    "Meta scheduled post records",
+    "Cron jobs 0fc6cfb67b69 and f454c41e2278"
+  ],
+  "assumptions": [
+    "Meta Graph API remains the verification source unless UI/API discrepancy is observed."
+  ],
+  "blockers": [],
+  "branch_or_worktree": "main",
+  "completed_steps": [
+    "Added social copy polish gate before Meta scheduling.",
+    "Created 21 polished Facebook scheduled photo posts at 09:00/13:00/17:00 AEST.",
+    "Created recurring Instagram due publisher and social verification scripts."
+  ],
+  "current_status": "active-monitoring",
+  "current_step": "Recurring verification cron checks due FB/IG posts and alerts on API failures or missing due posts.",
+  "decisions_made": [
+    "Use recurring due-check publisher for Instagram because durable IG draft scheduling is not available via Graph API."
+  ],
+  "last_known_good_commit": "b225513",
+  "last_updated": "2026-07-08T15:39:37Z",
+  "next_actions": [
+    "After the next publish window, run python3 automation/verify_posts.py and inspect cron output if any alert fires.",
+    "If copy or media is wrong publicly, pause publishing before regenerating/scheduling replacements."
+  ],
+  "objective": "Verify scheduled Facebook and Instagram posts publish with polished copy, attached media, and expected public visibility.",
+  "owner_worker": "hermes-agent",
+  "project": "fitsek",
+  "relevant_commands": [
+    "python3 automation/social_copy.py audit --days 21",
+    "python3 automation/verify_posts.py"
+  ],
+  "relevant_files": [
+    "automation/social_copy.py",
+    "automation/meta_autopilot.py",
+    "automation/meta_ig_publisher.py",
+    "automation/verify_posts.py",
+    "var/meta_ig_schedule.json",
+    "var/meta_created_posts_last.json"
+  ],
+  "resume_instructions": "Read AGENTS.md, .agents/project-memory.json, the Fitsek social context bullet, this capsule, then run python3 automation/verify_posts.py after a publish window. Do not reschedule posts unless verification shows a real gap.",
+  "risks": [
+    "Meta UI labels eligible-for-promotion posts with ad-like affordances; verify API fields before treating them as paid ads."
+  ],
+  "task_id": "fitsek-social-publish-verification-20260708",
+  "tests_last_run": [
+    "python3 automation/social_copy.py audit --days 21",
+    "python3 automation/verify_posts.py"
+  ]
+}

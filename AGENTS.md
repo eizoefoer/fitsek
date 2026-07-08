@@ -48,3 +48,18 @@ JSONL event shape:
 ```json
 {"ts":"2026-07-04T00:00:00Z","actor":"agent-or-human","event":"start|decision|change|test|blocker|complete","summary":"short factual note","files":["path"],"next":["optional next action"]}
 ```
+
+<!-- agent-context-handoff:v1 -->
+## Structured context and handoff capsules
+
+Use `.agents/context-bullets.jsonl` for concise, append-only context facts loaded by future sessions instead of pasting large prompt blobs. Each JSONL row must use this schema:
+
+```json
+{"id":"stable-id","project":"repo-name","type":"constraint|preference|decision|fact|open-question|risk|assumption","text":"short durable context","source":"file/user/log reference","confidence":0.95,"created_at":"2026-07-08T00:00:00Z","updated_at":"2026-07-08T00:00:00Z","related_files":[],"related_jobs":[],"related_decisions":[]}
+```
+
+Use `.agents/handoff-capsules/<task_id>.json` for resumability. Hermes creates/updates the capsule before a worker starts, during long tasks, and before stopping/switching models/IDEs/humans. Capsules reference `.agents/task-log.jsonl` and project memory; they are not a replacement task tracker.
+
+Required capsule fields: `task_id`, `project`, `objective`, `current_status`, `completed_steps`, `current_step`, `next_actions`, `blockers`, `assumptions`, `decisions_made`, `relevant_files`, `relevant_commands`, `branch_or_worktree`, `tests_last_run`, `last_known_good_commit`, `artifacts`, `risks`, `owner_worker`, `last_updated`, `resume_instructions`.
+
+Resume order for any model/IDE/agent: read `AGENTS.md`, `.agents/project-memory.json`, relevant context bullets, current handoff capsule, then tail `.agents/task-log.jsonl`. Continue from the capsule; do not restart from chat history.

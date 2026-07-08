@@ -44,3 +44,21 @@ This project-local skill makes repo state portable across agents, models, IDEs, 
 - `CLAUDE.md` and other agent-specific files point back to `AGENTS.md`.
 - Prefer IaC/config/scripts over clickops.
 - Prefer local/free/self-hosted tooling; paid fallbacks require explicit approval.
+
+
+
+## Structured context and handoff capsules
+
+Before assigning work to any worker/model/IDE, create or update a handoff capsule in `.agents/handoff-capsules/<task_id>.json` and append a checkpoint to `.agents/task-log.jsonl`. Use `.agents/context-bullets.jsonl` for concise facts, constraints, preferences, risks and open questions that should load into future sessions.
+
+Recommended helper:
+
+```bash
+~/.hermes/scripts/project_agent_state.py init --repo .
+~/.hermes/scripts/project_agent_state.py add-context --repo . --project <name> --id <id> --type fact --text "..." --source "..."
+~/.hermes/scripts/project_agent_state.py upsert-capsule --repo . --task-id <id> --project <name> --objective "..." --next-action "..."
+~/.hermes/scripts/project_agent_state.py session-context --repo .
+~/.hermes/scripts/project_agent_state.py validate --repo . --strict
+```
+
+Capsules are mutable current-state summaries. The JSONL task log remains the append-only source of truth for what happened.
