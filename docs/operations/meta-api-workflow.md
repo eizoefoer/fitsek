@@ -45,6 +45,9 @@ python3 automation/meta_autopilot.py fb-draft --days 7        # dry run
 python3 automation/meta_autopilot.py fb-draft --days 7 --confirm
 python3 automation/meta_autopilot.py fb-schedule --days 7     # dry run
 python3 automation/meta_autopilot.py ig-plan --days 7
+python3 automation/meta_ig_publisher.py plan --days 7 --overwrite
+python3 automation/meta_ig_publisher.py status
+python3 automation/meta_ig_publisher.py publish-due --confirm  # cron/wrapper path; publishes only due IG posts
 ```
 
 ## Token/watchdog note
@@ -56,8 +59,8 @@ Meta does not provide a standard OAuth refresh token for this flow. `automation/
 - Facebook Page found: `FitSek` (`100185022163250`), category `Shopping & retail`, Page tasks include `CREATE_CONTENT`.
 - Current token grants all required Facebook/Instagram publish permissions checked by the script: `pages_show_list`, `pages_read_engagement`, `pages_manage_posts`, `instagram_basic`, and `instagram_content_publish`.
 - 7 Facebook Page photo posts were scheduled via Graph API for 2026-07-09 through 2026-07-15 at 19:30 AEST. `/scheduled_posts` verification returned 7 unpublished scheduled posts.
-- Instagram asset `@fitsek.wellness` exists in Meta Business Settings under the FitSek business portfolio, but it is not yet connected to the FitSek Page for composer/API publishing: `/me/accounts?...instagram_business_account` returns `ig_user: null`, direct IG Graph lookup by the Business Settings ID fails, and Meta Business Suite composer still shows only Facebook plus “Connect Instagram”.
-- Next IG unblock: in Meta Business Settings → Pages → FitSek → Connect assets → Instagram account → **Log into Instagram**, finish the manual login/authorization flow, then rerun `python3 automation/meta_autopilot.py refresh --write-env && python3 automation/meta_autopilot.py check`.
+- Instagram Page linkage is now API-visible: `@fitsek.wellness` (`17841443568404793`) is returned as the FitSek Page `instagram_business_account`.
+- 7 Instagram posts are scheduled through Hermes one-shot cron jobs at 19:30 AEST from 2026-07-09 through 2026-07-15. The durable local schedule is ignored runtime state at `var/meta_ig_schedule.json`; each job runs `~/.hermes/scripts/fitsek_ig_publish_due.sh`, which calls `automation/meta_ig_publisher.py publish-due --confirm --wait-seconds 180` and prints the returned Instagram media ID only when a post is actually published.
 
 ## Proper API path
 
@@ -68,10 +71,10 @@ After Meta App Review grants the required permissions and a fresh user token is 
 1. `GET /me/accounts` discovers the FitSek Page, Page access token, and linked Instagram business account.
 2. `POST /{page-id}/photos` with `published=false` creates Facebook Page review drafts.
 3. `POST /{page-id}/photos` with `published=false` and `scheduled_publish_time` creates scheduled Facebook Page photo posts after approval.
-4. Instagram publishing uses `POST /{ig-user-id}/media` followed by `POST /{ig-user-id}/media_publish`; it does not create persistent scheduled drafts in Meta Business Suite.
+4. Instagram publishing uses `POST /{ig-user-id}/media` followed by `POST /{ig-user-id}/media_publish`; it does not create persistent scheduled drafts in Meta Business Suite. `automation/meta_ig_publisher.py` handles approved future publishing by creating the media container only when a scheduled Hermes cron job fires.
 
 Until `pages_manage_posts` is granted, `fb-draft --confirm` intentionally fails before calling the write endpoint and prints the App Review unblock path.
 
 ## Meta API limitation
 
-The public Instagram Graph API can publish media, but it does not create persistent future-scheduled Instagram drafts inside Meta Business Suite. For the first 30 days, use the generated outbox/assets for final manual schedule approval. After explicit approval, a cron publisher can post at the scheduled times.
+The public Instagram Graph API can publish media, but it does not create persistent future-scheduled Instagram drafts inside Meta Business Suite. For approved future publishing, keep `var/meta_ig_schedule.json` as ignored runtime state and use one-shot Hermes cron jobs that run `fitsek_ig_publish_due.sh` at the approved times. The publisher creates the IG media container at publish time, then calls `media_publish`, avoiding container expiry. The publisher prefers committed `.jpg` siblings for generated `.png` social assets because Instagram's content publishing path is stricter about image media than Facebook.

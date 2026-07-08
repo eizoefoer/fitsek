@@ -28,7 +28,7 @@ GitHub Pages deploys `site/` after `scripts/validate_site.py` passes.
 
 ## Meta automation
 
-Meta/Facebook/Instagram automation remains approval-first. See `docs/operations/meta-api-workflow.md` for the current Graph API path, required App Review permissions, token refresh commands, and the VM-local Hermes browser login bridge.
+Meta/Facebook/Instagram automation remains approval-first. See `docs/operations/meta-api-workflow.md` for the current Graph API path, required App Review permissions, token refresh commands, the Instagram cron publisher, and the VM-local Hermes browser login bridge.
 
 ### VM browser login bridge
 
