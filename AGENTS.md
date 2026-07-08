@@ -41,6 +41,9 @@ Project state files:
 
 - `.agents/project-memory.json` — compact durable project facts and agent handoff pointers.
 - `.agents/task-log.jsonl` — append-only event log for cross-model/machine task resumption.
+- `.agents/context-bullets.jsonl` — append-only concise context facts, constraints, decisions, risks, assumptions and open questions.
+- `.agents/handoff-capsules/` — mutable per-task resume capsules that reference logs/project memory rather than duplicating full task state.
+- `.agents/job-ledger.jsonl` — append-only attribution ledger for every task/subtask/tool/worker/model/scheduler/human result and its acceptance status.
 - `skills/project-memory/SKILL.md` — project-local skill explaining how to resume and update state.
 
 JSONL event shape:
@@ -62,4 +65,13 @@ Use `.agents/handoff-capsules/<task_id>.json` for resumability. Hermes creates/u
 
 Required capsule fields: `task_id`, `project`, `objective`, `current_status`, `completed_steps`, `current_step`, `next_actions`, `blockers`, `assumptions`, `decisions_made`, `relevant_files`, `relevant_commands`, `branch_or_worktree`, `tests_last_run`, `last_known_good_commit`, `artifacts`, `risks`, `owner_worker`, `last_updated`, `resume_instructions`.
 
-Resume order for any model/IDE/agent: read `AGENTS.md`, `.agents/project-memory.json`, relevant context bullets, current handoff capsule, then tail `.agents/task-log.jsonl`. Continue from the capsule; do not restart from chat history.
+Resume order for any model/IDE/agent: read `AGENTS.md`, `.agents/project-memory.json`, relevant context bullets, current handoff capsule, recent `.agents/job-ledger.jsonl` rows, then tail `.agents/task-log.jsonl`. Continue from the capsule; do not restart from chat history.
+
+<!-- agent-job-ledger:v1 -->
+## Job ledger and worker attribution
+
+Use `.agents/job-ledger.jsonl` as the append-only source of truth for who/what performed work. Every task, subtask, tool call, delegated agent run, IDE run, model run, browser run, research run, review and scheduled job that contributes accepted evidence must have a job ledger row.
+
+Required job fields: `job_id`, `parent_job_id`, `project`, `task_type`, `goal`, `priority`, `assigned_worker`, `worker_type`, `model_name`, `model_provider`, `model_version`, `interface_used`, `cost_tier`, `estimated_cost`, `token_usage`, `started_at`, `completed_at`, `status`, `selection_reason`, `input_context_sources`, `files_allowed`, `files_forbidden`, `files_changed`, `commands_run`, `tests_run`, `artifacts_created`, `result_summary`, `quality_score`, `accepted_by`, `rejection_reason`, `superseded_by_job_id`, `next_action`, `failure_reason`.
+
+Rules: no worker output is accepted without attribution; no code/config/memory change is accepted without knowing the model/agent/tool; each model/agent gets its own child job; Hermes records why the worker was selected and whether the result was used, ignored, merged, rewritten, rejected or superseded. Model output is evidence, not truth. Hermes reconciles worker output against tests, source files, JSONL, project memory and user instructions before updating project memory.

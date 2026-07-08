@@ -41,6 +41,9 @@ This project-local skill makes repo state portable across agents, models, IDEs, 
 ## Principles
 
 - `AGENTS.md` is the single source of truth.
+- `.agents/context-bullets.jsonl` provides compact structured context for session loading.
+- `.agents/handoff-capsules/` provides resumability; capsules reference JSONL/project memory instead of duplicating full history.
+- `.agents/job-ledger.jsonl` attributes every worker/model/tool result before Hermes accepts it.
 - `CLAUDE.md` and other agent-specific files point back to `AGENTS.md`.
 - Prefer IaC/config/scripts over clickops.
 - Prefer local/free/self-hosted tooling; paid fallbacks require explicit approval.
@@ -62,3 +65,13 @@ Recommended helper:
 ```
 
 Capsules are mutable current-state summaries. The JSONL task log remains the append-only source of truth for what happened.
+
+## Job ledger attribution
+
+Before accepting worker/model/CLI/IDE/browser/scheduler output, append a row to `.agents/job-ledger.jsonl`:
+
+```bash
+~/.hermes/scripts/project_agent_state.py add-job --repo . --job-id <id> --project <name> --task-type <type> --goal "..." --assigned-worker "..." --worker-type "model" --model-name "..." --model-provider "..." --interface-used Hermes --cost-tier paid --status accepted --selection-reason "..." --accepted-by "Hermes orchestrator"
+```
+
+For multiple models/agents on the same goal, create one parent job and a child job per worker. Hermes accepts/rejects/supersedes each child only after reconciling against tests, source files, JSONL, project memory and user instructions.

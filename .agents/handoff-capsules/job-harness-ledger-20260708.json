@@ -1,0 +1,47 @@
+{
+  "artifacts": [
+    ".agents/job-ledger.jsonl",
+    "multi-agent-harness skill updated"
+  ],
+  "assumptions": [],
+  "blockers": [],
+  "branch_or_worktree": "main",
+  "completed_steps": [
+    "Added .agents/job-ledger.jsonl schema, validation, add-job CLI and sample-jobs command.",
+    "Extended AGENTS.md, project memory, project-memory skill and multi-agent-harness skill with attribution rules.",
+    "Created one parent job and two child jobs with Hermes model and local CLI worker attribution."
+  ],
+  "current_status": "complete",
+  "current_step": "Implemented and validated job ledger helper, bootstrap/audit support, docs, skill update, and sample parent/child job rows.",
+  "decisions_made": [],
+  "last_known_good_commit": "2ace8f9",
+  "last_updated": "2026-07-08T15:51:38Z",
+  "next_actions": [
+    "Use .agents/job-ledger.jsonl before accepting any future worker/model/tool output."
+  ],
+  "objective": "Add append-only job ledger and exact worker attribution to the multi-agent harness.",
+  "owner_worker": "hermes-agent",
+  "project": "fitsek",
+  "relevant_commands": [
+    "~/.hermes/scripts/project_agent_state.py sample-jobs --repo /home/ubuntu/fitsek --project fitsek"
+  ],
+  "relevant_files": [
+    ".agents/job-ledger.jsonl",
+    "AGENTS.md",
+    ".agents/project-memory.json",
+    "skills/project-memory/SKILL.md",
+    "~/.hermes/scripts/project_agent_state.py",
+    "~/.hermes/scripts/bootstrap_project_agent_state.py",
+    "~/.hermes/scripts/project_agent_state_audit.py"
+  ],
+  "resume_instructions": "Read AGENTS.md, .agents/project-memory.json, .agents/job-ledger.jsonl, this capsule and tail .agents/task-log.jsonl. Continue by adding child job rows for any new worker output before accepting it.",
+  "risks": [
+    "Append-only ledger can grow; use session-context --limit to load concise recent rows."
+  ],
+  "task_id": "job-harness-ledger-20260708",
+  "tests_last_run": [
+    "python3 -m py_compile ~/.hermes/scripts/project_agent_state.py ~/.hermes/scripts/bootstrap_project_agent_state.py ~/.hermes/scripts/project_agent_state_audit.py",
+    "~/.hermes/scripts/project_agent_state.py validate --repo /home/ubuntu/fitsek --strict",
+    "~/.hermes/scripts/project_agent_state_audit.py --root /home/ubuntu"
+  ]
+}
