@@ -61,6 +61,7 @@ Meta does not provide a standard OAuth refresh token for this flow. `automation/
 - Current token grants all required Facebook/Instagram publish permissions checked by the script: `pages_show_list`, `pages_read_engagement`, `pages_manage_posts`, `instagram_basic`, and `instagram_content_publish`.
 - Public copy is generated through `automation/social_copy.py`; `python3 automation/social_copy.py audit --days 21` must pass before Meta scheduling. This prevents internal labels such as `CTA:` and repetitive boilerplate from reaching public posts.
 - Current weekly social-manager rhythm: 3 unique posts per day at 09:00, 13:00, and 17:00 AEST, using the first 21 calendar rows for the 7-day batch.
+- Facebook currently has 21 unpublished scheduled photo posts for 2026-07-09 through 2026-07-15. Verification found media attached to every scheduled post and no leaked `CTA:`/`Fitsek rule:` boilerplate.
 - Instagram Page linkage is API-visible: `@fitsek.wellness` (`17841443568404793`) is returned as the FitSek Page `instagram_business_account`.
 - Instagram uses a recurring no-agent due-check cron (`Fitsek IG Publish Due Check`, every 15 minutes) that runs `~/.hermes/scripts/fitsek_ig_publish_due.sh`. The publisher stays silent when no post is due and prints returned media IDs only when it publishes.
 - `Fitsek Social Publish Verification` runs `~/.hermes/scripts/fitsek_social_verify.sh` every 30 minutes. It is silent on OK and alerts if a due FB/IG post is missing after the grace window or Meta API verification fails.
