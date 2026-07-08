@@ -18,9 +18,10 @@ ROOT = Path(__file__).resolve().parents[1]
 ENV_PATH = Path.home()/'.hermes/.env'
 STATE_PATH = ROOT/'var/meta_state.json'
 OUTBOX_PATH = ROOT/'automation/meta_outbox.json'
-GRAPH='https://graph.facebook.com/v19.0'
+DEFAULT_GRAPH_VERSION='v25.0'
 REQUIRED_PERMS={'pages_show_list','pages_manage_posts','pages_read_engagement'}
 IG_PERMS={'instagram_basic','instagram_content_publish'}
+APP_REVIEW_PERMS=sorted(REQUIRED_PERMS | IG_PERMS)
 
 def load_env():
     if ENV_PATH.exists():
@@ -31,17 +32,25 @@ def load_env():
 
 def env(name): return os.environ.get(name,'').strip()
 
+def graph_version():
+    raw = env('META_GRAPH_VERSION') or DEFAULT_GRAPH_VERSION
+    version = raw.strip().lstrip('/')
+    return version if version.startswith('v') else f'v{version}'
+
+def graph_url(path):
+    return f'https://graph.facebook.com/{graph_version()}/{path.lstrip("/")}'
+
 def urlencode(d): return urllib.parse.urlencode({k:v for k,v in d.items() if v is not None})
 
 def graph(method, path, token, params=None, data=None):
     params=params or {}; data=data or {}
     if method=='GET':
         params['access_token']=token
-        url=f'{GRAPH}/{path.lstrip("/")}?{urlencode(params)}'
+        url=f'{graph_url(path)}?{urlencode(params)}'
         req=urllib.request.Request(url)
     else:
         data['access_token']=token
-        url=f'{GRAPH}/{path.lstrip("/")}'
+        url=graph_url(path)
         req=urllib.request.Request(url, data=urlencode(data).encode(), method=method)
     try:
         with urllib.request.urlopen(req, timeout=45) as r:
@@ -61,6 +70,18 @@ def exchange_user_token(token):
     return graph('GET','oauth/access_token', token='', params={'grant_type':'fb_exchange_token','client_id':app_id,'client_secret':app_secret,'fb_exchange_token':token})
 
 def get_user_token(): return user_token()
+
+def app_review_urls():
+    app_id = env('META_FITSEK_APP_ID')
+    urls = {
+        'developer_apps': 'https://developers.facebook.com/apps/',
+        'permissions_and_features': 'https://developers.facebook.com/apps/',
+        'business_suite_calendar': 'https://business.facebook.com/latest/content_calendar?asset_id=100185022163250',
+    }
+    if app_id:
+        urls['app_dashboard'] = f'https://developers.facebook.com/apps/{app_id}/'
+        urls['permissions_and_features'] = f'https://developers.facebook.com/apps/{app_id}/app-review/permissions/'
+    return urls
 
 def upsert_env(updates: dict[str, str]):
     ENV_PATH.parent.mkdir(parents=True, exist_ok=True)
@@ -180,6 +201,7 @@ def build_outbox(days=7):
 
 def print_safe_state(state, missing, ig_missing):
     print(json.dumps({
+        'graph_version': graph_version(),
         'user': state.get('user'),
         'permissions_missing_for_fb': missing,
         'permissions_missing_for_ig': ig_missing,
@@ -189,6 +211,42 @@ def print_safe_state(state, missing, ig_missing):
         'state_file': str(STATE_PATH),
     }, indent=2))
 
+def print_permission_path():
+    state, missing, ig_missing, _ = discover(write_state=True)
+    page = state.get('selected_page') or {}
+    report = {
+        'graph_version': graph_version(),
+        'status': 'blocked' if missing or ig_missing else 'ready',
+        'required_permissions': {
+            'facebook_page_drafts_or_scheduled_posts': sorted(REQUIRED_PERMS),
+            'instagram_content_publish': sorted(IG_PERMS),
+        },
+        'missing_permissions': {
+            'facebook': missing,
+            'instagram': ig_missing,
+        },
+        'selected_page': page,
+        'ig_user': state.get('ig_user'),
+        'api_paths_after_approval': {
+            'facebook_unpublished_photo_draft': f'POST /{page.get("id", "{page-id}")}/photos with published=false',
+            'facebook_scheduled_photo': f'POST /{page.get("id", "{page-id}")}/photos with published=false and scheduled_publish_time',
+            'instagram_create_media_container': 'POST /{ig-user-id}/media',
+            'instagram_publish_media_container': 'POST /{ig-user-id}/media_publish',
+        },
+        'manual_unblock_path': {
+            'meta_developer_dashboard': app_review_urls(),
+            'request_or_enable': APP_REVIEW_PERMS,
+            'after_meta_approval': [
+                'Generate a fresh user token containing all required permissions.',
+                'Run: python3 automation/meta_autopilot.py refresh --write-env',
+                'Run: python3 automation/meta_autopilot.py check',
+                'Run: python3 automation/meta_autopilot.py fb-draft --days 7 --confirm',
+            ],
+        },
+        'note': 'Page CREATE_CONTENT tasks do not replace App Review/API permission grants; Meta rejects draft creation without pages_manage_posts.',
+    }
+    print(json.dumps(report, indent=2))
+
 def fb_create(mode, days, confirm=False):
     posts=build_outbox(days)
     if not confirm:
@@ -196,6 +254,13 @@ def fb_create(mode, days, confirm=False):
         print(f'Outbox: {OUTBOX_PATH}')
         return
     state, missing, _, page_access = discover(write_state=True)
+    if 'pages_manage_posts' in missing:
+        raise SystemExit(
+            'Meta API blocked: missing pages_manage_posts. Open the Meta Developer app dashboard, '
+            'request/enable pages_manage_posts under App Review / Permissions and Features, '
+            'generate a fresh token, then run `python3 automation/meta_autopilot.py refresh --write-env`. '
+            'For exact links and API paths, run `python3 automation/meta_autopilot.py permissions`.'
+        )
     page=state.get('selected_page')
     page_tasks=set((page or {}).get('tasks') or [])
     if missing and 'CREATE_CONTENT' not in page_tasks:
@@ -228,6 +293,7 @@ def main():
     ap=argparse.ArgumentParser()
     sub=ap.add_subparsers(dest='cmd', required=True)
     sub.add_parser('check')
+    sub.add_parser('permissions', help='Print safe Meta App Review and API path status without posting')
     p=sub.add_parser('refresh'); p.add_argument('--write-env', action='store_true', help='Store long-lived user token, page token, page ID, and IG ID in ~/.hermes/.env')
     p=sub.add_parser('prepare'); p.add_argument('--days',type=int,default=7)
     p=sub.add_parser('fb-draft'); p.add_argument('--days',type=int,default=7); p.add_argument('--confirm',action='store_true')
@@ -236,6 +302,8 @@ def main():
     args=ap.parse_args()
     if args.cmd=='check':
         state, missing, ig_missing, _ = discover(write_state=True); print_safe_state(state, missing, ig_missing)
+    elif args.cmd=='permissions':
+        print_permission_path()
     elif args.cmd=='refresh':
         refresh_tokens(write_env=args.write_env)
     elif args.cmd=='prepare':

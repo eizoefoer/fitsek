@@ -1,6 +1,6 @@
 # AI_STATE.md
 
-Last updated: 2026-07-03
+Last updated: 2026-07-08
 
 ## Brand
 Fitsek is a faceless desk-worker body recomposition brand: simple, practical, evidence-aware, direct, encouraging, and general wellness only.
@@ -28,5 +28,7 @@ Traffic → `fitsek.com` → free lead magnet → email/list → paid digital pr
 
 ## Meta state
 - FB Page verified by API: `FitSek` (`100185022163250`), category `Shopping & retail`, Page tasks include `CREATE_CONTENT`.
-- Linked IG Business Account was not returned by API as of 2026-07-03; check Page↔IG linking and token permissions.
-- Current blocking permission: token/app lacks `pages_manage_posts`; Meta API rejected draft creation with App Review/permission error.
+- Meta permissions are now present for Facebook Page scheduling and Instagram content publishing (`pages_manage_posts`, `instagram_basic`, `instagram_content_publish` all granted in `check`).
+- 2026-07-08: 7 Facebook Page photo posts were scheduled via Graph API for 2026-07-09 through 2026-07-15 at 19:30 AEST. Verification via `/scheduled_posts` returned 7 unpublished scheduled posts; runtime IDs are kept in ignored `var/meta_created_posts_last.json`.
+- Instagram asset `@fitsek.wellness` exists in Meta Business Settings under the FitSek business portfolio, but the FitSek Facebook Page is still not connected to it for Page/IG cross-posting: `/me/accounts?...instagram_business_account` returns `ig_user: null`, direct IG Graph lookup fails, and Meta Business Suite composer still shows only Facebook with “Connect Instagram”. Finish the Page↔Instagram “Log into Instagram” connection flow manually, then rerun `python3 automation/meta_autopilot.py refresh --write-env && python3 automation/meta_autopilot.py check` before attempting IG publishing.
+- 2026-07-07 API path update: `automation/meta_autopilot.py` now defaults to Graph API `v25.0`, exposes `python3 automation/meta_autopilot.py permissions` for a safe App Review/API path diagnostic, and stops `fb-draft --confirm` before the write call when `pages_manage_posts` is missing.

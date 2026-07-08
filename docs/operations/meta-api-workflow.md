@@ -10,6 +10,7 @@
 ## Required environment variables
 
 ```bash
+META_GRAPH_VERSION=v25.0                 # optional override; defaults to current Graph API path in automation
 META_FITSEK_APP_ID=...
 META_FITSEK_APP_SECRET=...
 META_FITSEK_ACCESS_TOKEN_SHORT_TERM=...   # fresh user token
@@ -36,6 +37,7 @@ Required for Instagram publishing:
 
 ```bash
 python3 automation/meta_autopilot.py check
+python3 automation/meta_autopilot.py permissions  # safe App Review/API path diagnostic
 python3 automation/meta_autopilot.py refresh --write-env   # exchange a fresh short token and persist page/IG IDs
 python3 automation/meta_token_watch.py --quiet-ok          # silent when healthy; alerts when re-auth/action is required
 python3 automation/meta_autopilot.py prepare --days 7
@@ -49,12 +51,26 @@ python3 automation/meta_autopilot.py ig-plan --days 7
 
 Meta does not provide a standard OAuth refresh token for this flow. `automation/meta_token_watch.py` keeps the saved long-lived user/page tokens validated, attempts allowed token exchange when Meta permits it, and alerts before/manual re-auth is required. Hermes cron job `Fitsek Meta Token Watch` runs this daily and stays silent while healthy.
 
-## Current verified state (2026-07-03)
+## Current verified state (2026-07-08)
 
 - Facebook Page found: `FitSek` (`100185022163250`), category `Shopping & retail`, Page tasks include `CREATE_CONTENT`.
-- Linked Instagram Business Account was not returned by the API (`ig_user: null`): either the IG account is not linked to the Page/Business asset or the token lacks IG permissions.
-- Current token grants `pages_show_list` and `pages_read_engagement`, but not `pages_manage_posts`; Meta rejected draft creation with `(#200) pages_manage_posts ... need to be approved by App Review`.
-- Next unblock: grant/request `pages_manage_posts`, `instagram_basic`, and `instagram_content_publish`, then run `refresh --write-env` and `fb-draft --confirm` again.
+- Current token grants all required Facebook/Instagram publish permissions checked by the script: `pages_show_list`, `pages_read_engagement`, `pages_manage_posts`, `instagram_basic`, and `instagram_content_publish`.
+- 7 Facebook Page photo posts were scheduled via Graph API for 2026-07-09 through 2026-07-15 at 19:30 AEST. `/scheduled_posts` verification returned 7 unpublished scheduled posts.
+- Instagram asset `@fitsek.wellness` exists in Meta Business Settings under the FitSek business portfolio, but it is not yet connected to the FitSek Page for composer/API publishing: `/me/accounts?...instagram_business_account` returns `ig_user: null`, direct IG Graph lookup by the Business Settings ID fails, and Meta Business Suite composer still shows only Facebook plus “Connect Instagram”.
+- Next IG unblock: in Meta Business Settings → Pages → FitSek → Connect assets → Instagram account → **Log into Instagram**, finish the manual login/authorization flow, then rerun `python3 automation/meta_autopilot.py refresh --write-env && python3 automation/meta_autopilot.py check`.
+
+## Proper API path
+
+The automation uses Graph API `v25.0` by default and can be overridden with `META_GRAPH_VERSION`.
+
+After Meta App Review grants the required permissions and a fresh user token is generated:
+
+1. `GET /me/accounts` discovers the FitSek Page, Page access token, and linked Instagram business account.
+2. `POST /{page-id}/photos` with `published=false` creates Facebook Page review drafts.
+3. `POST /{page-id}/photos` with `published=false` and `scheduled_publish_time` creates scheduled Facebook Page photo posts after approval.
+4. Instagram publishing uses `POST /{ig-user-id}/media` followed by `POST /{ig-user-id}/media_publish`; it does not create persistent scheduled drafts in Meta Business Suite.
+
+Until `pages_manage_posts` is granted, `fb-draft --confirm` intentionally fails before calling the write endpoint and prints the App Review unblock path.
 
 ## Meta API limitation
 

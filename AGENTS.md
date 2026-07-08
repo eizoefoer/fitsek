@@ -22,3 +22,29 @@ Optimise for profitable validation, not overbuilding. Build the smallest useful 
 
 ## Content requirements
 Every social draft must include hook, caption, CTA, hashtags, visual brief, suggested format, destination URL with UTM, and funnel stage.
+
+<!-- agent-state-standard:v1 -->
+## Agent state standard
+
+`AGENTS.md` is the single source of truth for agentic work in this repo. Before starting or completing work, every agent must:
+
+1. Read this file and any referenced project docs.
+2. Check `.agents/project-memory.json` and `.agents/task-log.jsonl` for current state.
+3. Update `.agents/task-log.jsonl` with a JSON line for meaningful starts, decisions, blockers, tests, and completions.
+4. Keep `README.md` current when behavior, setup, deployment, or public usage changes.
+5. Keep `CLAUDE.md` and other agent-specific entrypoints as pointers back to `AGENTS.md`; do not duplicate rules there.
+6. Put reusable project-specific skill code/templates under `skills/`.
+7. Prefer IaC/config/scripts over clickops. If clickops are unavoidable, document the exact manual step and the IaC replacement TODO.
+8. Prefer local/free/self-hosted tools first. Use free-tier fallbacks only when they are better for the task or their limits have reset. Paid providers require explicit approval.
+
+Project state files:
+
+- `.agents/project-memory.json` — compact durable project facts and agent handoff pointers.
+- `.agents/task-log.jsonl` — append-only event log for cross-model/machine task resumption.
+- `skills/project-memory/SKILL.md` — project-local skill explaining how to resume and update state.
+
+JSONL event shape:
+
+```json
+{"ts":"2026-07-04T00:00:00Z","actor":"agent-or-human","event":"start|decision|change|test|blocker|complete","summary":"short factual note","files":["path"],"next":["optional next action"]}
+```

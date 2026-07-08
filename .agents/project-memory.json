@@ -1,0 +1,15 @@
+{
+  "agent_state_dir": ".agents",
+  "last_bootstrap_at": "2026-07-04T02:07:06Z",
+  "policy": {
+    "agents_md_single_source_of_truth": true,
+    "claude_md_points_to_agents_md": true,
+    "prefer_iac_over_clickops": true,
+    "prefer_local_free_tools": true,
+    "readme_kept_current": true
+  },
+  "project": "fitsek",
+  "project_skill": "skills/project-memory/SKILL.md",
+  "source_of_truth": "AGENTS.md",
+  "task_log": ".agents/task-log.jsonl"
+}
