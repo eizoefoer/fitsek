@@ -14,10 +14,13 @@ from __future__ import annotations
 import argparse, csv, datetime as dt, json, os, sys, time, urllib.parse, urllib.request, urllib.error
 from pathlib import Path
 
+import social_copy
+
 ROOT = Path(__file__).resolve().parents[1]
 ENV_PATH = Path.home()/'.hermes/.env'
 STATE_PATH = ROOT/'var/meta_state.json'
 OUTBOX_PATH = ROOT/'automation/meta_outbox.json'
+CREATED_PATH = ROOT/'var/meta_created_posts_last.json'
 DEFAULT_GRAPH_VERSION='v25.0'
 REQUIRED_PERMS={'pages_show_list','pages_manage_posts','pages_read_engagement'}
 IG_PERMS={'instagram_basic','instagram_content_publish'}
@@ -160,21 +163,11 @@ def load_posts(days):
         rows=list(csv.DictReader(f))
     return rows[:days]
 
-def schedule_time(day, hour=19, minute=30):
-    # 19:30 AEST -> 09:30 UTC, start tomorrow; Meta requires at least 10 min future.
-    today=dt.datetime.now(dt.timezone.utc).date()
-    local_date=today + dt.timedelta(days=day)
-    # AEST UTC+10 fixed for Brisbane.
-    utc=dt.datetime.combine(local_date, dt.time(hour,minute), tzinfo=dt.timezone(dt.timedelta(hours=10))).astimezone(dt.timezone.utc)
-    return int(utc.timestamp())
+def schedule_time_for_index(index, posts_per_day=1):
+    return social_copy.schedule_timestamp_for_index(index, posts_per_day=posts_per_day)
 
 def caption(row, platform):
-    dest=row.get(f'destination_url_{platform.lower()}') or row.get('destination_url_facebook') or 'https://fitsek.com/'
-    hook=(row.get('hook','') or '').strip()
-    body=(row.get('caption','') or '').strip()
-    lead = body if body.lower().startswith(hook.lower()[:40]) else '\n\n'.join([hook, body]).strip()
-    parts=[lead, '', f"CTA: {row.get('cta','Get the free reset').strip()}", dest, '', row.get('hashtags','').strip()]
-    return '\n'.join([p for p in parts if p is not None]).strip()
+    return social_copy.polished_caption(row, platform)
 
 def asset_url_for(day, row):
     base=env('META_FITSEK_ASSET_BASE_URL').rstrip('/')
@@ -182,21 +175,22 @@ def asset_url_for(day, row):
         return f'{base}/post-{day:02d}.png'
     return row.get('asset_url') or f'https://fitsek.com/assets/social/post-{day:02d}.png'
 
-def build_outbox(days=7):
+def build_outbox(days=7, posts_per_day=1):
     posts=[]
-    for r in load_posts(days):
+    for idx, r in enumerate(load_posts(days)):
         day=int(r['day'])
+        scheduled_ts = schedule_time_for_index(idx, posts_per_day=posts_per_day)
         item={
             'day':day,'date':r.get('date'),'title':r.get('post_title'),'format':r.get('format'),'pillar':r.get('pillar'),
             'asset_url':asset_url_for(day, r),
             'asset_path':r.get('asset_path') or f'site/assets/social/post-{day:02d}.png',
             'facebook_caption':caption(r,'facebook'),'instagram_caption':caption(r,'instagram'),
-            'suggested_scheduled_publish_time_utc':schedule_time(day),
-            'suggested_scheduled_publish_time_aest':dt.datetime.fromtimestamp(schedule_time(day), tz=dt.timezone.utc).astimezone(dt.timezone(dt.timedelta(hours=10))).isoformat(),
+            'suggested_scheduled_publish_time_utc':scheduled_ts,
+            'suggested_scheduled_publish_time_aest':dt.datetime.fromtimestamp(scheduled_ts, tz=dt.timezone.utc).astimezone(social_copy.AEST).isoformat(),
             'status':'ready_for_meta_review'
         }
         posts.append(item)
-    OUTBOX_PATH.write_text(json.dumps({'created_at':dt.datetime.now(dt.timezone.utc).isoformat(),'mode':'approval_first','posts':posts},indent=2), encoding='utf-8')
+    OUTBOX_PATH.write_text(json.dumps({'created_at':dt.datetime.now(dt.timezone.utc).isoformat(),'mode':'approval_first','posts_per_day':posts_per_day,'copy_polished':True,'posts':posts},indent=2), encoding='utf-8')
     return posts
 
 def print_safe_state(state, missing, ig_missing):
@@ -247,8 +241,8 @@ def print_permission_path():
     }
     print(json.dumps(report, indent=2))
 
-def fb_create(mode, days, confirm=False):
-    posts=build_outbox(days)
+def fb_create(mode, days, confirm=False, posts_per_day=1):
+    posts=build_outbox(days, posts_per_day=posts_per_day)
     if not confirm:
         print(f'DRY RUN: would create {len(posts)} Facebook {mode} photo posts. Use --confirm with a valid page token to call Meta API.')
         print(f'Outbox: {OUTBOX_PATH}')
@@ -274,12 +268,14 @@ def fb_create(mode, days, confirm=False):
         if mode=='scheduled':
             data['scheduled_publish_time']=str(item['suggested_scheduled_publish_time_utc'])
         res=graph('POST',f'{page["id"]}/photos',page_access,data=data)
-        created.append({'day':item['day'],'id':res.get('id') or res.get('post_id'),'mode':mode,'asset_url':item['asset_url']})
+        created.append({'day':item['day'],'title':item.get('title'),'id':res.get('id') or res.get('post_id'),'mode':mode,'scheduled_publish_time_utc':item.get('suggested_scheduled_publish_time_utc'),'scheduled_publish_time_aest':item.get('suggested_scheduled_publish_time_aest'),'asset_url':item['asset_url']})
         time.sleep(1)
-    print(json.dumps({'created':created,'note':'Review in Meta Business Suite / Page publishing tools before the posts go live. For unpublished mode, publish/schedule manually.'}, indent=2))
+    CREATED_PATH.parent.mkdir(parents=True, exist_ok=True)
+    CREATED_PATH.write_text(json.dumps({'created_at':dt.datetime.now(dt.timezone.utc).isoformat(),'mode':mode,'posts_per_day':posts_per_day,'created':created}, indent=2), encoding='utf-8')
+    print(json.dumps({'created':created,'created_path':str(CREATED_PATH),'note':'Review in Meta Business Suite / Page publishing tools before the posts go live. For unpublished mode, publish/schedule manually.'}, indent=2))
 
-def ig_plan(days):
-    posts=build_outbox(days)
+def ig_plan(days, posts_per_day=3):
+    posts=build_outbox(days * posts_per_day, posts_per_day=posts_per_day)
     state={}; ig_missing=[]; token_status='not_checked'
     try:
         state, _, ig_missing, _ = discover(write_state=True)
@@ -295,10 +291,10 @@ def main():
     sub.add_parser('check')
     sub.add_parser('permissions', help='Print safe Meta App Review and API path status without posting')
     p=sub.add_parser('refresh'); p.add_argument('--write-env', action='store_true', help='Store long-lived user token, page token, page ID, and IG ID in ~/.hermes/.env')
-    p=sub.add_parser('prepare'); p.add_argument('--days',type=int,default=7)
-    p=sub.add_parser('fb-draft'); p.add_argument('--days',type=int,default=7); p.add_argument('--confirm',action='store_true')
-    p=sub.add_parser('fb-schedule'); p.add_argument('--days',type=int,default=7); p.add_argument('--confirm',action='store_true')
-    p=sub.add_parser('ig-plan'); p.add_argument('--days',type=int,default=7)
+    p=sub.add_parser('prepare'); p.add_argument('--days',type=int,default=7); p.add_argument('--posts-per-day',type=int,default=1)
+    p=sub.add_parser('fb-draft'); p.add_argument('--days',type=int,default=7); p.add_argument('--posts-per-day',type=int,default=1); p.add_argument('--confirm',action='store_true')
+    p=sub.add_parser('fb-schedule'); p.add_argument('--days',type=int,default=7); p.add_argument('--posts-per-day',type=int,default=1); p.add_argument('--confirm',action='store_true')
+    p=sub.add_parser('ig-plan'); p.add_argument('--days',type=int,default=7); p.add_argument('--posts-per-day',type=int,default=3)
     args=ap.parse_args()
     if args.cmd=='check':
         state, missing, ig_missing, _ = discover(write_state=True); print_safe_state(state, missing, ig_missing)
@@ -307,10 +303,10 @@ def main():
     elif args.cmd=='refresh':
         refresh_tokens(write_env=args.write_env)
     elif args.cmd=='prepare':
-        posts=build_outbox(args.days); print(json.dumps({'outbox':str(OUTBOX_PATH),'posts_prepared':len(posts),'first_asset':posts[0]['asset_url'] if posts else None}, indent=2))
-    elif args.cmd=='fb-draft': fb_create('draft', args.days, args.confirm)
-    elif args.cmd=='fb-schedule': fb_create('scheduled', args.days, args.confirm)
-    elif args.cmd=='ig-plan': ig_plan(args.days)
+        posts=build_outbox(args.days, posts_per_day=args.posts_per_day); print(json.dumps({'outbox':str(OUTBOX_PATH),'posts_prepared':len(posts),'posts_per_day':args.posts_per_day,'copy_polished':True,'first_asset':posts[0]['asset_url'] if posts else None}, indent=2))
+    elif args.cmd=='fb-draft': fb_create('draft', args.days, args.confirm, posts_per_day=args.posts_per_day)
+    elif args.cmd=='fb-schedule': fb_create('scheduled', args.days, args.confirm, posts_per_day=args.posts_per_day)
+    elif args.cmd=='ig-plan': ig_plan(args.days, posts_per_day=args.posts_per_day)
 if __name__=='__main__':
     try:
         main()

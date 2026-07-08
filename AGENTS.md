@@ -21,7 +21,7 @@ Optimise for profitable validation, not overbuilding. Build the smallest useful 
 5. Update `AI_STATE.md` when deployment, DNS, product, analytics, cron, or API status changes.
 
 ## Content requirements
-Every social draft must include hook, caption, CTA, hashtags, visual brief, suggested format, destination URL with UTM, and funnel stage.
+Every social draft must include hook, caption, CTA, hashtags, visual brief, suggested format, destination URL with UTM, and funnel stage. Before any Meta schedule/publish call, run the copy through the social-manager polish gate (`automation/social_copy.py` / `meta_autopilot.py` captions): no internal labels like `CTA:`, no repeated boilerplate, no raw unpolished AI copy, and no medical/guaranteed-result claims.
 
 <!-- agent-state-standard:v1 -->
 ## Agent state standard

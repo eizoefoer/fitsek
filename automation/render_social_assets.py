@@ -3,7 +3,10 @@ from __future__ import annotations
 from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont, ImageFilter
 import csv, shutil
+import sys
 ROOT=Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT/'automation'))
+import social_copy
 SITE=ROOT/'site'; OUT=SITE/'assets/social'
 
 def font(size, bold=False):
@@ -67,12 +70,14 @@ def create(path,title,hook,cta,day):
     box=(86,1132,w-86,1240); d.rounded_rectangle(box,radius=54,fill=(185,255,74,255)); draw_button_text(d,box,cta_label(cta))
     d.text((86,1272),'Illustrative fitness education only. Results vary.',font=font(23),fill=(169,183,202,220))
     img.save(path,quality=92)
+    if path.suffix.lower() == '.png':
+        img.save(path.with_suffix('.jpg'), quality=92)
 
 def main():
     OUT.mkdir(parents=True,exist_ok=True)
     rows=list(csv.DictReader((ROOT/'content/social/30-day-calendar.csv').open(newline='',encoding='utf-8')))
     for r in rows:
-        day=int(r['day']); create(OUT/f'post-{day:02d}.png',r.get('post_title','Fitsek'),r.get('hook',''),r.get('cta',''),day)
+        day=int(r['day']); create(OUT/f'post-{day:02d}.png',social_copy.visual_title(r),social_copy.visual_hook(r),r.get('cta',''),day)
     # OG + avatar
     og=bg(1200,630); d=ImageDraw.Draw(og,'RGBA'); d.rounded_rectangle((58,58,1142,572),radius=44,fill=(13,20,34,220),outline=(255,255,255,40),width=2)
     d.rounded_rectangle((94,96,174,176),radius=24,fill=(185,255,74,255)); d.text((123,104),'F',font=font(52,True),fill=(5,7,12,255)); d.text((198,112),'FITSEK',font=font(44,True),fill=(245,248,255,255)); d.text((94,230),'Recomp that fits\nreal work weeks.',font=font(72,True),fill=(245,248,255,255),spacing=6); d.text((94,438),'Strength • steps • protein • weekly review',font=font(34),fill=(66,245,167,255)); og.save(OUT/'og-fitsek.png',quality=92)

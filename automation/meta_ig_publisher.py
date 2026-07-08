@@ -75,12 +75,13 @@ def graph(method: str, path: str, token: str, params: dict | None = None, data: 
         raise RuntimeError(f"Meta API error {exc.code}: {body}") from exc
 
 
-def load_outbox_posts(days: int) -> list[dict]:
+def load_outbox_posts(days: int, posts_per_day: int = 3) -> list[dict]:
     sys.path.insert(0, str(AUTOMATION_DIR))
     import meta_autopilot  # type: ignore
 
     meta_autopilot.load_env()
-    return meta_autopilot.build_outbox(days)
+    # In this script, days means calendar days. Build one unique post per slot.
+    return meta_autopilot.build_outbox(days * posts_per_day, posts_per_day=posts_per_day)
 
 
 def discover_ig_user_id() -> str:
@@ -131,18 +132,21 @@ def write_json(path: Path, data: dict) -> None:
     path.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
 
 
-def make_plan(days: int, overwrite: bool = False) -> dict:
+def make_plan(days: int, overwrite: bool = False, posts_per_day: int = 3) -> dict:
     load_env()
     ig_user_id = discover_ig_user_id()
     if SCHEDULE_PATH.exists() and not overwrite:
         return json.loads(SCHEDULE_PATH.read_text())
-    posts = load_outbox_posts(days)
+    posts = load_outbox_posts(days, posts_per_day=posts_per_day)
     plan = {
         "created_at": dt.datetime.now(dt.timezone.utc).isoformat(),
         "mode": "ig_graph_scheduled_cron_publish",
         "graph_version": graph_version(),
         "ig_user_id": ig_user_id,
         "schedule_path": str(SCHEDULE_PATH),
+        "calendar_days": days,
+        "posts_per_day": posts_per_day,
+        "copy_polished": True,
         "note": "Instagram Graph API has no durable future scheduled drafts; approved posts are published by Hermes cron at scheduled times.",
         "posts": [],
     }
@@ -285,7 +289,8 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     sub = parser.add_subparsers(dest="cmd", required=True)
     p = sub.add_parser("plan")
-    p.add_argument("--days", type=int, default=7)
+    p.add_argument("--days", type=int, default=7, help="Calendar days to schedule")
+    p.add_argument("--posts-per-day", type=int, default=3)
     p.add_argument("--overwrite", action="store_true")
     sub.add_parser("status")
     p = sub.add_parser("publish-due")
@@ -295,7 +300,7 @@ def main() -> int:
     p.add_argument("--verbose", action="store_true")
     args = parser.parse_args()
     if args.cmd == "plan":
-        print(json.dumps(summarize(make_plan(args.days, overwrite=args.overwrite)), indent=2))
+        print(json.dumps(summarize(make_plan(args.days, overwrite=args.overwrite, posts_per_day=args.posts_per_day)), indent=2))
         return 0
     if args.cmd == "status":
         print(json.dumps(summarize(load_plan()), indent=2))
