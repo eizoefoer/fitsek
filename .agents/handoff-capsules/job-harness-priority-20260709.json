@@ -1,7 +1,9 @@
 {
   "artifacts": [
     "cron job 6a940c02346c",
-    "/home/ubuntu/.hermes/priority-reviews/priority-review-20260709T050015Z.json"
+    "/home/ubuntu/.hermes/priority-reviews/priority-review-20260709T050015Z.json",
+    "commit 22ad9b9",
+    "https://github.com/eizoefoer/fitsek/actions/runs/28995317826"
   ],
   "assumptions": [],
   "blockers": [],
@@ -10,19 +12,21 @@
     "Implemented project_agent_priority.py with score/upsert-task/validate/review commands.",
     "Added .agents/priority-queue.jsonl and seeded current harness/social monitoring priority rows.",
     "Added system/priority-cost-policy.md and wired priority/cost rules into system docs, AGENTS.md, project memory and skills.",
-    "Created no-agent weekly Cross-project Priority Review cron job 6a940c02346c and verified manual run ok."
+    "Created no-agent weekly Cross-project Priority Review cron job 6a940c02346c and verified manual run ok.",
+    "Pushed commit 22ad9b9 and verified GitHub Actions Deploy GitHub Pages run 28995317826 succeeded."
   ],
-  "current_status": "active",
-  "current_step": "Local validation passed; commit/push and GitHub Actions verification remain.",
+  "current_status": "complete",
+  "current_step": "Chunk 6 priority/cost system implemented, validated, committed and deployed.",
   "decisions_made": [
     "Use append-only .agents/priority-queue.jsonl snapshots; latest row per task_id is current.",
     "Weekly priority review can run as a no-agent deterministic cron because it aggregates queue/job-ledger state without judgment-heavy reasoning."
   ],
-  "last_known_good_commit": "b7b7219",
-  "last_updated": "2026-07-09T05:01:32Z",
+  "last_known_good_commit": "22ad9b9",
+  "last_updated": "2026-07-09T05:09:04Z",
   "next_actions": [
     "Run priority helper validation, cross-project review, repo validation, audit, site/social checks, secret scan, commit, push and verify CI.",
-    "Commit and push priority support, then verify GitHub Actions deploy and record final accepted rows."
+    "Commit and push priority support, then verify GitHub Actions deploy and record final accepted rows.",
+    "Use weekly Cross-project Priority Review output and .agents/priority-queue.jsonl before choosing non-trivial cross-project work."
   ],
   "objective": "Add cross-project task prioritisation, cost-efficiency routing and weekly review support to the Hermes multi-agent harness.",
   "owner_worker": "Hermes Agent",
@@ -50,6 +54,7 @@
     "project_agent_state_audit passed",
     "site validation ok",
     "social copy audit: 21 checked, 0 issues",
-    "secret_scan_hits=0"
+    "secret_scan_hits=0",
+    "GitHub Actions Deploy GitHub Pages run 28995317826 succeeded"
   ]
 }
