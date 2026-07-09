@@ -1,0 +1,55 @@
+{
+  "artifacts": [
+    "cron job 6a940c02346c",
+    "/home/ubuntu/.hermes/priority-reviews/priority-review-20260709T050015Z.json"
+  ],
+  "assumptions": [],
+  "blockers": [],
+  "branch_or_worktree": "main",
+  "completed_steps": [
+    "Implemented project_agent_priority.py with score/upsert-task/validate/review commands.",
+    "Added .agents/priority-queue.jsonl and seeded current harness/social monitoring priority rows.",
+    "Added system/priority-cost-policy.md and wired priority/cost rules into system docs, AGENTS.md, project memory and skills.",
+    "Created no-agent weekly Cross-project Priority Review cron job 6a940c02346c and verified manual run ok."
+  ],
+  "current_status": "active",
+  "current_step": "Local validation passed; commit/push and GitHub Actions verification remain.",
+  "decisions_made": [
+    "Use append-only .agents/priority-queue.jsonl snapshots; latest row per task_id is current.",
+    "Weekly priority review can run as a no-agent deterministic cron because it aggregates queue/job-ledger state without judgment-heavy reasoning."
+  ],
+  "last_known_good_commit": "b7b7219",
+  "last_updated": "2026-07-09T05:01:32Z",
+  "next_actions": [
+    "Run priority helper validation, cross-project review, repo validation, audit, site/social checks, secret scan, commit, push and verify CI.",
+    "Commit and push priority support, then verify GitHub Actions deploy and record final accepted rows."
+  ],
+  "objective": "Add cross-project task prioritisation, cost-efficiency routing and weekly review support to the Hermes multi-agent harness.",
+  "owner_worker": "Hermes Agent",
+  "project": "fitsek",
+  "relevant_commands": [
+    "python3 ~/.hermes/scripts/project_agent_priority.py review --root /home/ubuntu --write-report --format text"
+  ],
+  "relevant_files": [
+    "/home/ubuntu/.hermes/scripts/project_agent_priority.py",
+    "/home/ubuntu/.hermes/scripts/project_priority_weekly_review.sh",
+    "system/priority-cost-policy.md",
+    ".agents/priority-queue.jsonl"
+  ],
+  "resume_instructions": "Read AGENTS.md, .agents/project-memory.json, system/priority-cost-policy.md, .agents/priority-queue.jsonl, this capsule, recent job-ledger rows and task log. Continue with validation and final accepted queue update.",
+  "risks": [
+    "Priority scores are decision aids only; Hermes still validates source-of-truth state and user instructions before acting."
+  ],
+  "task_id": "job-harness-priority-20260709",
+  "tests_last_run": [
+    "py_compile harness scripts passed",
+    "project_agent_priority validate passed: latest_tasks=2 priority_queue_rows=2",
+    "project_agent_priority review generated weekly report",
+    "project_agent_state validate --strict passed",
+    "project_agent_fanout validate --strict passed",
+    "project_agent_state_audit passed",
+    "site validation ok",
+    "social copy audit: 21 checked, 0 issues",
+    "secret_scan_hits=0"
+  ]
+}

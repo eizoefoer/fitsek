@@ -8,6 +8,7 @@ Every delegated task, subagent run, IDE run, CLI run, browser run, research run,
 project: <project name>
 goal: <specific outcome>
 parent_job_id: <job id>
+priority_queue_ref: .agents/priority-queue.jsonl:<task_id>
 child_job_id: <job id for this worker>
 context_source_paths:
   - AGENTS.md
@@ -47,6 +48,9 @@ rollback_plan:
   - <how to revert if code/config changes are made>
 cost_and_model_constraints:
   cost_tier: <paid/free-tier/free/local>
+  cost_budget: <numeric/string budget>
+  safe_for_free_model: <true/false>
+  requires_paid_model_review: <true/false>
   max_scope: <scope limit>
 ```
 

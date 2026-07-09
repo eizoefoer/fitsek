@@ -21,10 +21,11 @@ This project-local skill makes repo state portable across agents, models, IDEs, 
 1. Read `AGENTS.md`.
 2. Read `.agents/project-memory.json`.
 3. Tail `.agents/task-log.jsonl` for recent events.
-4. Review `system/model-routing-policy.md`, `system/delegation-contract.md`, `system/fanout-execution.md`, and `system/validation-gates.md` when delegating or accepting worker output.
-5. Review `README.md` when setup, behavior, or deployment matters.
-6. Log a `start` event before changing files.
-7. Create or update a handoff capsule for active work: `.agents/handoff-capsules/<task_id>.json`.
+4. Review `system/model-routing-policy.md`, `system/delegation-contract.md`, `system/fanout-execution.md`, `system/priority-cost-policy.md`, and `system/validation-gates.md` when prioritising, delegating, or accepting worker output.
+5. Review `.agents/priority-queue.jsonl` or run `~/.hermes/scripts/project_agent_priority.py review --root /home/ubuntu --write-report --format text` before choosing non-trivial next work.
+6. Review `README.md` when setup, behavior, or deployment matters.
+7. Log a `start` event before changing files.
+8. Create or update a handoff capsule for active work: `.agents/handoff-capsules/<task_id>.json`.
 
 ## Required completion sequence
 
@@ -47,6 +48,7 @@ This project-local skill makes repo state portable across agents, models, IDEs, 
 - `.agents/context-bullets.jsonl` provides compact structured context for session loading.
 - `.agents/handoff-capsules/` provides resumability; capsules reference JSONL/project memory instead of duplicating full history.
 - `.agents/job-ledger.jsonl` attributes every worker/model/tool result before Hermes accepts it.
+- `.agents/priority-queue.jsonl` ranks cross-project next actions and cost-efficient routing; latest row per `task_id` is current.
 - `CLAUDE.md` and other agent-specific files point back to `AGENTS.md`.
 - Prefer IaC/config/scripts over clickops.
 - Prefer local/free/self-hosted tooling; paid fallbacks require explicit approval.
@@ -78,6 +80,18 @@ Before accepting worker/model/CLI/IDE/browser/scheduler output, append a row to 
 ```
 
 For multiple models/agents on the same goal, create one parent job and a child job per worker. Hermes accepts/rejects/supersedes each child only after reconciling against tests, source files, JSONL, project memory and user instructions.
+
+## Cross-project priority queue and cost review
+
+Use `.agents/priority-queue.jsonl` plus `~/.hermes/scripts/project_agent_priority.py` to rank tasks across projects by value, urgency, blockers, effort, risk and cost. The latest JSONL row per `task_id` is the current queue state.
+
+```bash
+~/.hermes/scripts/project_agent_priority.py upsert-task --repo . --task-id <id> --title "..." --status ready --expected-value "..." --cost-budget "local/free first" --next-action "..."
+~/.hermes/scripts/project_agent_priority.py review --root /home/ubuntu --write-report --format text
+~/.hermes/scripts/project_agent_priority.py validate --repo . --strict
+```
+
+Cost rule: use deterministic scripts/tests/search/static analysis before model calls where possible; use free/local models for low-risk drafts/exploration; reserve paid/current best model for architecture, important tradeoffs, high-risk work and final review.
 
 ## Fan-out execution
 

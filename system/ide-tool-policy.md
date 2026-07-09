@@ -91,6 +91,7 @@ Acceptance requires:
 - Prefer file/search/patch tools over ad-hoc shell text manipulation.
 - Use shell for builds, tests, git, package managers, processes and network checks.
 - Record meaningful commands in handoff capsules and job ledger.
+- Prefer priority-review helper output for cross-project scheduling decisions, then let Hermes review any judgment-heavy recommendation.
 - For destructive commands or production-impacting operations, require explicit approval and rollback plan.
 
 ## Scheduled jobs

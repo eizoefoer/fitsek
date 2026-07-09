@@ -4,7 +4,7 @@ Fan-out lets Hermes split suitable work into independent workstreams, compare re
 
 ## When to use fan-out
 
-Use fan-out when parallelism adds speed, quality, or risk reduction:
+Use fan-out when parallelism adds speed, quality, or risk reduction. Prefer priority-queue candidates with `safe_to_parallelise=true`, no unresolved blockers, and enough value to justify coordination cost:
 
 - competing implementation approaches
 - bug-fix hypotheses

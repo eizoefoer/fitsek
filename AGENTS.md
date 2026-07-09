@@ -46,6 +46,7 @@ Harness policy files:
 - `system/handoff-template.md` — human-readable handoff template pointing to capsules/ledger.
 - `system/validation-gates.md` — acceptance gates by task type.
 - `system/fanout-execution.md` — branch/worktree fan-out execution and reconciliation policy.
+- `system/priority-cost-policy.md` — cross-project prioritisation, weekly review, and cost-efficiency policy.
 
 Project state files:
 
@@ -54,6 +55,7 @@ Project state files:
 - `.agents/context-bullets.jsonl` — append-only concise context facts, constraints, decisions, risks, assumptions and open questions.
 - `.agents/handoff-capsules/` — mutable per-task resume capsules that reference logs/project memory rather than duplicating full task state.
 - `.agents/job-ledger.jsonl` — append-only attribution ledger for every task/subtask/tool/worker/model/scheduler/human result and its acceptance status.
+- `.agents/priority-queue.jsonl` — append-only priority snapshots for cross-project next-action ranking and cost routing.
 - `.agents/fanout/` — fan-out plans, worker briefs and reconciliation records that reference job ledger rows.
 - `.agents/locks/` — lightweight locks for active fan-out workstreams.
 - `skills/project-memory/SKILL.md` — project-local skill explaining how to resume and update state.
@@ -96,3 +98,16 @@ Use fan-out only when independent workstreams improve speed, quality, or risk re
 Fan-out state lives under `.agents/fanout/<task_id>/` for plans, worker briefs and reconciliation records, with `.agents/locks/` for active locks. Job ledger rows remain the source of truth for worker attribution and acceptance. Project memory is updated only after Hermes compares candidates, validates the selected result, and records reconciliation.
 
 Required reconciliation record fields: `candidates_compared`, `branch_worktree_names`, `model_agent_used`, `strengths`, `weaknesses`, `test_results`, `files_changed`, `conflicts`, `security_concerns`, `selected_winner`, `selection_reason`, `parts_cherry_picked`, `final_validation_commands`, `final_accepted_commit_or_pr`, `rejected_or_superseded_jobs`.
+
+<!-- agent-priority-cost:v1 -->
+## Cross-project prioritisation and cost efficiency
+
+Use `.agents/priority-queue.jsonl` for append-only task priority snapshots. The latest row for each `task_id` is the current queue item. Priority rows help Hermes choose the highest-value next action across projects without replacing `.agents/task-log.jsonl`, handoff capsules, job ledger attribution, or fan-out reconciliation records.
+
+Required priority queue fields: `task_id`, `project`, `title`, `priority_score`, `status`, `owner_worker`, `required_capability`, `cost_budget`, `expected_value`, `dependencies`, `blockers`, `safe_to_parallelise`, `safe_for_free_model`, `requires_paid_model_review`, `requires_human_approval`, `branch_or_worktree`, `handoff_capsule`, `next_action`.
+
+Scoring considers user priority, business value, urgency, dependency blocking, effort, risk, cost estimate, expected revenue/impact, whether the task unblocks other tasks, whether it can safely parallelise, whether a human can help, whether free/local models are good enough, and whether paid review or human approval is required.
+
+Cost-efficiency rules: prefer code-first implementation when faster than long planning; do just enough planning to avoid rework; use free/free-tier/local models for low-risk first drafts, tests, summaries and exploration; use paid/current best model for architecture, final review, important tradeoffs and high-risk work; use fan-out only when parallelism adds value; prefer deterministic scripts/tests/search/static analysis over expensive model calls; record estimated cost and best result per cost where possible.
+
+Weekly review command: `~/.hermes/scripts/project_agent_priority.py review --root /home/ubuntu --write-report --format text`.

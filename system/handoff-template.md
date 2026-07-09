@@ -13,6 +13,7 @@ Use this template for human-readable handoffs. Machine-readable resumability liv
 - Capsule: `.agents/handoff-capsules/<task_id>.json`
 - Job ledger rows: `<parent_job_id>` and child jobs `<ids>`
 - Fan-out record if any: `.agents/fanout/<task_id>/reconciliation.json`
+- Priority queue row: `.agents/priority-queue.jsonl` latest row for `<task_id>`
 - Last known good commit: `<sha>`
 - Branch/worktree: `<branch or path>`
 
@@ -55,7 +56,7 @@ Use this template for human-readable handoffs. Machine-readable resumability liv
 
 ## Resume instructions
 
-Read `AGENTS.md`, `.agents/project-memory.json`, relevant context bullets, this capsule, recent `.agents/job-ledger.jsonl` rows, then tail `.agents/task-log.jsonl`. Continue from the capsule; do not restart from chat history.
+Read `AGENTS.md`, `.agents/project-memory.json`, `.agents/priority-queue.jsonl`, relevant context bullets, this capsule, recent `.agents/job-ledger.jsonl` rows, then tail `.agents/task-log.jsonl`. Continue from the capsule; do not restart from chat history.
 ```
 
 ## Capsule schema reminder
@@ -87,6 +88,7 @@ Required fields:
 
 ```bash
 ~/.hermes/scripts/project_agent_state.py session-context --repo . --limit 8
+~/.hermes/scripts/project_agent_priority.py review --root /home/ubuntu --write-report --format text
 ~/.hermes/scripts/project_agent_state.py upsert-capsule --repo . --task-id <task_id> --current-step "..." --next-action "..."
 ~/.hermes/scripts/project_agent_state.py validate --repo . --strict
 ```
