@@ -1,0 +1,61 @@
+{
+  "artifacts": [
+    "/home/ubuntu/.hermes/backups/chunk8-vault-20260709T063315Z",
+    "/home/ubuntu/vault",
+    "https://github.com/eizoefoer/fitsek/pull/2",
+    "https://github.com/eizoefoer/fitsek/actions/runs/28999385962"
+  ],
+  "assumptions": [],
+  "blockers": [],
+  "branch_or_worktree": "feature/fitsek/markdown-vault-synthesis-layer @ /home/ubuntu/worktrees/fitsek-markdown-vault-synthesis-layer",
+  "completed_steps": [
+    "Created ~/vault layout, source-of-truth/rules/decision/active-context/graph-health files, and vault git repo.",
+    "Configured Hermes MCP vault server to @modelcontextprotocol/server-filesystem scoped only to /home/ubuntu/vault and verified 14 tools discovered.",
+    "Created no-agent daily, Sunday synthesis, and monthly graph-health scripts/jobs and manually verified all three cron jobs last_status=ok.",
+    "Recorded Fitsek project-state context/job/priority/capsule for Chunk 8.",
+    "Opened PR #2 and verified GitHub Actions PR run 28999385962 passed."
+  ],
+  "current_status": "active",
+  "current_step": "Recording PR CI evidence before merge.",
+  "decisions_made": [],
+  "last_known_good_commit": "7deff54",
+  "last_updated": "2026-07-09T06:43:11Z",
+  "next_actions": [
+    "Validate state update, commit branch, push PR, verify CI, merge and deploy.",
+    "Commit branch, push PR, verify CI, merge, deploy, then mark Chunk 8 complete.",
+    "Push CI evidence, verify PR CI again, merge PR #2, then verify main deploy."
+  ],
+  "objective": "Add Markdown/Obsidian-style vault as readable synthesis layer only, configure vault-scoped MCP, and schedule daily/weekly/monthly vault maintenance.",
+  "owner_worker": "Hermes Agent",
+  "project": "fitsek",
+  "relevant_commands": [
+    "python3 ~/.hermes/scripts/vault_maintenance.py validate",
+    "hermes mcp test vault"
+  ],
+  "relevant_files": [
+    "AGENTS.md",
+    ".agents/project-memory.json",
+    "skills/project-memory/SKILL.md",
+    "/home/ubuntu/vault/system/source-of-truth.md",
+    "/home/ubuntu/.hermes/config.yaml",
+    "/home/ubuntu/.hermes/scripts/vault_maintenance.py"
+  ],
+  "resume_instructions": "Read AGENTS.md, .agents/project-memory.json, .agents/context-bullets.jsonl, this capsule, then tail .agents/task-log.jsonl before continuing.",
+  "risks": [
+    "Vault is readable synthesis only and must not be used as authoritative task state."
+  ],
+  "task_id": "job-harness-markdown-vault-20260709",
+  "tests_last_run": [
+    "vault validate passed: dirs=10 notes=18 errors=[]",
+    "hermes mcp test vault passed: 14 tools discovered",
+    "Vault Daily Filing cron run ok: job_id 2fd74438417a",
+    "Vault Sunday Synthesis cron run ok: job_id e62cddfb89bd",
+    "Vault Monthly Graph Health cron run ok: job_id fa76ad4eddbe",
+    "project_agent_state.py validate --strict passed",
+    "project_agent_priority.py validate --strict passed",
+    "site validation ok",
+    "social copy: 21 checked, 0 issues",
+    "secret_scan_hits=0",
+    "GitHub Actions PR run 28999385962 succeeded"
+  ]
+}

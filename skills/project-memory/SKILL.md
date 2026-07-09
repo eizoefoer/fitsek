@@ -51,6 +51,7 @@ This project-local skill makes repo state portable across agents, models, IDEs, 
 - `.agents/job-ledger.jsonl` attributes every worker/model/tool result before Hermes accepts it.
 - `.agents/priority-queue.jsonl` ranks cross-project next actions and cost-efficient routing; latest row per `task_id` is current.
 - `system/sdlc-iac-ci.md` plus `project_agent_sdlc.py` define start gates, branch/worktree policy, CI/IaC checks, rollback evidence and human-collaboration rules.
+- `~/vault` is a Markdown/Obsidian-style readable synthesis layer only; it links and summarizes, but `.agents` JSONL/project memory/job ledger remains authoritative.
 - `CLAUDE.md` and other agent-specific files point back to `AGENTS.md`.
 - Prefer IaC/config/scripts over clickops.
 - Prefer local/free/self-hosted tooling; paid fallbacks require explicit approval.

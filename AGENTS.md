@@ -61,6 +61,13 @@ Project state files:
 - `.agents/locks/` — lightweight locks for active fan-out workstreams.
 - `skills/project-memory/SKILL.md` — project-local skill explaining how to resume and update state.
 
+Markdown vault readable layer:
+
+- `~/vault` is an Obsidian-style readable synthesis layer only, never the source of truth for task state.
+- Vault raw captures live under `~/vault/inbox/raw/` and must not be edited after creation.
+- Vault processed notes/daily/weekly/monthly syntheses may link to project state, but if they conflict with `.agents/task-log.jsonl`, `.agents/project-memory.json`, `.agents/job-ledger.jsonl`, or handoff capsules, the `.agents` state wins.
+- MCP filesystem access for vault work is scoped to `/home/ubuntu/vault` only.
+
 JSONL event shape:
 
 ```json
