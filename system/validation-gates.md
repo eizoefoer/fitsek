@@ -10,6 +10,7 @@ A task is not complete until the relevant validation gates pass or the blocker i
 4. **State check** — handoff capsule current; task log has meaningful events; project memory updated only after acceptance.
 5. **Diff review** — Hermes inspects actual files/diffs, not only worker summaries.
 6. **Rollback check** — code/config changes have git revert, patch reversal, or documented restore path.
+7. **Fan-out check** — if multiple workers/branches were used, `.agents/fanout/<task_id>/reconciliation.json` exists, losing jobs are rejected/superseded in `.agents/job-ledger.jsonl`, and project memory changed only after reconciliation.
 
 ## Fitsek repo gates
 

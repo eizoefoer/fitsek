@@ -1,0 +1,54 @@
+{
+  "artifacts": [
+    "system/fanout-execution.md",
+    "validation output"
+  ],
+  "assumptions": [],
+  "blockers": [],
+  "branch_or_worktree": "main",
+  "completed_steps": [
+    "Created ~/.hermes/scripts/project_agent_fanout.py with start/add-worker/reconcile/validate commands.",
+    "Updated project_agent_state/bootstrap/audit to include fanout directories, locks and system/fanout-execution.md.",
+    "Created system/fanout-execution.md and wired fan-out policy into existing system docs.",
+    "Validated fan-out helper with disposable git repo: two isolated worktrees created, reconciliation written, validation passed, and temp worktrees removed.",
+    "Validated Fitsek state/docs/scripts with strict project_agent_state, project_agent_fanout, audit, site validation, social copy audit, policy check and secret scan."
+  ],
+  "current_status": "running",
+  "current_step": "Fan-out helper, policy docs, project state and skills updated; validation and commit pending.",
+  "decisions_made": [],
+  "last_known_good_commit": "9112742",
+  "last_updated": "2026-07-09T02:38:56Z",
+  "next_actions": [
+    "Run full validation, secret scan, commit/push, and verify GitHub Actions deploy.",
+    "Commit and push fan-out support; verify GitHub Actions deploy."
+  ],
+  "objective": "Add fan-out execution support with safe branch/worktree worker lanes and reconciliation records.",
+  "owner_worker": "hermes-agent",
+  "project": "fitsek",
+  "relevant_commands": [
+    "project_agent_fanout.py disposable worktree test",
+    "python3 -m py_compile harness scripts",
+    "project_agent_fanout.py validate --repo /home/ubuntu/fitsek --strict",
+    "project_agent_state.py validate --repo /home/ubuntu/fitsek --strict"
+  ],
+  "relevant_files": [
+    "~/.hermes/scripts/project_agent_fanout.py",
+    "~/.hermes/scripts/project_agent_state.py",
+    "~/.hermes/scripts/bootstrap_project_agent_state.py",
+    "~/.hermes/scripts/project_agent_state_audit.py",
+    "system/fanout-execution.md",
+    "AGENTS.md",
+    ".agents/project-memory.json",
+    "skills/project-memory/SKILL.md"
+  ],
+  "resume_instructions": "Read AGENTS.md, project memory, system/fanout-execution.md, this capsule and job ledger. Continue by validating scripts/docs, then commit/push and verify CI.",
+  "risks": [
+    "Fan-out branches can create state drift if workers are not scoped and reconciled before memory updates."
+  ],
+  "task_id": "job-harness-fanout-20260709",
+  "tests_last_run": [
+    "Disposable fan-out git worktree test passed and cleaned up",
+    "secret_scan_hits=0",
+    "fanout_policy_doc_check ok"
+  ]
+}

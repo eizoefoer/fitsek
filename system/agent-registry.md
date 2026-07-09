@@ -38,3 +38,5 @@ Add a row above and include:
 - required validation before output can be accepted
 
 Then create or update a context bullet if the worker changes durable routing behavior.
+
+For fan-out work, every worker row must map to a child job, branch/worktree, worker brief under `.agents/fanout/<task_id>/workers/`, and final reconciliation before acceptance.

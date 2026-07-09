@@ -21,7 +21,7 @@ This project-local skill makes repo state portable across agents, models, IDEs, 
 1. Read `AGENTS.md`.
 2. Read `.agents/project-memory.json`.
 3. Tail `.agents/task-log.jsonl` for recent events.
-4. Review `system/model-routing-policy.md`, `system/delegation-contract.md`, and `system/validation-gates.md` when delegating or accepting worker output.
+4. Review `system/model-routing-policy.md`, `system/delegation-contract.md`, `system/fanout-execution.md`, and `system/validation-gates.md` when delegating or accepting worker output.
 5. Review `README.md` when setup, behavior, or deployment matters.
 6. Log a `start` event before changing files.
 7. Create or update a handoff capsule for active work: `.agents/handoff-capsules/<task_id>.json`.
@@ -78,3 +78,7 @@ Before accepting worker/model/CLI/IDE/browser/scheduler output, append a row to 
 ```
 
 For multiple models/agents on the same goal, create one parent job and a child job per worker. Hermes accepts/rejects/supersedes each child only after reconciling against tests, source files, JSONL, project memory and user instructions.
+
+## Fan-out execution
+
+Use `system/fanout-execution.md` plus `~/.hermes/scripts/project_agent_fanout.py` when independent branches/worktrees will improve speed, quality, or risk reduction. Start a parent fan-out job, create one branch/worktree worker lane per candidate, validate each lane, record `.agents/fanout/<task_id>/reconciliation.json`, and update project memory only after Hermes accepts the reconciled result.

@@ -31,9 +31,11 @@ Hermes routes work to minimise cost while preserving quality. Paid/current-best 
 - log triage and pattern finding
 - deterministic validation scripts
 
-## Use multi-agent only when it adds value
+## Use multi-agent / fan-out only when it adds value
 
-Use multi-agent for:
+Use normal delegation for independent analysis/review. Use fan-out when candidates need isolated branches/worktrees and Hermes will compare competing outputs.
+
+Use multi-agent/fan-out for:
 
 - comparing approaches
 - parallel research
@@ -46,7 +48,7 @@ Use multi-agent for:
 - UI/design alternatives
 - architecture trade-off analysis
 
-Do **not** use multi-agent for:
+Do **not** use multi-agent/fan-out for:
 
 - trivial tasks
 - secrets or credential handling
@@ -55,6 +57,8 @@ Do **not** use multi-agent for:
 - tasks needing one authoritative answer
 - tasks where state drift risk is high
 - work where coordination overhead exceeds speed/quality/risk-reduction value
+
+Fan-out repo work must follow `system/fanout-execution.md`: one branch/worktree per worker, parent/child job-ledger rows, worker briefs, validation on each branch, reconciliation before merge or memory update.
 
 ## Routing decision checklist
 

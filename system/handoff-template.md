@@ -12,6 +12,7 @@ Use this template for human-readable handoffs. Machine-readable resumability liv
 - Status: planned / running / blocked / complete
 - Capsule: `.agents/handoff-capsules/<task_id>.json`
 - Job ledger rows: `<parent_job_id>` and child jobs `<ids>`
+- Fan-out record if any: `.agents/fanout/<task_id>/reconciliation.json`
 - Last known good commit: `<sha>`
 - Branch/worktree: `<branch or path>`
 

@@ -45,6 +45,7 @@ Harness policy files:
 - `system/delegation-contract.md` — required delegated-task brief and worker return format.
 - `system/handoff-template.md` — human-readable handoff template pointing to capsules/ledger.
 - `system/validation-gates.md` — acceptance gates by task type.
+- `system/fanout-execution.md` — branch/worktree fan-out execution and reconciliation policy.
 
 Project state files:
 
@@ -53,6 +54,8 @@ Project state files:
 - `.agents/context-bullets.jsonl` — append-only concise context facts, constraints, decisions, risks, assumptions and open questions.
 - `.agents/handoff-capsules/` — mutable per-task resume capsules that reference logs/project memory rather than duplicating full task state.
 - `.agents/job-ledger.jsonl` — append-only attribution ledger for every task/subtask/tool/worker/model/scheduler/human result and its acceptance status.
+- `.agents/fanout/` — fan-out plans, worker briefs and reconciliation records that reference job ledger rows.
+- `.agents/locks/` — lightweight locks for active fan-out workstreams.
 - `skills/project-memory/SKILL.md` — project-local skill explaining how to resume and update state.
 
 JSONL event shape:
@@ -84,3 +87,12 @@ Use `.agents/job-ledger.jsonl` as the append-only source of truth for who/what p
 Required job fields: `job_id`, `parent_job_id`, `project`, `task_type`, `goal`, `priority`, `assigned_worker`, `worker_type`, `model_name`, `model_provider`, `model_version`, `interface_used`, `cost_tier`, `estimated_cost`, `token_usage`, `started_at`, `completed_at`, `status`, `selection_reason`, `input_context_sources`, `files_allowed`, `files_forbidden`, `files_changed`, `commands_run`, `tests_run`, `artifacts_created`, `result_summary`, `quality_score`, `accepted_by`, `rejection_reason`, `superseded_by_job_id`, `next_action`, `failure_reason`.
 
 Rules: no worker output is accepted without attribution; no code/config/memory change is accepted without knowing the model/agent/tool; each model/agent gets its own child job; Hermes records why the worker was selected and whether the result was used, ignored, merged, rewritten, rejected or superseded. Model output is evidence, not truth. Hermes reconciles worker output against tests, source files, JSONL, project memory and user instructions before updating project memory.
+
+<!-- agent-fanout:v1 -->
+## Fan-out execution
+
+Use fan-out only when independent workstreams improve speed, quality, or risk reduction. For repo work, prepare one branch/worktree per worker using `agent/<project>/<task-slug>/<worker-name>` and keep worktrees outside the main repo when possible. Never let two workers edit the same worktree concurrently.
+
+Fan-out state lives under `.agents/fanout/<task_id>/` for plans, worker briefs and reconciliation records, with `.agents/locks/` for active locks. Job ledger rows remain the source of truth for worker attribution and acceptance. Project memory is updated only after Hermes compares candidates, validates the selected result, and records reconciliation.
+
+Required reconciliation record fields: `candidates_compared`, `branch_worktree_names`, `model_agent_used`, `strengths`, `weaknesses`, `test_results`, `files_changed`, `conflicts`, `security_concerns`, `selected_winner`, `selection_reason`, `parts_cherry_picked`, `final_validation_commands`, `final_accepted_commit_or_pr`, `rejected_or_superseded_jobs`.

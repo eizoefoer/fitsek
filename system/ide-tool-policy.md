@@ -44,6 +44,7 @@ Allowed:
 - test/lint loops
 - bug reproduction and hypothesis testing
 - generating patches for Hermes review
+- fan-out worker lanes in their own branch/worktree
 
 Required scope in brief:
 

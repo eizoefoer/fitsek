@@ -42,6 +42,7 @@ expected_output_format:
   artifacts_or_logs: list
 validation_steps:
   - <command/check>
+branch_or_worktree: <branch/worktree path; required for fan-out repo work>
 rollback_plan:
   - <how to revert if code/config changes are made>
 cost_and_model_constraints:
