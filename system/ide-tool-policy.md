@@ -8,7 +8,9 @@ This policy covers Cursor, VS Code, Codex CLI, other IDE agents, browser agents,
 - IDEs/CLIs/tools are workers, not owners of project state.
 - Every accepted tool/worker result must be attributed in `.agents/job-ledger.jsonl`.
 - Do not allow IDE/tool output to update project memory directly. Hermes accepts/rejects first.
-- Use isolated branches/worktrees/scopes for parallel or risky edits.
+- Use isolated branches/worktrees/scopes for parallel, risky, or non-trivial edits.
+- Before editing, check git status and do not overwrite uncommitted human changes.
+- For repo work, pull latest from `development` if present, otherwise `main`, then use `feature/<project>/<task>`, `fix/<project>/<bug>`, or fan-out `agent/<project>/<task>/<worker>` branches.
 - Never place secrets, tokens, `.env`, SSH keys, credential files, or raw auth output in prompts, memory, logs, capsules, ledgers, docs, or screenshots.
 
 ## IDE agents
@@ -92,7 +94,15 @@ Acceptance requires:
 - Use shell for builds, tests, git, package managers, processes and network checks.
 - Record meaningful commands in handoff capsules and job ledger.
 - Prefer priority-review helper output for cross-project scheduling decisions, then let Hermes review any judgment-heavy recommendation.
+- Run `~/.hermes/scripts/project_agent_sdlc.py detect --repo . --format text` before changing CI/IaC/deploy behavior.
 - For destructive commands or production-impacting operations, require explicit approval and rollback plan.
+
+## Human workers
+
+- Humans are workers when they provide approvals, manual UI/account changes, business decisions, or direct file edits.
+- Record accepted human work in `.agents/job-ledger.jsonl` with `worker_type: human`.
+- Do not overwrite human edits; inspect git status, branch, conflicts and recent commits first.
+- If a human is working concurrently, use a separate worktree/branch or pause and coordinate.
 
 ## Scheduled jobs
 

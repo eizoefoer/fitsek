@@ -1,6 +1,6 @@
 # AI_STATE.md
 
-Last updated: 2026-07-08
+Last updated: 2026-07-09
 
 ## Brand
 Fitsek is a faceless desk-worker body recomposition brand: simple, practical, evidence-aware, direct, encouraging, and general wellness only.
@@ -19,6 +19,10 @@ Traffic → `fitsek.com` → free lead magnet → email/list → paid digital pr
 - Custom domain: `fitsek.com`; `www.fitsek.com` CNAME to GitHub Pages.
 - Lead/event API: `server/lead_api.py`, systemd service `fitsek-leads.service`, proxied by Caddy as `leads.fitsek.com`.
 - No payment checkout is connected yet. Use no-monthly-fee option when user sets account: Stripe Payment Link, Gumroad, Payhip, Lemon Squeezy, or Ko-fi.
+
+## Agent/CI state
+- 2026-07-09: Agent harness policies include SDLC/IaC/CI/human-collaboration rules in `system/sdlc-iac-ci.md`; meaningful repo work should use feature/fix/agent branches or worktrees, existing CI first, IaC/rollback records for infra changes, and human worker job-ledger rows for accepted human changes.
+- GitHub Pages workflow validates pushes to `main` and pull requests targeting `main`; deploy is skipped for pull requests and runs only for non-PR workflow events.
 
 ## Automation
 - `automation/business_review.py` writes daily/weekly/monthly reports to `analytics/reports/`.

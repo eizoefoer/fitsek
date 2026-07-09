@@ -19,12 +19,14 @@ Faceless, low-friction body recomposition funnel for busy desk workers.
 
 ```bash
 python3 scripts/validate_site.py
+python3 automation/social_copy.py audit --days 21
+~/.hermes/scripts/project_agent_sdlc.py detect --repo . --format text
 python3 -m http.server 8080 -d site
 ```
 
 ## Release
 
-GitHub Pages deploys `site/` after `scripts/validate_site.py` passes.
+GitHub Pages deploys `site/` after `scripts/validate_site.py` passes. Pull requests targeting `main` run the validation job without deploying; pushes/workflow dispatches to `main` deploy after validation.
 
 ## Meta automation
 
@@ -66,4 +68,4 @@ Never commit `.env`, API keys, lead exports, logs with emails, Meta tokens, Stri
 
 ## Agent workflow
 
-Agentic work in this repository is governed by [`AGENTS.md`](AGENTS.md). Agents should keep `.agents/project-memory.json`, `.agents/task-log.jsonl`, and relevant README/setup docs updated before considering work complete.
+Agentic work in this repository is governed by [`AGENTS.md`](AGENTS.md). Before meaningful repo edits, run the SDLC preflight helper, use a feature/fix/agent branch or worktree, and record handoff/job-ledger state. Agents should keep `.agents/project-memory.json`, `.agents/task-log.jsonl`, `.agents/handoff-capsules/`, and relevant README/setup docs updated before considering work complete.

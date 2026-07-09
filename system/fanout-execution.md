@@ -40,13 +40,13 @@ Do **not** use fan-out for:
 
 For repo work:
 
-1. Start from a clean main/development branch or known base commit.
-2. Create one branch/worktree per worker.
+1. Run `~/.hermes/scripts/project_agent_sdlc.py preflight` so base branch, clean status, CI and IaC context are recorded.
+2. Start from a clean `development` branch if present, otherwise `main`, or from a documented known base commit.
 3. Keep worktrees outside the main repo working directory when possible.
-4. Use branch naming:
-   - `agent/<project>/<task-slug>/<worker-name>`
-   - Example: `agent/fitsek/landing-page-copy/gpt55`
-   - Example: `agent/fitsek/landing-page-copy/free-model-a`
+4. Create one branch/worktree per worker:
+   - regular feature work: `feature/<project>/<task-slug>`
+   - fixes: `fix/<project>/<bug-slug>`
+   - fan-out workers: `agent/<project>/<task-slug>/<worker-name>`
 5. Never let two workers edit the same worktree concurrently.
 6. Each branch makes small logical commits.
 7. Each branch runs relevant lint/tests/build checks before handoff.

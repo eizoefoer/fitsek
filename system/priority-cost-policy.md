@@ -85,6 +85,7 @@ The score is a decision aid, not an automatic command. Hermes still checks user 
 - Use free/free-tier/local models for low-risk first drafts, tests, summaries, extraction, exploration, and broad parallel research.
 - Use paid/current best model for architecture, important tradeoffs, high-risk code/config, source-of-truth reconciliation, and final review.
 - Use fan-out only when parallelism adds speed, quality, or risk reduction beyond the coordination cost.
+- Run SDLC preflight before repo edits so branch/worktree, CI/IaC and human-change risks are known before model/tool spend.
 - Record estimated model/tool cost where possible in `.agents/job-ledger.jsonl` and `.agents/priority-queue.jsonl`.
 - Record which approach gave the best result per cost when the evidence exists.
 - Never expose secrets to workers or priority/review logs.

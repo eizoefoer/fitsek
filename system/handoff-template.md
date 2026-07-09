@@ -16,6 +16,10 @@ Use this template for human-readable handoffs. Machine-readable resumability liv
 - Priority queue row: `.agents/priority-queue.jsonl` latest row for `<task_id>`
 - Last known good commit: `<sha>`
 - Branch/worktree: `<branch or path>`
+- Base branch pulled before start: `<development|main> / yes|no>`
+- CI status: `<local checks + CI run URL/status>`
+- IaC/rollback: `<config/scripts changed + rollback path or n/a>`
+- Human changes/approvals: `<human job-ledger row or n/a>`
 
 ## What is complete
 
@@ -56,7 +60,7 @@ Use this template for human-readable handoffs. Machine-readable resumability liv
 
 ## Resume instructions
 
-Read `AGENTS.md`, `.agents/project-memory.json`, `.agents/priority-queue.jsonl`, relevant context bullets, this capsule, recent `.agents/job-ledger.jsonl` rows, then tail `.agents/task-log.jsonl`. Continue from the capsule; do not restart from chat history.
+Read `AGENTS.md`, `.agents/project-memory.json`, `system/sdlc-iac-ci.md`, `.agents/priority-queue.jsonl`, relevant context bullets, this capsule, recent `.agents/job-ledger.jsonl` rows, then tail `.agents/task-log.jsonl`. Continue from the capsule; do not restart from chat history.
 ```
 
 ## Capsule schema reminder
@@ -88,6 +92,7 @@ Required fields:
 
 ```bash
 ~/.hermes/scripts/project_agent_state.py session-context --repo . --limit 8
+~/.hermes/scripts/project_agent_sdlc.py preflight --repo . --project <project> --task-slug <task> --work-type feature --format text
 ~/.hermes/scripts/project_agent_priority.py review --root /home/ubuntu --write-report --format text
 ~/.hermes/scripts/project_agent_state.py upsert-capsule --repo . --task-id <task_id> --current-step "..." --next-action "..."
 ~/.hermes/scripts/project_agent_state.py validate --repo . --strict

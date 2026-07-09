@@ -21,7 +21,7 @@ Use the queue fields to choose the cheapest safe route:
 ## Default routing order
 
 1. **Hermes current best paid model** — complex reasoning, planning, architecture, important coding, final review, risky decisions.
-2. **Local deterministic tools** — tests, lint, schema checks, build, git, CI status, static validation.
+2. **Local deterministic tools** — tests, lint, schema checks, build, git, CI status, SDLC/IaC detection, static validation.
 3. **Free/free-tier/local models** — simple drafting, extraction, summarisation, low-risk refactors, test generation, parallel exploration, first-pass research.
 4. **Specialised workers** — browser/CDP for UI evidence, scheduler for repeated checks, IDE/CLI agents for scoped edits.
 5. **Human** — credentials, approvals, subjective business decisions, destructive/production actions.
@@ -93,6 +93,7 @@ Before delegating, Hermes records in `.agents/job-ledger.jsonl`:
 ## Cost controls
 
 - Check priority queue score, blockers, cost budget and model-review fields before starting non-trivial work.
+- Run the SDLC helper before repo edits: base branch, clean status, CI and IaC detection are deterministic and should not spend model tokens.
 - Prefer no-agent cron scripts for recurring checks that do not need reasoning.
 - Prefer local CLI validation over model-based review when the answer is objectively testable.
 - Use cheaper/free workers for broad exploration, then paid/current-best Hermes for synthesis and acceptance.
