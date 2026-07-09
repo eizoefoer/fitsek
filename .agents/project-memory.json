@@ -4,6 +4,7 @@
   "current_state": {
     "fanout_harness": "Fan-out support uses ~/.hermes/scripts/project_agent_fanout.py, .agents/fanout/<task_id>/ plans/worker briefs/reconciliation, .agents/locks/ fan-out locks, and system/fanout-execution.md; project memory updates only after reconciliation.",
     "ig_publisher": "automation/meta_ig_publisher.py plus ~/.hermes/scripts/fitsek_ig_publish_due.sh publish due approved IG posts from var/meta_ig_schedule.json via recurring Fitsek IG Publish Due Check cron.",
+    "markdown_vault_layer": "~/vault is configured as a Markdown/Obsidian-style readable synthesis layer only. Raw captures live under inbox/raw and are never edited; processed/daily/weekly/graph-health notes are committed in the vault repo; MCP filesystem access is scoped to /home/ubuntu/vault only; .agents JSONL/project memory/job ledger remain authoritative.",
     "meta_automation": "AI_STATE.md and docs/operations/meta-api-workflow.md track current Facebook/Instagram scheduling state; ignored runtime post/schedule IDs live under var/.",
     "multi_agent_harness": "system/*.md defines worker registry, model routing, IDE/tool policy, delegation contract, handoff template and validation gates; .agents/job-ledger.jsonl attributes accepted worker output.",
     "priority_harness": "Cross-project priority support uses ~/.hermes/scripts/project_agent_priority.py, .agents/priority-queue.jsonl, system/priority-cost-policy.md, and weekly no-agent review script ~/.hermes/scripts/project_priority_weekly_review.sh. Cron Cross-project Priority Review job_id 6a940c02346c runs Mondays 08:00 UTC and was manually verified OK.",
@@ -40,6 +41,7 @@
     "iac_preferred_for_infra_changes": true,
     "job_ledger_is_worker_attribution_source_of_truth": true,
     "jsonl_task_log_is_source_of_truth": true,
+    "markdown_vault_is_synthesis_only": true,
     "no_worker_output_accepted_without_attribution": true,
     "paid_model_review_required_for_high_risk_or_final_acceptance": true,
     "prefer_iac_over_clickops": true,
@@ -47,6 +49,8 @@
     "readme_kept_current": true,
     "sdlc_feature_branches_required": true,
     "structured_context_for_session_loading": true,
+    "vault_mcp_scoped_to_vault_only": true,
+    "vault_never_authoritative_over_jsonl": true,
     "weekly_priority_review_enabled": true
   },
   "priority_queue": ".agents/priority-queue.jsonl",
