@@ -3,7 +3,8 @@
     "/home/ubuntu/.hermes/backups/chunk8-vault-20260709T063315Z",
     "/home/ubuntu/vault",
     "https://github.com/eizoefoer/fitsek/pull/2",
-    "https://github.com/eizoefoer/fitsek/actions/runs/28999385962"
+    "https://github.com/eizoefoer/fitsek/actions/runs/28999385962",
+    "https://github.com/eizoefoer/fitsek/actions/runs/28999689704"
   ],
   "assumptions": [],
   "blockers": [],
@@ -13,17 +14,18 @@
     "Configured Hermes MCP vault server to @modelcontextprotocol/server-filesystem scoped only to /home/ubuntu/vault and verified 14 tools discovered.",
     "Created no-agent daily, Sunday synthesis, and monthly graph-health scripts/jobs and manually verified all three cron jobs last_status=ok.",
     "Recorded Fitsek project-state context/job/priority/capsule for Chunk 8.",
-    "Opened PR #2 and verified GitHub Actions PR run 28999385962 passed."
+    "Opened PR #2 and verified GitHub Actions PR run 28999385962 passed.",
+    "Merged PR #2 into main as merge commit 0be14e2.",
+    "Verified main GitHub Pages run 28999689704: validate and deploy succeeded."
   ],
-  "current_status": "active",
-  "current_step": "Recording PR CI evidence before merge.",
+  "current_status": "complete",
+  "current_step": "Complete: Markdown vault synthesis layer is configured, scheduled, recorded, merged and deployed.",
   "decisions_made": [],
-  "last_known_good_commit": "7deff54",
-  "last_updated": "2026-07-09T06:43:11Z",
+  "last_known_good_commit": "0be14e2",
+  "last_updated": "2026-07-09T06:50:45Z",
   "next_actions": [
-    "Validate state update, commit branch, push PR, verify CI, merge and deploy.",
-    "Commit branch, push PR, verify CI, merge, deploy, then mark Chunk 8 complete.",
-    "Push CI evidence, verify PR CI again, merge PR #2, then verify main deploy."
+    "Use ~/vault for readable synthesis only; keep .agents JSONL/project memory/job ledger authoritative.",
+    "Start a new Hermes session or restart the gateway later to expose the new MCP vault tools in live chat; not auto-restarted mid-task."
   ],
   "objective": "Add Markdown/Obsidian-style vault as readable synthesis layer only, configure vault-scoped MCP, and schedule daily/weekly/monthly vault maintenance.",
   "owner_worker": "Hermes Agent",
@@ -56,6 +58,7 @@
     "site validation ok",
     "social copy: 21 checked, 0 issues",
     "secret_scan_hits=0",
-    "GitHub Actions PR run 28999385962 succeeded"
+    "GitHub Actions PR run 28999385962 succeeded",
+    "main GitHub Actions run 28999689704 succeeded: validate + deploy"
   ]
 }
