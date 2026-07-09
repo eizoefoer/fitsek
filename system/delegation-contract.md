@@ -16,6 +16,7 @@ context_source_paths:
   - .agents/context-bullets.jsonl
   - .agents/handoff-capsules/<task_id>.json
   - .agents/job-ledger.jsonl
+  - system/sdlc-iac-ci.md
 relevant_jsonl_project_memory_refs:
   - .agents/task-log.jsonl:<line or event summary>
   - .agents/project-memory.json:<key>
@@ -43,7 +44,13 @@ expected_output_format:
   artifacts_or_logs: list
 validation_steps:
   - <command/check>
-branch_or_worktree: <branch/worktree path; required for fan-out repo work>
+branch_or_worktree: <branch/worktree path; required for repo work and fan-out workers>
+sdlc:
+  base_branch: <development|main>
+  work_branch: <feature/...|fix/...|agent/...>
+  latest_pulled_before_start: <true/false>
+  ci_files_detected: []
+  iac_files_detected: []
 rollback_plan:
   - <how to revert if code/config changes are made>
 cost_and_model_constraints:
@@ -82,10 +89,11 @@ artifacts_or_logs:
 
 1. Verify the worker obeyed allowed/forbidden file scopes.
 2. Inspect diffs/artifacts directly; do not trust the worker summary alone.
-3. Run validation steps or document why blocked.
-4. Append/update child job row in `.agents/job-ledger.jsonl` with accepted/rejected/superseded status.
-5. If accepted, update handoff capsule and project memory/current state as needed.
-6. If rejected/superseded, record rejection/supersession reason and do not update project memory from the worker output.
+3. Confirm SDLC preflight evidence exists for repo work: clean-start check, base branch, branch/worktree, CI/IaC detection.
+4. Run validation steps or document why blocked.
+5. Append/update child job row in `.agents/job-ledger.jsonl` with accepted/rejected/superseded status.
+6. If accepted, update handoff capsule and project memory/current state as needed.
+7. If rejected/superseded, record rejection/supersession reason and do not update project memory from the worker output.
 
 ## Rollback rules
 

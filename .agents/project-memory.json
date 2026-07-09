@@ -7,6 +7,7 @@
     "meta_automation": "AI_STATE.md and docs/operations/meta-api-workflow.md track current Facebook/Instagram scheduling state; ignored runtime post/schedule IDs live under var/.",
     "multi_agent_harness": "system/*.md defines worker registry, model routing, IDE/tool policy, delegation contract, handoff template and validation gates; .agents/job-ledger.jsonl attributes accepted worker output.",
     "priority_harness": "Cross-project priority support uses ~/.hermes/scripts/project_agent_priority.py, .agents/priority-queue.jsonl, system/priority-cost-policy.md, and weekly no-agent review script ~/.hermes/scripts/project_priority_weekly_review.sh. Cron Cross-project Priority Review job_id 6a940c02346c runs Mondays 08:00 UTC and was manually verified OK.",
+    "sdlc_iac_ci_harness": "SDLC/IaC/CI/human-collaboration support uses system/sdlc-iac-ci.md plus ~/.hermes/scripts/project_agent_sdlc.py; meaningful repo work checks human changes, pulls development/main, uses feature/fix/agent branches or worktrees, validates existing CI, prefers IaC, and records human worker job rows.",
     "social_copy": "automation/social_copy.py is the required polish gate before scheduling; run python3 automation/social_copy.py audit --days 21.",
     "social_verifier": "automation/verify_posts.py plus ~/.hermes/scripts/fitsek_social_verify.sh verify FB/IG posts and alert only on missing due posts or API failures."
   },
@@ -20,19 +21,23 @@
     "system/handoff-template.md",
     "system/validation-gates.md",
     "system/fanout-execution.md",
-    "system/priority-cost-policy.md"
+    "system/priority-cost-policy.md",
+    "system/sdlc-iac-ci.md"
   ],
   "job_ledger": ".agents/job-ledger.jsonl",
   "last_bootstrap_at": "2026-07-08T15:50:14Z",
   "locks_dir": ".agents/locks",
   "policy": {
     "agents_md_single_source_of_truth": true,
+    "ci_validation_required_before_handoff": true,
     "claude_md_points_to_agents_md": true,
     "cost_efficiency_prefers_deterministic_tools": true,
     "cross_project_priority_queue_enabled": true,
     "fanout_reconciliation_required_before_memory_update": true,
     "fanout_requires_isolated_branch_or_worktree": true,
     "handoff_capsules_reference_logs_not_duplicate": true,
+    "human_work_requires_job_ledger": true,
+    "iac_preferred_for_infra_changes": true,
     "job_ledger_is_worker_attribution_source_of_truth": true,
     "jsonl_task_log_is_source_of_truth": true,
     "no_worker_output_accepted_without_attribution": true,
@@ -40,6 +45,7 @@
     "prefer_iac_over_clickops": true,
     "prefer_local_free_tools": true,
     "readme_kept_current": true,
+    "sdlc_feature_branches_required": true,
     "structured_context_for_session_loading": true,
     "weekly_priority_review_enabled": true
   },

@@ -9,9 +9,13 @@ A task is not complete until the relevant validation gates pass or the blocker i
 3. **Attribution check** — `.agents/job-ledger.jsonl` has worker/model/tool attribution for accepted output.
 4. **State check** — handoff capsule current; task log has meaningful events; project memory updated only after acceptance.
 5. **Priority/cost check** — `.agents/priority-queue.jsonl` has a current row for meaningful cross-project work, including blockers, next action, safe-free-model, paid-review, human-approval and cost-budget fields.
-6. **Diff review** — Hermes inspects actual files/diffs, not only worker summaries.
-7. **Rollback check** — code/config changes have git revert, patch reversal, or documented restore path.
-8. **Fan-out check** — if multiple workers/branches were used, `.agents/fanout/<task_id>/reconciliation.json` exists, losing jobs are rejected/superseded in `.agents/job-ledger.jsonl`, and project memory changed only after reconciliation.
+6. **SDLC branch check** — meaningful repo work started from a clean status, pulled the selected base (`development` if present, else `main`), and used a policy-compliant feature/fix/agent branch or worktree.
+7. **CI check** — existing CI is used first; if CI is missing, a minimal CI proposal exists before major changes. Do not weaken tests/checks silently.
+8. **IaC/rollback check** — VM/app/service/cron/tunnel/deployment changes have commands, config files, validation and rollback steps recorded, with secrets referenced not embedded.
+9. **Human-collaboration check** — human changes/approvals are recorded as job-ledger rows and handoff sources let a human continue.
+10. **Diff review** — Hermes inspects actual files/diffs, not only worker summaries.
+11. **Rollback check** — code/config changes have git revert, patch reversal, or documented restore path.
+12. **Fan-out check** — if multiple workers/branches were used, `.agents/fanout/<task_id>/reconciliation.json` exists, losing jobs are rejected/superseded in `.agents/job-ledger.jsonl`, and project memory changed only after reconciliation.
 
 ## Fitsek repo gates
 
@@ -31,7 +35,8 @@ python3 automation/verify_posts.py
 For harness/project-state work:
 
 ```bash
-python3 -m py_compile ~/.hermes/scripts/project_agent_state.py ~/.hermes/scripts/bootstrap_project_agent_state.py ~/.hermes/scripts/project_agent_state_audit.py ~/.hermes/scripts/project_agent_fanout.py ~/.hermes/scripts/project_agent_priority.py
+python3 -m py_compile ~/.hermes/scripts/project_agent_state.py ~/.hermes/scripts/bootstrap_project_agent_state.py ~/.hermes/scripts/project_agent_state_audit.py ~/.hermes/scripts/project_agent_fanout.py ~/.hermes/scripts/project_agent_priority.py ~/.hermes/scripts/project_agent_sdlc.py
+~/.hermes/scripts/project_agent_sdlc.py validate --repo /home/ubuntu/fitsek --strict --format text
 ~/.hermes/scripts/project_agent_state.py validate --repo /home/ubuntu/fitsek --strict
 ~/.hermes/scripts/project_agent_priority.py validate --repo /home/ubuntu/fitsek --strict
 ~/.hermes/scripts/project_agent_priority.py review --root /home/ubuntu --write-report --format text

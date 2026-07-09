@@ -21,11 +21,12 @@ This project-local skill makes repo state portable across agents, models, IDEs, 
 1. Read `AGENTS.md`.
 2. Read `.agents/project-memory.json`.
 3. Tail `.agents/task-log.jsonl` for recent events.
-4. Review `system/model-routing-policy.md`, `system/delegation-contract.md`, `system/fanout-execution.md`, `system/priority-cost-policy.md`, and `system/validation-gates.md` when prioritising, delegating, or accepting worker output.
-5. Review `.agents/priority-queue.jsonl` or run `~/.hermes/scripts/project_agent_priority.py review --root /home/ubuntu --write-report --format text` before choosing non-trivial next work.
-6. Review `README.md` when setup, behavior, or deployment matters.
-7. Log a `start` event before changing files.
-8. Create or update a handoff capsule for active work: `.agents/handoff-capsules/<task_id>.json`.
+4. Review `system/model-routing-policy.md`, `system/delegation-contract.md`, `system/fanout-execution.md`, `system/priority-cost-policy.md`, `system/sdlc-iac-ci.md`, and `system/validation-gates.md` when prioritising, branching, delegating, or accepting worker output.
+5. Run `~/.hermes/scripts/project_agent_sdlc.py preflight --repo . --project <project> --task-slug <task> --work-type feature --format text` before meaningful repo edits.
+6. Review `.agents/priority-queue.jsonl` or run `~/.hermes/scripts/project_agent_priority.py review --root /home/ubuntu --write-report --format text` before choosing non-trivial next work.
+7. Review `README.md` when setup, behavior, or deployment matters.
+8. Log a `start` event before changing files.
+9. Create or update a handoff capsule for active work: `.agents/handoff-capsules/<task_id>.json`.
 
 ## Required completion sequence
 
@@ -49,6 +50,7 @@ This project-local skill makes repo state portable across agents, models, IDEs, 
 - `.agents/handoff-capsules/` provides resumability; capsules reference JSONL/project memory instead of duplicating full history.
 - `.agents/job-ledger.jsonl` attributes every worker/model/tool result before Hermes accepts it.
 - `.agents/priority-queue.jsonl` ranks cross-project next actions and cost-efficient routing; latest row per `task_id` is current.
+- `system/sdlc-iac-ci.md` plus `project_agent_sdlc.py` define start gates, branch/worktree policy, CI/IaC checks, rollback evidence and human-collaboration rules.
 - `CLAUDE.md` and other agent-specific files point back to `AGENTS.md`.
 - Prefer IaC/config/scripts over clickops.
 - Prefer local/free/self-hosted tooling; paid fallbacks require explicit approval.
@@ -96,3 +98,15 @@ Cost rule: use deterministic scripts/tests/search/static analysis before model c
 ## Fan-out execution
 
 Use `system/fanout-execution.md` plus `~/.hermes/scripts/project_agent_fanout.py` when independent branches/worktrees will improve speed, quality, or risk reduction. Start a parent fan-out job, create one branch/worktree worker lane per candidate, validate each lane, record `.agents/fanout/<task_id>/reconciliation.json`, and update project memory only after Hermes accepts the reconciled result.
+
+## SDLC, IaC, CI and human collaboration
+
+Use `system/sdlc-iac-ci.md` plus `~/.hermes/scripts/project_agent_sdlc.py` before repo edits and before handoff.
+
+```bash
+~/.hermes/scripts/project_agent_sdlc.py preflight --repo . --project <project> --task-slug <task> --work-type feature --format text
+~/.hermes/scripts/project_agent_sdlc.py detect --repo . --format text
+~/.hermes/scripts/project_agent_sdlc.py validate --repo . --strict --format text
+```
+
+Rules: pull `development` if present, else `main`; use `feature/<project>/<task>`, `fix/<project>/<bug>`, or `agent/<project>/<task>/<worker>` branches/worktrees; keep commits small and descriptive; use existing CI first; do not weaken tests; prefer IaC/config/scripts for VM/app/service/cron/tunnel/deploy changes; record rollback steps; and record accepted human changes as `worker_type: human` job-ledger rows.

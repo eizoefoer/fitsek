@@ -47,6 +47,7 @@ Harness policy files:
 - `system/validation-gates.md` — acceptance gates by task type.
 - `system/fanout-execution.md` — branch/worktree fan-out execution and reconciliation policy.
 - `system/priority-cost-policy.md` — cross-project prioritisation, weekly review, and cost-efficiency policy.
+- `system/sdlc-iac-ci.md` — SDLC, branching, CI, IaC and human-collaboration policy.
 
 Project state files:
 
@@ -111,3 +112,20 @@ Scoring considers user priority, business value, urgency, dependency blocking, e
 Cost-efficiency rules: prefer code-first implementation when faster than long planning; do just enough planning to avoid rework; use free/free-tier/local models for low-risk first drafts, tests, summaries and exploration; use paid/current best model for architecture, final review, important tradeoffs and high-risk work; use fan-out only when parallelism adds value; prefer deterministic scripts/tests/search/static analysis over expensive model calls; record estimated cost and best result per cost where possible.
 
 Weekly review command: `~/.hermes/scripts/project_agent_priority.py review --root /home/ubuntu --write-report --format text`.
+
+<!-- agent-sdlc-iac-ci:v1 -->
+## SDLC, IaC, CI and human collaboration
+
+Use `system/sdlc-iac-ci.md` and `~/.hermes/scripts/project_agent_sdlc.py` before meaningful repo work. Hermes must check for uncommitted human changes, pull latest from `development` if present otherwise `main`, and work in a feature/fix/agent branch or external worktree before editing.
+
+Branch naming:
+
+- `feature/<project>/<task-slug>` for new feature, policy, or vertical-slice work.
+- `fix/<project>/<bug-slug>` for bug fixes.
+- `agent/<project>/<task-slug>/<worker-name>` for fan-out worker branches.
+
+SDLC rules: prefer vertical slices, small logical commits, descriptive commit messages, focused PRs, existing CI first, lint/test/type/build/security checks before handoff, docs updates when behavior changes, project-memory updates only after acceptance, and handoff capsules for continuation.
+
+IaC rules: prefer scripts/config/IaC for VM, app, service, cron, tunnel, DNS and deployment changes. For VM/service changes, record commands, config files, validation and rollback steps. Never expose secrets; use env-var templates and secret references.
+
+Human collaboration rules: a human must be able to continue from the capsule, job ledger, branch/worktree, recent commits and validation results. Human changes are worker output too; record a `worker_type: human` job-ledger row before accepting them. Hermes must not overwrite human work without checking git status and conflicts.

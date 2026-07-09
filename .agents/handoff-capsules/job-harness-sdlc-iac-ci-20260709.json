@@ -1,0 +1,51 @@
+{
+  "artifacts": [
+    "/home/ubuntu/.hermes/backups/chunk7-sdlc-iac-ci-20260709T053702Z"
+  ],
+  "assumptions": [],
+  "blockers": [],
+  "branch_or_worktree": "feature/fitsek/sdlc-iac-ci-human-collab @ /home/ubuntu/worktrees/fitsek-sdlc-iac-ci-human-collab",
+  "completed_steps": [
+    "Implemented project_agent_sdlc.py, system/sdlc-iac-ci.md, project-state wiring, README/AI_STATE updates and PR validation workflow trigger.",
+    "Ran local validation: py_compile, SDLC strict validation, project state, priority, fanout, site validation, social copy audit, CI YAML parse, git diff check and secret scan."
+  ],
+  "current_status": "active",
+  "current_step": "Committing feature branch and preparing PR/CI verification.",
+  "decisions_made": [],
+  "last_known_good_commit": "f5f1704",
+  "last_updated": "2026-07-09T05:50:36Z",
+  "next_actions": [
+    "Run SDLC/helper validation, repo validation, site/social checks, secret scan, commit, push and verify CI.",
+    "Commit feature branch, push to origin, create PR, verify PR CI, then merge only if validation passes."
+  ],
+  "objective": "Add SDLC, IaC, CI and human collaboration rules to the Hermes multi-agent harness.",
+  "owner_worker": "Hermes Agent",
+  "project": "fitsek",
+  "relevant_commands": [
+    "git worktree add /home/ubuntu/worktrees/fitsek-sdlc-iac-ci-human-collab feature/fitsek/sdlc-iac-ci-human-collab",
+    "~/.hermes/scripts/project_agent_sdlc.py preflight --repo /home/ubuntu/worktrees/fitsek-sdlc-iac-ci-human-collab --project fitsek --task-slug sdlc-iac-ci-human-collab --work-type feature --format text"
+  ],
+  "relevant_files": [
+    "system/sdlc-iac-ci.md",
+    "AGENTS.md",
+    ".agents/project-memory.json",
+    "skills/project-memory/SKILL.md",
+    "/home/ubuntu/.hermes/scripts/project_agent_sdlc.py"
+  ],
+  "resume_instructions": "Read AGENTS.md, .agents/project-memory.json, .agents/context-bullets.jsonl, this capsule, then tail .agents/task-log.jsonl before continuing.",
+  "risks": [
+    "GitHub Actions queue/deploy may be slow; local validation remains the deterministic gate until CI completes."
+  ],
+  "task_id": "job-harness-sdlc-iac-ci-20260709",
+  "tests_last_run": [
+    "py_compile harness scripts passed",
+    "project_agent_sdlc.py validate --strict --require-work-branch passed",
+    "project_agent_state.py validate --strict passed",
+    "project_agent_priority.py validate --strict passed",
+    "project_agent_fanout.py validate --strict passed",
+    "site validation ok",
+    "social copy audit: 21 checked, 0 issues",
+    "yaml workflow parse ok",
+    "secret_scan_hits=0"
+  ]
+}
