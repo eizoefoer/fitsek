@@ -4,10 +4,19 @@
   "current_state": {
     "ig_publisher": "automation/meta_ig_publisher.py plus ~/.hermes/scripts/fitsek_ig_publish_due.sh publish due approved IG posts from var/meta_ig_schedule.json via recurring Fitsek IG Publish Due Check cron.",
     "meta_automation": "AI_STATE.md and docs/operations/meta-api-workflow.md track current Facebook/Instagram scheduling state; ignored runtime post/schedule IDs live under var/.",
+    "multi_agent_harness": "system/*.md defines worker registry, model routing, IDE/tool policy, delegation contract, handoff template and validation gates; .agents/job-ledger.jsonl attributes accepted worker output.",
     "social_copy": "automation/social_copy.py is the required polish gate before scheduling; run python3 automation/social_copy.py audit --days 21.",
     "social_verifier": "automation/verify_posts.py plus ~/.hermes/scripts/fitsek_social_verify.sh verify FB/IG posts and alert only on missing due posts or API failures."
   },
   "handoff_capsules_dir": ".agents/handoff-capsules",
+  "harness_policy_files": [
+    "system/agent-registry.md",
+    "system/model-routing-policy.md",
+    "system/ide-tool-policy.md",
+    "system/delegation-contract.md",
+    "system/handoff-template.md",
+    "system/validation-gates.md"
+  ],
   "job_ledger": ".agents/job-ledger.jsonl",
   "last_bootstrap_at": "2026-07-08T15:50:14Z",
   "policy": {

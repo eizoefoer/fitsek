@@ -1,0 +1,56 @@
+{
+  "artifacts": [
+    "system/*.md harness policy files",
+    ".agents/context-bullets.jsonl ctx-multi-agent-routing-policy-v1"
+  ],
+  "assumptions": [],
+  "blockers": [],
+  "branch_or_worktree": "main",
+  "completed_steps": [
+    "Created system/agent-registry.md, system/model-routing-policy.md, system/ide-tool-policy.md, system/delegation-contract.md, system/handoff-template.md, and system/validation-gates.md.",
+    "Updated project memory with harness_policy_files and multi_agent_harness current state.",
+    "Updated helper validation/session-context to include system/*.md policy docs."
+  ],
+  "current_status": "complete",
+  "current_step": "System harness policy files created and wired into AGENTS, project memory, project-memory skill and multi-agent-harness skill.",
+  "decisions_made": [],
+  "last_known_good_commit": "f39dcb8",
+  "last_updated": "2026-07-09T00:44:37Z",
+  "next_actions": [
+    "Use system/delegation-contract.md and .agents/job-ledger.jsonl for future delegated worker runs."
+  ],
+  "objective": "Create multi-agent registry and routing/delegation/IDE/handoff/validation policy harness files.",
+  "owner_worker": "hermes-agent",
+  "project": "fitsek",
+  "relevant_commands": [
+    "python3 -m py_compile ~/.hermes/scripts/project_agent_state.py ~/.hermes/scripts/bootstrap_project_agent_state.py ~/.hermes/scripts/project_agent_state_audit.py",
+    "~/.hermes/scripts/project_agent_state.py validate --repo /home/ubuntu/fitsek --strict",
+    "~/.hermes/scripts/project_agent_state_audit.py --root /home/ubuntu"
+  ],
+  "relevant_files": [
+    "system/agent-registry.md",
+    "system/model-routing-policy.md",
+    "system/ide-tool-policy.md",
+    "system/delegation-contract.md",
+    "system/handoff-template.md",
+    "system/validation-gates.md",
+    "AGENTS.md",
+    ".agents/project-memory.json",
+    "skills/project-memory/SKILL.md",
+    "~/.hermes/scripts/project_agent_state.py",
+    "~/.hermes/scripts/bootstrap_project_agent_state.py",
+    "~/.hermes/scripts/project_agent_state_audit.py"
+  ],
+  "resume_instructions": "Read AGENTS.md, .agents/project-memory.json, system/*.md, this capsule and .agents/job-ledger.jsonl. For future work, create parent/child job rows before accepting worker output and validate via system/validation-gates.md.",
+  "risks": [
+    "Routing docs are policy; Hermes must still record concrete worker attribution in job ledger per task."
+  ],
+  "task_id": "job-harness-routing-policy-20260709",
+  "tests_last_run": [
+    "py_compile harness scripts",
+    "project_agent_state validate --strict passed",
+    "project_agent_state_audit passed",
+    "scripts/validate_site.py passed",
+    "automation/social_copy.py audit --days 21 passed"
+  ]
+}

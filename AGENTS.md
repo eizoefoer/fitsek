@@ -37,6 +37,15 @@ Every social draft must include hook, caption, CTA, hashtags, visual brief, sugg
 7. Prefer IaC/config/scripts over clickops. If clickops are unavoidable, document the exact manual step and the IaC replacement TODO.
 8. Prefer local/free/self-hosted tools first. Use free-tier fallbacks only when they are better for the task or their limits have reset. Paid providers require explicit approval.
 
+Harness policy files:
+
+- `system/agent-registry.md` — available workers/tools and validation requirements.
+- `system/model-routing-policy.md` — cost/quality routing rules and when to use multi-agent.
+- `system/ide-tool-policy.md` — safe use rules for IDE, CLI, browser, MCP and scheduled workers.
+- `system/delegation-contract.md` — required delegated-task brief and worker return format.
+- `system/handoff-template.md` — human-readable handoff template pointing to capsules/ledger.
+- `system/validation-gates.md` — acceptance gates by task type.
+
 Project state files:
 
 - `.agents/project-memory.json` — compact durable project facts and agent handoff pointers.

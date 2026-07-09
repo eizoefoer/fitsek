@@ -21,8 +21,10 @@ This project-local skill makes repo state portable across agents, models, IDEs, 
 1. Read `AGENTS.md`.
 2. Read `.agents/project-memory.json`.
 3. Tail `.agents/task-log.jsonl` for recent events.
-4. Review `README.md` when setup, behavior, or deployment matters.
-5. Log a `start` event before changing files.
+4. Review `system/model-routing-policy.md`, `system/delegation-contract.md`, and `system/validation-gates.md` when delegating or accepting worker output.
+5. Review `README.md` when setup, behavior, or deployment matters.
+6. Log a `start` event before changing files.
+7. Create or update a handoff capsule for active work: `.agents/handoff-capsules/<task_id>.json`.
 
 ## Required completion sequence
 
@@ -30,7 +32,8 @@ This project-local skill makes repo state portable across agents, models, IDEs, 
 2. Update `README.md` if user-facing behavior, setup, deployment, or operations changed.
 3. Update `AGENTS.md` if project instructions changed.
 4. Append a `complete` or `blocker` event to `.agents/task-log.jsonl`.
-5. Keep reusable skill code/templates inside `skills/`.
+5. Update the handoff capsule with final status, next action, tests, artifacts, and resume instructions.
+6. Keep reusable skill code/templates inside `skills/`.
 
 ## JSONL event shape
 
