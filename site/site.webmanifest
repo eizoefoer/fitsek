@@ -1,0 +1,16 @@
+{
+  "name": "Fitsek",
+  "short_name": "Fitsek",
+  "description": "Desk-worker body recomposition systems.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#05070c",
+  "theme_color": "#05070c",
+  "icons": [
+    {
+      "src": "/assets/brand/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

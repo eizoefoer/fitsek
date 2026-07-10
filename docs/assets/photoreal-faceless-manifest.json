@@ -1,0 +1,68 @@
+{
+  "task_id": "t_7a2da974",
+  "project": "fitsek",
+  "generated_at": "2026-07-10T00:48:37Z",
+  "tool": "Hermes image_generate",
+  "provider": "openai-codex",
+  "model_reported_by_tool": "gpt-image-2-low",
+  "compliance_review": {
+    "faceless_or_non_identifying": true,
+    "no_before_after": true,
+    "no_testimonial_or_customer_claim": true,
+    "no_medical_claim": true,
+    "no_guaranteed_outcome_claim": true,
+    "no_readable_brand_or_claim_text": true,
+    "notes": "Visual review found no visible faces/identifiable people, readable claim text, before-after layouts, testimonials, medical props, or guaranteed-outcome cues. Generated images are illustrative only."
+  },
+  "assets": [
+    {
+      "file": "site/assets/photoreal/fitsek-hero-desk-reset.png",
+      "jpg_sibling": "site/assets/photoreal/fitsek-hero-desk-reset.jpg",
+      "prompt_file": "docs/assets/prompts/photoreal-faceless/01-fitsek-hero-desk-reset.md",
+      "dimensions": "1672x941",
+      "use": "website hero / reusable website visual"
+    },
+    {
+      "file": "site/assets/photoreal/fitsek-og-desk-system.png",
+      "jpg_sibling": "site/assets/photoreal/fitsek-og-desk-system.jpg",
+      "prompt_file": "docs/assets/prompts/photoreal-faceless/02-fitsek-og-desk-system.md",
+      "dimensions": "1200x630",
+      "use": "open graph / website sharing"
+    },
+    {
+      "file": "site/assets/social/og-fitsek-photoreal.png",
+      "jpg_sibling": "site/assets/social/og-fitsek-photoreal.jpg",
+      "prompt_file": "docs/assets/prompts/photoreal-faceless/02-fitsek-og-desk-system.md",
+      "dimensions": "1200x630",
+      "use": "legacy/social Open Graph path alias"
+    },
+    {
+      "file": "site/assets/social/photoreal-desk-walking-pad.png",
+      "jpg_sibling": "site/assets/social/photoreal-desk-walking-pad.jpg",
+      "prompt_file": "docs/assets/prompts/photoreal-faceless/03-photoreal-desk-walking-pad.md",
+      "dimensions": "1080x1350",
+      "use": "Instagram/Facebook walking-pad or desk movement visual"
+    },
+    {
+      "file": "site/assets/social/photoreal-gym-progression.png",
+      "jpg_sibling": "site/assets/social/photoreal-gym-progression.jpg",
+      "prompt_file": "docs/assets/prompts/photoreal-faceless/04-photoreal-gym-progression.md",
+      "dimensions": "1080x1350",
+      "use": "Instagram/Facebook strength/progression visual"
+    },
+    {
+      "file": "site/assets/social/photoreal-meal-prep-protein.png",
+      "jpg_sibling": "site/assets/social/photoreal-meal-prep-protein.jpg",
+      "prompt_file": "docs/assets/prompts/photoreal-faceless/05-photoreal-meal-prep-protein.md",
+      "dimensions": "1080x1350",
+      "use": "Instagram/Facebook meal-prep/protein-anchor visual"
+    },
+    {
+      "file": "site/assets/social/photoreal-product-context.png",
+      "jpg_sibling": "site/assets/social/photoreal-product-context.jpg",
+      "prompt_file": "docs/assets/prompts/photoreal-faceless/06-photoreal-product-context.md",
+      "dimensions": "1080x1080",
+      "use": "social/product context visual"
+    }
+  ]
+}
