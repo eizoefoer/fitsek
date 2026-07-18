@@ -1,0 +1,65 @@
+{
+  "artifacts": [
+    "site/assets/brand/favicon.svg",
+    "site/assets/brand/hero-desk-worker-recomp.webp",
+    "site/assets/social/social-meal-prep-desk-worker.jpg",
+    "site/assets/social/social-desk-strength-band.jpg",
+    "site/assets/brand/fitsek-logo.svg"
+  ],
+  "assumptions": [
+    "Microsoft Clarity/session recording remains approval-gated; current heatmap is aggregate first-party events only.",
+    "Generated images are synthetic and faceless, not customer proof."
+  ],
+  "blockers": [],
+  "branch_or_worktree": "feature/fitsek/site-brand-analytics-refresh",
+  "completed_steps": [
+    "Read AGENTS/project memory/task log/AI_STATE.",
+    "Created Fitsek Kanban tasks t_10722adb, t_99502159, t_7a2da974.",
+    "Confirmed GitHub Pages SSL certificate mismatch and re-triggered Pages custom-domain certificate; https_enforced=true and HTTPS probes started passing.",
+    "Generated faceless photorealistic image set and copied optimized derivatives into site assets.",
+    "Added favicon/logo/webmanifest, visible website photo section, analytics on all pages, first-party scroll/section event instrumentation, heatmap report script, privacy copy update."
+  ],
+  "current_status": "implementation_in_progress",
+  "current_step": "validation_and_deploy",
+  "decisions_made": [
+    "Use GitHub Pages API remove/re-add custom domain to fix certificate provisioning instead of DNS cutover.",
+    "Use Cloudflare Web Analytics plus first-party UX events rather than third-party session recording."
+  ],
+  "last_known_good_commit": "fdadf33",
+  "last_updated": "2026-07-10T00:48:25Z",
+  "next_actions": [
+    "Run python/site/social/business/heatmap validations.",
+    "Fix any validation issues.",
+    "Commit/push PR and verify GitHub Pages deploy.",
+    "Browser verify live SSL/assets/analytics beacon and first-party event endpoint."
+  ],
+  "objective": "Fix SSL and improve Fitsek brand assets, photorealistic imagery, analytics, traffic reporting, and heatmap-style measurement.",
+  "owner_worker": "Hermes",
+  "project": "fitsek",
+  "relevant_commands": [
+    "gh api repos/eizoefoer/fitsek/pages",
+    "gh api --method PUT repos/eizoefoer/fitsek/pages -f cname=...",
+    "curl -I -L https://fitsek.com/",
+    "python3 scripts/validate_site.py"
+  ],
+  "relevant_files": [
+    "site/index.html",
+    "site/app.js",
+    "site/styles.css",
+    "site/privacy.html",
+    "automation/business_review.py",
+    "automation/heatmap_report.py",
+    "automation/github_pages_https_watch.sh",
+    "docs/operations/analytics-heatmap-plan.md",
+    "docs/brand-image-provenance.md",
+    "AI_STATE.md",
+    "README.md"
+  ],
+  "resume_instructions": "Continue from feature branch, run validations, commit/push, verify CI and live site. Do not touch var/ or secrets; preserve pre-existing verify_posts.py change unless validated and intentionally included.",
+  "risks": [
+    "GitHub Pages deploy propagation can lag; verify live URL after CI.",
+    "First-party verification page visits may add page_view events."
+  ],
+  "task_id": "fitsek-site-brand-analytics-refresh-20260710",
+  "tests_last_run": []
+}

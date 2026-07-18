@@ -12,6 +12,7 @@ Faceless, low-friction body recomposition funnel for busy desk workers.
 - `assets/social/` — generated faceless social visuals/templates.
 - `automation/` — reporting/check scripts; no secrets.
 - `analytics/` — schema, manual metrics template, generated reports.
+- `docs/operations/analytics-heatmap-plan.md` — privacy-light traffic, first-party events, and heatmap-style reporting plan.
 - `docs/` — strategy, compliance, operations.
 - `server/` — optional VM lead/event API.
 
@@ -20,6 +21,8 @@ Faceless, low-friction body recomposition funnel for busy desk workers.
 ```bash
 python3 scripts/validate_site.py
 python3 automation/social_copy.py audit --days 21
+python3 automation/business_review.py --period daily --write
+python3 automation/heatmap_report.py --write
 ~/.hermes/scripts/project_agent_sdlc.py detect --repo . --format text
 python3 -m http.server 8080 -d site
 ```

@@ -27,8 +27,8 @@ def assert_contains(text, needles, file):
     assert not missing, f'{file} missing {missing}'
 
 index = read_site('index.html')
-assert_contains(index, ['Hero', '7-Day Desk Worker Recomp Reset', 'Fitsek 12-Week Recomp System', 'Privacy', 'Terms', 'Fitness disclaimer', 'leads.fitsek.com/signup', 'static.cloudflareinsights.com/beacon.min.js'], 'site/index.html')
-for section in ['problem','how','preview','faq','signup']:
+assert_contains(index, ['Hero', '7-Day Desk Worker Recomp Reset', 'Fitsek 12-Week Recomp System', 'Privacy', 'Terms', 'Fitness disclaimer', 'leads.fitsek.com/signup', 'static.cloudflareinsights.com/beacon.min.js', '/assets/brand/favicon.svg', '/assets/photoreal/fitsek-hero-desk-reset.jpg', 'photoreal-meal-prep-protein.jpg', 'photoreal-gym-progression.jpg'], 'site/index.html')
+for section in ['problem','how','preview','visuals','faq','signup']:
     assert f'id="{section}"' in index, f'missing section #{section}'
 for claim in ['diagnose users','hormone fix','cortisol cure','guaranteed fat loss','guaranteed transformation','real customer transformation']:
     assert claim.lower() not in index.lower(), f'unsafe claim phrase present: {claim}'
@@ -39,8 +39,11 @@ assert any(i.get('name')=='consent' and i.get('type')=='checkbox' and 'required'
 for page in ['lead-magnet.html','product.html','privacy.html','terms.html','disclaimer.html']:
     text=read_site(page)
     assert '<title>' in text, f'{page} missing title'
+    assert '/assets/brand/favicon.svg' in text, f'{page} missing favicon'
+    assert 'static.cloudflareinsights.com/beacon.min.js' in text, f'{page} missing Cloudflare analytics beacon'
+    assert '<script defer src="/app.js"></script>' in text, f'{page} missing first-party analytics script'
     assert 'medical advice' in text.lower() or page in {'privacy.html','terms.html'}, f'{page} needs disclaimer wording'
-for required in ['site/CNAME','site/robots.txt','site/sitemap.xml','AGENTS.md','AI_STATE.md','.gitignore','docs/strategy/brand-basics.md','content/social/30-day-calendar.csv','products/paid-recomp-system/README.md','automation/business_review.py']:
+for required in ['site/CNAME','site/robots.txt','site/sitemap.xml','site/site.webmanifest','site/favicon.ico','site/favicon.svg','site/apple-touch-icon.png','site/icon-192.png','site/icon-512.png','site/assets/brand/fitsek-logo.svg','site/assets/brand/favicon.svg','site/assets/brand/favicon-32.png','site/assets/brand/apple-touch-icon.png','site/assets/brand/icon-192.png','site/assets/brand/icon-512.png','site/assets/photoreal/fitsek-hero-desk-reset.jpg','site/assets/photoreal/fitsek-og-desk-system.jpg','site/assets/social/og-fitsek-photoreal.jpg','site/assets/social/photoreal-desk-walking-pad.jpg','site/assets/social/photoreal-gym-progression.jpg','site/assets/social/photoreal-meal-prep-protein.jpg','site/assets/social/photoreal-product-context.jpg','docs/assets/photoreal-faceless-image-set-2026-07-10.md','docs/assets/photoreal-faceless-manifest.json','AGENTS.md','AI_STATE.md','.gitignore','docs/strategy/brand-basics.md','docs/brand-image-provenance.md','content/social/30-day-calendar.csv','products/paid-recomp-system/README.md','automation/business_review.py','automation/heatmap_report.py']:
     assert (ROOT/required).exists(), f'missing {required}'
 all_text='\n'.join(p.read_text(encoding='utf-8', errors='ignore') for p in ROOT.rglob('*') if p.is_file() and '.git' not in p.parts and 'analytics/reports' not in str(p))
 secret_patterns=[r'sk_live_[A-Za-z0-9]{12,}', r'ghp_[A-Za-z0-9]{20,}', r'github_pat_[A-Za-z0-9_]{20,}', r'EA[A-Za-z0-9]{20,}', r'AIza[A-Za-z0-9_-]{20,}']
