@@ -9,8 +9,10 @@
     "multi_agent_harness": "system/*.md defines worker registry, model routing, IDE/tool policy, delegation contract, handoff template and validation gates; .agents/job-ledger.jsonl attributes accepted worker output.",
     "priority_harness": "Cross-project priority support uses ~/.hermes/scripts/project_agent_priority.py, .agents/priority-queue.jsonl, system/priority-cost-policy.md, and weekly no-agent review script ~/.hermes/scripts/project_priority_weekly_review.sh. Cron Cross-project Priority Review job_id 6a940c02346c runs Mondays 08:00 UTC and was manually verified OK.",
     "sdlc_iac_ci_harness": "SDLC/IaC/CI/human-collaboration support uses system/sdlc-iac-ci.md plus ~/.hermes/scripts/project_agent_sdlc.py; meaningful repo work checks human changes, pulls development/main, uses feature/fix/agent branches or worktrees, validates existing CI, prefers IaC, and records human worker job rows.",
+    "site_brand_analytics_refresh": "2026-07-18 in progress: SSL fixed via GitHub Pages certificate re-trigger; brand assets, favicon, faceless photo set, first-party UX events, and heatmap report validated locally on feature/fitsek/site-ssl-brand-assets-photos-analytics-refresh; pending PR/CI/deploy/live verification.",
     "social_copy": "automation/social_copy.py is the required polish gate before scheduling; run python3 automation/social_copy.py audit --days 21.",
-    "social_verifier": "automation/verify_posts.py plus ~/.hermes/scripts/fitsek_social_verify.sh verify FB/IG posts and alert only on missing due posts or API failures."
+    "social_verifier": "automation/verify_posts.py plus ~/.hermes/scripts/fitsek_social_verify.sh verify FB/IG posts and alert only on missing due posts or API failures.",
+    "photoreal_faceless_assets": "2026-07-10: t_7a2da974 completed six primary faceless photorealistic website/social assets plus OG alias under site/assets/photoreal and site/assets/social; prompts/provenance live under docs/assets/photoreal-faceless-* and docs/brand-image-provenance.md; site hero/OG/visual grid now reference the photoreal set."
   },
   "fanout_dir": ".agents/fanout",
   "handoff_capsules_dir": ".agents/handoff-capsules",

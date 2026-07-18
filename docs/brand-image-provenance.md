@@ -20,14 +20,16 @@ Primary generated files:
 - `site/assets/social/photoreal-meal-prep-protein.png` / `.jpg` — meal-prep/protein-anchor social image.
 - `site/assets/social/photoreal-product-context.png` / `.jpg` — digital product/tracker context social image.
 
-## Earlier derivative brand files
+## Derivative brand files
 
-These derivative files may remain during the broader site refresh and should be reconciled before final deployment if no longer referenced:
+`automation/render_brand_assets.py` keeps the logo, favicons, app icons, Open Graph image, and optional reusable brand-photo derivatives deterministic from the approved faceless source images. The current website hero and social/Open Graph references use the primary photorealistic files above; derivative files are retained as reusable crop/format variants rather than customer proof:
 
-- `site/assets/brand/hero-desk-worker-recomp.webp` — earlier website hero/lifestyle derivative.
-- `site/assets/social/hero-desk-worker-recomp.jpg` — earlier social derivative.
-- `site/assets/social/social-meal-prep-desk-worker.jpg` / `.webp` — earlier meal-prep social derivative.
-- `site/assets/social/social-desk-strength-band.jpg` / `.webp` — earlier desk-strength social derivative.
+- `site/assets/brand/photo-hero-workspace.jpg` / `.webp` — reusable website crop.
+- `site/assets/brand/photo-social-reset.jpg` / `.webp` — reusable square social crop.
+- `site/assets/brand/photo-product-system.jpg` / `.webp` — reusable product-context crop.
+- `site/assets/brand/og-fitsek-site.png` — branded Open Graph fallback.
+- `site/assets/brand/hero-desk-worker-recomp.webp` and `site/assets/social/hero-desk-worker-recomp.jpg` — earlier faceless hero/social crops kept for fallback reuse.
+- `site/assets/social/social-meal-prep-desk-worker.jpg` / `.webp` and `site/assets/social/social-desk-strength-band.jpg` / `.webp` — earlier faceless social crops kept for fallback reuse.
 
 ## Prompt constraints used
 

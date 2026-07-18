@@ -1,0 +1,104 @@
+{
+  "task_id": "t_7a2da974",
+  "project": "fitsek",
+  "objective": "Create/update faceless photorealistic Fitsek image assets for website and socials with prompt/provenance docs and compliance guardrails.",
+  "current_status": "complete",
+  "completed_steps": [
+    "Verified existing generated image set and prompt files from the reclaimed run.",
+    "Created/reviewed contact sheet for six primary images; no visible faces, readable logos/text, before-after/testimonial/medical/guaranteed-outcome cues observed.",
+    "Wired the documented photoreal set into site hero, Open Graph image, lead/product OG images, and homepage visual-grid slots.",
+    "Expanded docs/brand-image-provenance.md and AI_STATE.md to point to prompt/provenance records.",
+    "Updated validate_site.py to require the photoreal assets and provenance docs.",
+    "Ran local validation, manifest/dimension checks, static server checks, diff check, and secret scan."
+  ],
+  "current_step": "Done; dependent devops task t_10722adb can resume final reconciliation/deploy.",
+  "next_actions": [
+    "Resume t_10722adb for broader site/analytics deploy reconciliation and review-required handoff.",
+    "Before final deploy, reconcile whether earlier derivative files under site/assets/brand and site/assets/social should remain or be removed."
+  ],
+  "blockers": [],
+  "assumptions": [
+    "The existing generated images are acceptable as synthetic brand/lifestyle visuals and not presented as real customers.",
+    "Devops task t_10722adb owns final PR/push/CI/live deploy for the broader site refresh."
+  ],
+  "decisions_made": [
+    "Use JPG siblings for website/social references to reduce payload while preserving PNG source files/provenance.",
+    "Keep all imagery faceless/context-led: desk-worker, walking pad, gym hands/equipment, meal prep, product/tracker context."
+  ],
+  "relevant_files": [
+    "site/assets/photoreal/fitsek-hero-desk-reset.png",
+    "site/assets/photoreal/fitsek-hero-desk-reset.jpg",
+    "site/assets/photoreal/fitsek-og-desk-system.png",
+    "site/assets/photoreal/fitsek-og-desk-system.jpg",
+    "site/assets/social/og-fitsek-photoreal.png",
+    "site/assets/social/og-fitsek-photoreal.jpg",
+    "site/assets/social/photoreal-desk-walking-pad.png",
+    "site/assets/social/photoreal-desk-walking-pad.jpg",
+    "site/assets/social/photoreal-gym-progression.png",
+    "site/assets/social/photoreal-gym-progression.jpg",
+    "site/assets/social/photoreal-meal-prep-protein.png",
+    "site/assets/social/photoreal-meal-prep-protein.jpg",
+    "site/assets/social/photoreal-product-context.png",
+    "site/assets/social/photoreal-product-context.jpg",
+    "docs/assets/prompts/photoreal-faceless/01-fitsek-hero-desk-reset.md",
+    "docs/assets/prompts/photoreal-faceless/02-fitsek-og-desk-system.md",
+    "docs/assets/prompts/photoreal-faceless/03-photoreal-desk-walking-pad.md",
+    "docs/assets/prompts/photoreal-faceless/04-photoreal-gym-progression.md",
+    "docs/assets/prompts/photoreal-faceless/05-photoreal-meal-prep-protein.md",
+    "docs/assets/prompts/photoreal-faceless/06-photoreal-product-context.md",
+    "docs/assets/photoreal-faceless-image-set-2026-07-10.md",
+    "docs/assets/photoreal-faceless-manifest.json",
+    "docs/brand-image-provenance.md",
+    "site/index.html",
+    "site/lead-magnet.html",
+    "site/product.html",
+    "scripts/validate_site.py",
+    "content/social/README.md",
+    "AI_STATE.md"
+  ],
+  "relevant_commands": [
+    "python3 scripts/validate_site.py",
+    "python3 automation/social_copy.py audit --days 21",
+    "python3 -m py_compile scripts/validate_site.py automation/heatmap_report.py automation/business_review.py",
+    "photoreal manifest/dimension/prompt compliance check via Python/PIL",
+    "/home/ubuntu/.hermes/scripts/project_agent_sdlc.py detect --repo . --format text",
+    "git diff --check",
+    "git diff secret scan",
+    "python3 -m http.server 8090 -d site + urllib local 200/ref checks",
+    "vision_analyze contact-sheet compliance review"
+  ],
+  "branch_or_worktree": "feature/fitsek/photorealistic-faceless-image-set @ /home/ubuntu/fitsek",
+  "tests_last_run": [
+    "site validation ok",
+    "social_copy audit checked 21, issues []",
+    "py_compile passed for validate_site.py, heatmap_report.py, business_review.py",
+    "photoreal manifest ok: 7 assets; all files/JPG siblings/prompts exist and dimensions match",
+    "git diff --check passed",
+    "diff secret scan ok",
+    "local static server returned 200 for /, lead-magnet, product, and referenced photoreal assets"
+  ],
+  "last_known_good_commit": "fdadf33",
+  "artifacts": [
+    "/tmp/fitsek-photoreal-contact-sheet.jpg",
+    "site/assets/photoreal/fitsek-hero-desk-reset.png",
+    "site/assets/photoreal/fitsek-hero-desk-reset.jpg",
+    "site/assets/photoreal/fitsek-og-desk-system.png",
+    "site/assets/photoreal/fitsek-og-desk-system.jpg",
+    "site/assets/social/og-fitsek-photoreal.png",
+    "site/assets/social/og-fitsek-photoreal.jpg",
+    "site/assets/social/photoreal-desk-walking-pad.png",
+    "site/assets/social/photoreal-desk-walking-pad.jpg",
+    "site/assets/social/photoreal-gym-progression.png",
+    "site/assets/social/photoreal-gym-progression.jpg",
+    "site/assets/social/photoreal-meal-prep-protein.png",
+    "site/assets/social/photoreal-meal-prep-protein.jpg",
+    "site/assets/social/photoreal-product-context.png",
+    "site/assets/social/photoreal-product-context.jpg"
+  ],
+  "risks": [
+    "The shared dir workspace still has broader uncommitted t_10722adb site/analytics changes and a pre-existing automation/verify_posts.py diff; devops should reconcile before commit/deploy."
+  ],
+  "owner_worker": "Hermes Agent writer",
+  "last_updated": "2026-07-10T01:06:15Z",
+  "resume_instructions": "Task t_7a2da974 is complete. Continue with dependent devops task t_10722adb in /home/ubuntu/fitsek, rerun validation, reconcile duplicate older brand/social derivatives, then PR/deploy/review as required."
+}

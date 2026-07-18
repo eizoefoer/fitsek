@@ -1,6 +1,6 @@
 # AI_STATE.md
 
-Last updated: 2026-07-09
+Last updated: 2026-07-18
 
 ## Brand
 Fitsek is a faceless desk-worker body recomposition brand: simple, practical, evidence-aware, direct, encouraging, and general wellness only.
@@ -17,8 +17,15 @@ Traffic → `fitsek.com` → free lead magnet → email/list → paid digital pr
 ## Infrastructure
 - Public static site: GitHub Pages from `site/` in this repository.
 - Custom domain: `fitsek.com`; `www.fitsek.com` CNAME to GitHub Pages.
+- 2026-07-10: GitHub Pages custom domain HTTPS was re-triggered by clearing/re-adding `fitsek.com`; `https_enforced` is now `true`, `https://fitsek.com/` returns `200`, and `https://www.fitsek.com/` redirects to the apex.
 - Lead/event API: `server/lead_api.py`, systemd service `fitsek-leads.service`, proxied by Caddy as `leads.fitsek.com`.
 - No payment checkout is connected yet. Use no-monthly-fee option when user sets account: Stripe Payment Link, Gumroad, Payhip, Lemon Squeezy, or Ko-fi.
+
+## Brand/assets
+- 2026-07-10: Added Fitsek SVG logo/favicon/web manifest plus faceless photorealistic website/social images under `site/assets/photoreal/`, `site/assets/social/`, and derivative `site/assets/brand/` paths. Provenance lives in `docs/brand-image-provenance.md`, `docs/assets/photoreal-faceless-image-set-2026-07-10.md`, and `docs/assets/prompts/photoreal-faceless/`. These images are synthetic brand/lifestyle visuals and must not be represented as real customer proof, testimonials, before/after results, or medical evidence.
+
+## Analytics / measurement
+- 2026-07-10: Cloudflare Web Analytics is installed on every public page. `site/app.js` also emits first-party `page_view`, `click`, `outbound_intent`, `section_view`, `scroll_depth`, and signup outcome events to `https://leads.fitsek.com/event`; heatmap-style reporting is aggregate-only via `automation/heatmap_report.py`, with no session recording enabled.
 
 ## Agent/CI state
 - 2026-07-09: Agent harness policies include SDLC/IaC/CI/human-collaboration rules in `system/sdlc-iac-ci.md`; meaningful repo work should use feature/fix/agent branches or worktrees, existing CI first, IaC/rollback records for infra changes, and human worker job-ledger rows for accepted human changes.

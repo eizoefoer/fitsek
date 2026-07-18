@@ -28,10 +28,44 @@
   window.fitsekTrack = track;
   track('page_view');
 
+  const scrollDepths = [25, 50, 75, 90];
+  const seenDepths = new Set();
+  function maybeTrackScrollDepth() {
+    const doc = document.documentElement;
+    const scrollable = Math.max(1, doc.scrollHeight - innerHeight);
+    const pct = Math.min(100, Math.round((scrollY / scrollable) * 100));
+    for (const depth of scrollDepths) {
+      if (pct >= depth && !seenDepths.has(depth)) {
+        seenDepths.add(depth);
+        track('scroll_depth', {depth});
+      }
+    }
+  }
+  addEventListener('scroll', maybeTrackScrollDepth, {passive:true});
+  addEventListener('pagehide', maybeTrackScrollDepth);
+
+  if ('IntersectionObserver' in window) {
+    const seenSections = new Set();
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        const id = entry.target.id || entry.target.getAttribute('aria-label') || entry.target.className || 'section';
+        if (seenSections.has(id)) return;
+        seenSections.add(id);
+        track('section_view', {section:id});
+      });
+    }, {threshold:0.45});
+    document.querySelectorAll('main section[id], main section[aria-label]').forEach((section) => observer.observe(section));
+  }
+
   document.addEventListener('click', (e) => {
     const el = e.target.closest('[data-track]');
     if (!el) return;
-    track('click', {label: el.dataset.track, href: el.getAttribute('href') || ''});
+    const href = el.getAttribute('href') || '';
+    track('click', {label: el.dataset.track, href});
+    if (/^https?:\/\//.test(href) && !href.includes(location.hostname)) {
+      track('outbound_intent', {label: el.dataset.track, href});
+    }
   });
 
   const form = document.getElementById('lead-form');

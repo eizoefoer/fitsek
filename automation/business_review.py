@@ -91,6 +91,8 @@ def build_report(period: str) -> str:
     by_post.sort(key=lambda x:x[0], reverse=True)
     url_checks=[(u,*check_url(u)) for u in URLS]
     product_clicks=sum(1 for e in events if 'product' in str(e.get('href','')) or e.get('label','').startswith('cta_product'))
+    section_views=Counter(str(e.get('section','unknown')) for e in events if e.get('type') == 'section_view')
+    scroll_depths=Counter(str(e.get('depth','unknown')) for e in events if e.get('type') == 'scroll_depth')
     signup_rate=(len(leads)/max(1,event_counts.get('page_view',0)))*100
     recommendations=[]
     if post_count - approved < 7: recommendations.append('Queue/approve at least 7 upcoming social posts.')
@@ -108,6 +110,8 @@ def build_report(period: str) -> str:
         f'- Email leads: {len(leads)}',
         f'- Signup conversion estimate: {signup_rate:.1f}%',
         f'- Product intent clicks/events: {product_clicks}',
+        f'- Section-view events: {sum(section_views.values())} ({dict(section_views.most_common(5))})',
+        f'- Scroll-depth events: {sum(scroll_depths.values())} ({dict(scroll_depths.most_common(5))})',
         f'- Traffic sources seen: {dict(source_counts.most_common(8))}', '',
         '## Social queue',
         f'- Draft posts: {post_count}',

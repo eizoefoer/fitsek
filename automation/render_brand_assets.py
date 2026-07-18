@@ -67,6 +67,7 @@ def write_svgs() -> None:
 '''
     (OUT / "fitsek-mark.svg").write_text(mark, encoding="utf-8")
     (OUT / "fitsek-logo.svg").write_text(logo, encoding="utf-8")
+    (OUT / "favicon.svg").write_text(mark, encoding="utf-8")
     (SITE / "favicon.svg").write_text(mark, encoding="utf-8")
 
 
@@ -106,9 +107,19 @@ def draw_mark(size: int) -> Image.Image:
     return canvas
 
 
+def write_mark_png(path: Path, size: int, flatten: bool = False) -> None:
+    mark = draw_mark(size)
+    if flatten:
+        bg = Image.new("RGBA", mark.size, (5, 7, 12, 255))
+        mark = Image.alpha_composite(bg, mark).convert("RGB")
+    mark.save(path)
+
+
 def write_icons() -> None:
     for name, size in [("apple-touch-icon.png", 180), ("icon-192.png", 192), ("icon-512.png", 512)]:
-        draw_mark(size).save(SITE / name)
+        write_mark_png(SITE / name, size)
+    for name, size in [("favicon-32.png", 32), ("apple-touch-icon.png", 180), ("icon-192.png", 192), ("icon-512.png", 512)]:
+        write_mark_png(OUT / name, size, flatten=True)
     draw_mark(256).save(SITE / "favicon.ico", sizes=[(16, 16), (32, 32), (48, 48), (128, 128), (256, 256)])
 
 

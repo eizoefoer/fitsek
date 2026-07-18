@@ -1,0 +1,94 @@
+{
+  "artifacts": [
+    "/home/ubuntu/fitsek/analytics/reports/2026-07-18-daily.md",
+    "/home/ubuntu/fitsek/analytics/reports/2026-07-18-ux-heatmap.md"
+  ],
+  "assumptions": [
+    "The automation/verify_posts.py one-line diff pre-dates this resumed task and remains intentionally unstaged for separate review.",
+    "Microsoft Clarity/session recording remains approval-gated; current UX heatmap report is aggregate first-party events only.",
+    "Generated images are synthetic/faceless illustrative assets only, not customer proof."
+  ],
+  "blockers": [],
+  "branch_or_worktree": "feature/fitsek/site-ssl-brand-assets-photos-analytics-refresh @ /home/ubuntu/fitsek",
+  "completed_steps": [
+    "Read kanban task, parent handoff, AGENTS/project memory/task log/job ledger, AI_STATE, README, and prior capsules.",
+    "Reconciled the shared workspace after parent image task t_7a2da974 completed.",
+    "Patched render_brand_assets.py so favicons/app icons in site/assets/brand are deterministic and added the 192px manifest icon.",
+    "Documented retained derivative brand assets as reusable faceless crops instead of unresolved leftovers.",
+    "Ran local site/social/report/project-state validation; checks passed."
+  ],
+  "current_status": "local_validation_passed_pending_pr_ci_deploy",
+  "current_step": "Commit branch, push PR, verify GitHub Actions, merge/deploy if green, then verify live HTTPS/assets/analytics/API.",
+  "decisions_made": [
+    "Keep Cloudflare Web Analytics plus first-party section/scroll/click events; do not enable third-party session recording.",
+    "Retain derivative brand crops as documented reusable/fallback faceless assets; primary site/social wiring uses the photoreal set from t_7a2da974."
+  ],
+  "last_known_good_commit": "201e758",
+  "last_updated": "2026-07-18T16:38:03Z",
+  "next_actions": [
+    "Commit all task changes except the unrelated pre-existing automation/verify_posts.py diff.",
+    "Push feature/fitsek/site-ssl-brand-assets-photos-analytics-refresh and create/update PR to main.",
+    "Verify PR CI, merge/deploy if green, then browser/network verify live Cloudflare beacon and first-party event endpoint."
+  ],
+  "objective": "Implement Fitsek site SSL, brand assets, faceless imagery, analytics/heatmap readiness refresh, validate and deploy.",
+  "owner_worker": "Hermes Agent coder",
+  "project": "fitsek",
+  "relevant_commands": [
+    "git fetch origin main",
+    "/home/ubuntu/.hermes/scripts/project_agent_sdlc.py detect --repo . --format text",
+    "python3 scripts/validate_site.py",
+    "python3 automation/social_copy.py audit --days 21",
+    "python3 -m py_compile scripts/validate_site.py automation/render_brand_assets.py automation/heatmap_report.py automation/business_review.py",
+    "bash -n automation/github_pages_https_watch.sh",
+    "python3 automation/business_review.py --period daily --write",
+    "python3 automation/heatmap_report.py --write",
+    "git diff --check",
+    "/home/ubuntu/.hermes/scripts/project_agent_state.py validate --repo . --strict",
+    "/home/ubuntu/.hermes/scripts/project_agent_priority.py validate --repo . --strict",
+    "photoreal manifest/icon dimension check",
+    "local static server/ref check",
+    "text diff secret scan"
+  ],
+  "relevant_files": [
+    "site/index.html",
+    "site/app.js",
+    "site/styles.css",
+    "site/site.webmanifest",
+    "site/assets/brand/",
+    "site/assets/photoreal/",
+    "site/assets/social/",
+    "automation/render_brand_assets.py",
+    "automation/heatmap_report.py",
+    "automation/business_review.py",
+    "automation/github_pages_https_watch.sh",
+    "docs/operations/analytics-heatmap-plan.md",
+    "docs/brand-image-provenance.md",
+    "scripts/validate_site.py",
+    "AI_STATE.md",
+    "README.md",
+    ".agents/project-memory.json",
+    ".agents/job-ledger.jsonl",
+    ".agents/task-log.jsonl"
+  ],
+  "resume_instructions": "Resume from this capsule by checking git status, preserving the unrelated verify_posts.py diff, then continuing PR/CI/deploy/live verification for t_10722adb.",
+  "risks": [
+    "GitHub Pages deploy propagation can lag; live checks must run after main deploy.",
+    "Browser/network live verification will create first-party page_view/section/scroll events.",
+    "automation/verify_posts.py remains dirty but unrelated to this PR unless explicitly reviewed."
+  ],
+  "task_id": "t_10722adb",
+  "tests_last_run": [
+    "site validation ok",
+    "social_copy audit checked 21, issues []",
+    "py_compile passed for validate/render/heatmap/business scripts",
+    "bash -n passed for github_pages_https_watch.sh",
+    "business_review daily report wrote /home/ubuntu/fitsek/analytics/reports/2026-07-18-daily.md and live health checks returned OK",
+    "heatmap_report wrote /home/ubuntu/fitsek/analytics/reports/2026-07-18-ux-heatmap.md",
+    "git diff --check passed",
+    "project_agent_state validate --strict errors []",
+    "project_agent_priority validate --strict errors []",
+    "manifest/icons dimension check passed for 7 photoreal assets",
+    "local static refs ok: 6 pages, 10 refs",
+    "text diff secret scan ok"
+  ]
+}
