@@ -1,7 +1,9 @@
 {
   "artifacts": [
     "/home/ubuntu/fitsek/analytics/reports/2026-07-18-daily.md",
-    "/home/ubuntu/fitsek/analytics/reports/2026-07-18-ux-heatmap.md"
+    "/home/ubuntu/fitsek/analytics/reports/2026-07-18-ux-heatmap.md",
+    "https://github.com/eizoefoer/fitsek/pull/3",
+    "https://github.com/eizoefoer/fitsek/actions/runs/29652397155"
   ],
   "assumptions": [
     "The automation/verify_posts.py one-line diff pre-dates this resumed task and remains intentionally unstaged for separate review.",
@@ -15,20 +17,21 @@
     "Reconciled the shared workspace after parent image task t_7a2da974 completed.",
     "Patched render_brand_assets.py so favicons/app icons in site/assets/brand are deterministic and added the 192px manifest icon.",
     "Documented retained derivative brand assets as reusable faceless crops instead of unresolved leftovers.",
-    "Ran local site/social/report/project-state validation; checks passed."
+    "Ran local site/social/report/project-state validation; checks passed.",
+    "Opened PR #3 and verified pull_request GitHub Actions run 29652397155: validate passed, deploy skipped as intended for PRs."
   ],
-  "current_status": "local_validation_passed_pending_pr_ci_deploy",
-  "current_step": "Commit branch, push PR, verify GitHub Actions, merge/deploy if green, then verify live HTTPS/assets/analytics/API.",
+  "current_status": "pr_ci_passed_pending_merge_deploy_live_verification",
+  "current_step": "Merge PR #3 after green validation, wait for GitHub Pages deploy, then verify live site/assets/analytics/API.",
   "decisions_made": [
     "Keep Cloudflare Web Analytics plus first-party section/scroll/click events; do not enable third-party session recording.",
     "Retain derivative brand crops as documented reusable/fallback faceless assets; primary site/social wiring uses the photoreal set from t_7a2da974."
   ],
   "last_known_good_commit": "201e758",
-  "last_updated": "2026-07-18T16:38:03Z",
+  "last_updated": "2026-07-18T16:40:25Z",
   "next_actions": [
-    "Commit all task changes except the unrelated pre-existing automation/verify_posts.py diff.",
-    "Push feature/fitsek/site-ssl-brand-assets-photos-analytics-refresh and create/update PR to main.",
-    "Verify PR CI, merge/deploy if green, then browser/network verify live Cloudflare beacon and first-party event endpoint."
+    "Merge PR #3 to main.",
+    "Verify main GitHub Pages deploy workflow completes successfully.",
+    "Verify live HTTPS pages, assets, Cloudflare beacon request, and first-party event API."
   ],
   "objective": "Implement Fitsek site SSL, brand assets, faceless imagery, analytics/heatmap readiness refresh, validate and deploy.",
   "owner_worker": "Hermes Agent coder",
@@ -47,7 +50,8 @@
     "/home/ubuntu/.hermes/scripts/project_agent_priority.py validate --repo . --strict",
     "photoreal manifest/icon dimension check",
     "local static server/ref check",
-    "text diff secret scan"
+    "text diff secret scan",
+    "gh run view 29652397155 --json status,conclusion,jobs,url"
   ],
   "relevant_files": [
     "site/index.html",
@@ -89,6 +93,7 @@
     "project_agent_priority validate --strict errors []",
     "manifest/icons dimension check passed for 7 photoreal assets",
     "local static refs ok: 6 pages, 10 refs",
-    "text diff secret scan ok"
+    "text diff secret scan ok",
+    "PR #3 CI run 29652397155 passed validate job; deploy skipped on pull_request as intended"
   ]
 }
