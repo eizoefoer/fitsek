@@ -3,7 +3,10 @@
     "/home/ubuntu/fitsek/analytics/reports/2026-07-18-daily.md",
     "/home/ubuntu/fitsek/analytics/reports/2026-07-18-ux-heatmap.md",
     "https://github.com/eizoefoer/fitsek/pull/3",
-    "https://github.com/eizoefoer/fitsek/actions/runs/29652397155"
+    "https://github.com/eizoefoer/fitsek/actions/runs/29652397155",
+    "https://github.com/eizoefoer/fitsek/pull/3",
+    "https://github.com/eizoefoer/fitsek/actions/runs/29652456060",
+    "https://fitsek.com/"
   ],
   "assumptions": [
     "The automation/verify_posts.py one-line diff pre-dates this resumed task and remains intentionally unstaged for separate review.",
@@ -18,20 +21,22 @@
     "Patched render_brand_assets.py so favicons/app icons in site/assets/brand are deterministic and added the 192px manifest icon.",
     "Documented retained derivative brand assets as reusable faceless crops instead of unresolved leftovers.",
     "Ran local site/social/report/project-state validation; checks passed.",
-    "Opened PR #3 and verified pull_request GitHub Actions run 29652397155: validate passed, deploy skipped as intended for PRs."
+    "Opened PR #3 and verified pull_request GitHub Actions run 29652397155: validate passed, deploy skipped as intended for PRs.",
+    "Merged PR #3 to main at 04be7eb.",
+    "Verified main GitHub Actions run 29652456060: validate and deploy jobs passed.",
+    "Verified live site HTTPS, title, CTA labels, new hero/OG/assets, Cloudflare beacon network request, and first-party event endpoint/browser POST HTTP 202."
   ],
-  "current_status": "pr_ci_passed_pending_merge_deploy_live_verification",
-  "current_step": "Merge PR #3 after green validation, wait for GitHub Pages deploy, then verify live site/assets/analytics/API.",
+  "current_status": "complete_deployed_live_verified",
+  "current_step": "Done; monitor normal analytics/social checks and review the unrelated verify_posts.py local diff separately.",
   "decisions_made": [
     "Keep Cloudflare Web Analytics plus first-party section/scroll/click events; do not enable third-party session recording.",
     "Retain derivative brand crops as documented reusable/fallback faceless assets; primary site/social wiring uses the photoreal set from t_7a2da974."
   ],
-  "last_known_good_commit": "201e758",
-  "last_updated": "2026-07-18T16:40:25Z",
+  "last_known_good_commit": "04be7eb",
+  "last_updated": "2026-07-18T16:44:15Z",
   "next_actions": [
-    "Merge PR #3 to main.",
-    "Verify main GitHub Pages deploy workflow completes successfully.",
-    "Verify live HTTPS pages, assets, Cloudflare beacon request, and first-party event API."
+    "Review/handle the unrelated local automation/verify_posts.py diff in a separate task if desired.",
+    "Let normal Fitsek business/heatmap/social verification reports collect fresh traffic before making the next funnel change."
   ],
   "objective": "Implement Fitsek site SSL, brand assets, faceless imagery, analytics/heatmap readiness refresh, validate and deploy.",
   "owner_worker": "Hermes Agent coder",
@@ -51,7 +56,11 @@
     "photoreal manifest/icon dimension check",
     "local static server/ref check",
     "text diff secret scan",
-    "gh run view 29652397155 --json status,conclusion,jobs,url"
+    "gh run view 29652397155 --json status,conclusion,jobs,url",
+    "gh pr merge 3 --merge --delete-branch",
+    "gh run view 29652456060 --json status,conclusion,jobs,url",
+    "curl/static live checks for fitsek.com pages/assets and leads.fitsek.com/event",
+    "browser live check for Cloudflare beacon and first-party event request"
   ],
   "relevant_files": [
     "site/index.html",
@@ -74,7 +83,7 @@
     ".agents/job-ledger.jsonl",
     ".agents/task-log.jsonl"
   ],
-  "resume_instructions": "Resume from this capsule by checking git status, preserving the unrelated verify_posts.py diff, then continuing PR/CI/deploy/live verification for t_10722adb.",
+  "resume_instructions": "Task is complete/deployed. For follow-up, start from AGENTS.md/project memory and inspect the unrelated local automation/verify_posts.py diff before touching social verification.",
   "risks": [
     "GitHub Pages deploy propagation can lag; live checks must run after main deploy.",
     "Browser/network live verification will create first-party page_view/section/scroll events.",
@@ -94,6 +103,14 @@
     "manifest/icons dimension check passed for 7 photoreal assets",
     "local static refs ok: 6 pages, 10 refs",
     "text diff secret scan ok",
-    "PR #3 CI run 29652397155 passed validate job; deploy skipped on pull_request as intended"
+    "PR #3 CI run 29652397155 passed validate job; deploy skipped on pull_request as intended",
+    "main deploy run 29652456060 passed validate and deploy jobs",
+    "curl live propagation: https://fitsek.com/ contained /assets/photoreal/fitsek-hero-desk-reset.jpg and Cloudflare beacon on first poll",
+    "static live checks: /, /product.html, /lead-magnet.html, /privacy.html and www redirect returned 200",
+    "assets live 200: favicon.svg, icon-192.png, hero jpg, og jpg, site.webmanifest",
+    "GitHub Pages API: cname fitsek.com, https_enforced true, html_url https://fitsek.com/",
+    "lead API healthz returned {\"ok\":true}",
+    "curl event POST returned HTTP 202",
+    "browser live check: title correct, hero image present, 6 data-track CTAs found, Cloudflare beacon requested, first-party event requested, browser event POST returned 202"
   ]
 }
