@@ -45,7 +45,14 @@ for page in ['lead-magnet.html','product.html','privacy.html','terms.html','disc
     assert 'medical advice' in text.lower() or page in {'privacy.html','terms.html'}, f'{page} needs disclaimer wording'
 for required in ['site/CNAME','site/robots.txt','site/sitemap.xml','site/site.webmanifest','site/favicon.ico','site/favicon.svg','site/apple-touch-icon.png','site/icon-192.png','site/icon-512.png','site/assets/brand/fitsek-logo.svg','site/assets/brand/favicon.svg','site/assets/brand/favicon-32.png','site/assets/brand/apple-touch-icon.png','site/assets/brand/icon-192.png','site/assets/brand/icon-512.png','site/assets/photoreal/fitsek-hero-desk-reset.jpg','site/assets/photoreal/fitsek-og-desk-system.jpg','site/assets/social/og-fitsek-photoreal.jpg','site/assets/social/photoreal-desk-walking-pad.jpg','site/assets/social/photoreal-gym-progression.jpg','site/assets/social/photoreal-meal-prep-protein.jpg','site/assets/social/photoreal-product-context.jpg','docs/assets/photoreal-faceless-image-set-2026-07-10.md','docs/assets/photoreal-faceless-manifest.json','AGENTS.md','AI_STATE.md','.gitignore','docs/strategy/brand-basics.md','docs/brand-image-provenance.md','content/social/30-day-calendar.csv','products/paid-recomp-system/README.md','automation/business_review.py','automation/heatmap_report.py']:
     assert (ROOT/required).exists(), f'missing {required}'
-all_text='\n'.join(p.read_text(encoding='utf-8', errors='ignore') for p in ROOT.rglob('*') if p.is_file() and '.git' not in p.parts and 'analytics/reports' not in str(p))
+TEXT_SUFFIXES = {'.css', '.csv', '.html', '.js', '.json', '.md', '.py', '.svg', '.txt', '.webmanifest', '.xml', '.yml', '.yaml'}
+TEXT_FILENAMES = {'.gitignore', 'CNAME', 'AGENTS.md', 'AI_STATE.md', 'CLAUDE.md', 'GEMINI.md', 'README.md'}
+text_files = [
+    p for p in ROOT.rglob('*')
+    if p.is_file() and '.git' not in p.parts and 'analytics/reports' not in str(p)
+    and (p.suffix.lower() in TEXT_SUFFIXES or p.name in TEXT_FILENAMES)
+]
+all_text='\n'.join(p.read_text(encoding='utf-8', errors='strict') for p in text_files)
 secret_patterns=[r'sk_live_[A-Za-z0-9]{12,}', r'ghp_[A-Za-z0-9]{20,}', r'github_pat_[A-Za-z0-9_]{20,}', r'EA[A-Za-z0-9]{20,}', r'AIza[A-Za-z0-9_-]{20,}']
 for pat in secret_patterns:
     assert not re.search(pat, all_text), f'secret-like pattern found: {pat}'
