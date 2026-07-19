@@ -1,0 +1,155 @@
+{
+  "version": 1,
+  "created_by": "automation/render_profile_social_refresh.py",
+  "brand_direction": "dark Fitsek palette with mint/cyan/lime accents, editorial hierarchy, cinematic spacing, faceless photoreal source photos",
+  "policy": {
+    "faceless": true,
+    "no_fake_testimonials": true,
+    "no_before_after": true,
+    "no_medical_or_guaranteed_outcomes": true,
+    "profile_updates_need_manual_or_explicit_approval": true
+  },
+  "publishing_note": "Use a public HTTPS base URL when publishing via Meta. Stories are generated as assets; keep approval-first behavior before any mutating Meta call.",
+  "entries": [
+    {
+      "id": "profile-avatar",
+      "kind": "profile_asset",
+      "surface": "instagram_profile_picture",
+      "path": "site/assets/social/profile-refresh/fitsek-avatar-square.png",
+      "note": "Manual/profile-update asset; Instagram Graph API does not expose profile-picture mutation."
+    },
+    {
+      "id": "facebook-cover",
+      "kind": "profile_asset",
+      "surface": "facebook_page_cover",
+      "path": "site/assets/social/profile-refresh/fitsek-facebook-cover.jpg",
+      "note": "Manual/profile-update asset; Graph cover-photo endpoint is read-only."
+    },
+    {
+      "id": "photo-walking-pad",
+      "kind": "photo",
+      "surface": "instagram_feed_photo",
+      "path": "site/assets/social/profile-refresh/photo-01-walking-pad.jpg",
+      "caption": "Make steps boring enough to repeat.\n\nTry one 10-minute walk after a meal, one easy meeting walk, and one shut-laptop lap. Small, repeatable steps beat a perfect plan you avoid.\n\nSave this and start with the easiest slot. Link in bio: fitsek.com\n\n#deskworkerfitness #bodyrecomposition #fatlossbasics #walkingpad #highprotein #fitsek\n\nGeneral fitness education only. Results vary.",
+      "alt_text": "Faceless Fitsek lifestyle asset for general desk-worker fitness education.",
+      "source_photo": "site/assets/social/photoreal-desk-walking-pad.jpg",
+      "status": "ready_for_publish_or_schedule"
+    },
+    {
+      "id": "photo-protein-anchors",
+      "kind": "photo",
+      "surface": "instagram_feed_photo",
+      "path": "site/assets/social/profile-refresh/photo-02-protein-anchors.jpg",
+      "caption": "Two protein anchors beat perfect meal prep.\n\nPick one earlier meal and one later meal. Add easy carbs, colour, and a sauce you actually like. The default meal should be obvious on a work day.\n\nSave the template for your next shop. Link in bio: fitsek.com\n\n#deskworkerfitness #bodyrecomposition #fatlossbasics #walkingpad #highprotein #fitsek\n\nGeneral fitness education only. Results vary.",
+      "alt_text": "Faceless Fitsek lifestyle asset for general desk-worker fitness education.",
+      "source_photo": "site/assets/social/photoreal-meal-prep-protein.jpg",
+      "status": "ready_for_publish_or_schedule"
+    },
+    {
+      "id": "photo-gym-progression",
+      "kind": "photo",
+      "surface": "instagram_feed_photo",
+      "path": "site/assets/social/profile-refresh/photo-03-gym-progression.jpg",
+      "caption": "Use one progression rule for 4 weeks.\n\nKeep the main lifts stable, stay 1-2 reps before form breaks, and add reps before load. Evidence beats novelty.\n\nSave this before changing the workout again. Link in bio: fitsek.com\n\n#deskworkerfitness #bodyrecomposition #fatlossbasics #walkingpad #highprotein #fitsek\n\nGeneral fitness education only. Results vary.",
+      "alt_text": "Faceless Fitsek lifestyle asset for general desk-worker fitness education.",
+      "source_photo": "site/assets/social/photoreal-gym-progression.jpg",
+      "status": "ready_for_publish_or_schedule"
+    },
+    {
+      "id": "photo-weekly-checkin",
+      "kind": "photo",
+      "surface": "instagram_feed_photo",
+      "path": "site/assets/social/profile-refresh/photo-04-weekly-checkin.jpg",
+      "caption": "Change one lever, not your whole life.\n\nLook at steps, protein anchors, training, and sleep. Choose one lever for the next week. Measuring one change is easier than guessing at five.\n\nSave this for Sunday. Link in bio: fitsek.com\n\n#deskworkerfitness #bodyrecomposition #fatlossbasics #walkingpad #highprotein #fitsek\n\nGeneral fitness education only. Results vary.",
+      "alt_text": "Faceless Fitsek lifestyle asset for general desk-worker fitness education.",
+      "source_photo": "site/assets/brand/photo-social-reset.jpg",
+      "status": "ready_for_publish_or_schedule"
+    },
+    {
+      "id": "photo-build-base",
+      "kind": "photo",
+      "surface": "instagram_feed_photo",
+      "path": "site/assets/social/profile-refresh/photo-05-build-base.jpg",
+      "caption": "Build the base before cutting harder.\n\nBefore you cut harder, check the base: lift 2-3 times, walk most days, hit two protein anchors, and review the week honestly.\n\nGet the free 7-Day Desk Worker Recomp Reset. Link in bio: fitsek.com\n\n#deskworkerfitness #bodyrecomposition #fatlossbasics #walkingpad #highprotein #fitsek\n\nGeneral fitness education only. Results vary.",
+      "alt_text": "Faceless Fitsek lifestyle asset for general desk-worker fitness education.",
+      "source_photo": "site/assets/social/photoreal-product-context.jpg",
+      "status": "ready_for_publish_or_schedule"
+    },
+    {
+      "id": "photo-work-week-plan",
+      "kind": "photo",
+      "surface": "instagram_feed_photo",
+      "path": "site/assets/social/profile-refresh/photo-06-work-week-plan.jpg",
+      "caption": "Your work week is the plan.\n\nMeetings, commutes, late meals, and low-energy days are constraints. Build around them with simple strength, steps, protein anchors, and review.\n\nJoin the Fitsek list. Link in bio: fitsek.com\n\n#deskworkerfitness #bodyrecomposition #fatlossbasics #walkingpad #highprotein #fitsek\n\nGeneral fitness education only. Results vary.",
+      "alt_text": "Faceless Fitsek lifestyle asset for general desk-worker fitness education.",
+      "source_photo": "site/assets/brand/photo-hero-workspace.jpg",
+      "status": "ready_for_publish_or_schedule"
+    },
+    {
+      "id": "story-steps",
+      "kind": "story_image",
+      "surface": "instagram_story",
+      "path": "site/assets/social/profile-refresh/story-01-steps.jpg",
+      "caption": "3-step walking pad reset.\n\nA small steps plan for real desk days.\n\nLink in bio: fitsek.com\n\n#deskworkerfitness #bodyrecomposition #fatlossbasics #walkingpad #highprotein #fitsek\n\nGeneral fitness education only. Results vary.",
+      "alt_text": "Faceless Fitsek lifestyle asset for general desk-worker fitness education.",
+      "source_photo": "site/assets/social/photoreal-desk-walking-pad.jpg",
+      "status": "ready_for_publish_or_schedule"
+    },
+    {
+      "id": "story-protein",
+      "kind": "story_image",
+      "surface": "instagram_story",
+      "path": "site/assets/social/profile-refresh/story-02-protein.jpg",
+      "caption": "2-anchor protein day.\n\nRepeatable meals beat impressive meals.\n\nLink in bio: fitsek.com\n\n#deskworkerfitness #bodyrecomposition #fatlossbasics #walkingpad #highprotein #fitsek\n\nGeneral fitness education only. Results vary.",
+      "alt_text": "Faceless Fitsek lifestyle asset for general desk-worker fitness education.",
+      "source_photo": "site/assets/social/photoreal-meal-prep-protein.jpg",
+      "status": "ready_for_publish_or_schedule"
+    },
+    {
+      "id": "story-review",
+      "kind": "story_image",
+      "surface": "instagram_story",
+      "path": "site/assets/social/profile-refresh/story-03-review.jpg",
+      "caption": "Sunday one-lever review.\n\nPick one lever. Do not reset your whole life.\n\nLink in bio: fitsek.com\n\n#deskworkerfitness #bodyrecomposition #fatlossbasics #walkingpad #highprotein #fitsek\n\nGeneral fitness education only. Results vary.",
+      "alt_text": "Faceless Fitsek lifestyle asset for general desk-worker fitness education.",
+      "source_photo": "site/assets/brand/photo-social-reset.jpg",
+      "status": "ready_for_publish_or_schedule"
+    },
+    {
+      "id": "reel-walking-pad",
+      "kind": "reel",
+      "surface": "instagram_reel",
+      "path": "site/assets/social/profile-refresh/reel-01-walking-pad.mp4",
+      "cover_path": "site/assets/social/profile-refresh/reel-01-walking-pad-cover.jpg",
+      "caption": "Walking pad protocol.\n\n10 minutes after one meal. One easy meeting walk. One shut-laptop lap. That is enough to start.\n\nSave this simple walking-pad protocol. Link in bio: fitsek.com\n\n#deskworkerfitness #bodyrecomposition #fatlossbasics #walkingpad #highprotein #fitsek\n\nGeneral fitness education only. Results vary.",
+      "alt_text": "Faceless Fitsek lifestyle asset for general desk-worker fitness education.",
+      "source_photo": "site/assets/social/photoreal-desk-walking-pad.jpg",
+      "duration_seconds": 6,
+      "status": "ready_for_publish_or_schedule"
+    },
+    {
+      "id": "reel-protein-template",
+      "kind": "reel",
+      "surface": "instagram_reel",
+      "path": "site/assets/social/profile-refresh/reel-02-protein-template.mp4",
+      "cover_path": "site/assets/social/profile-refresh/reel-02-protein-template-cover.jpg",
+      "caption": "Two protein anchors.\n\nPick one earlier protein anchor, one later protein anchor, and repeat them before chasing a perfect diet.\n\nSave the two-anchor template. Link in bio: fitsek.com\n\n#deskworkerfitness #bodyrecomposition #fatlossbasics #walkingpad #highprotein #fitsek\n\nGeneral fitness education only. Results vary.",
+      "alt_text": "Faceless Fitsek lifestyle asset for general desk-worker fitness education.",
+      "source_photo": "site/assets/social/photoreal-meal-prep-protein.jpg",
+      "duration_seconds": 6,
+      "status": "ready_for_publish_or_schedule"
+    },
+    {
+      "id": "reel-weekly-checkin",
+      "kind": "reel",
+      "surface": "instagram_reel",
+      "path": "site/assets/social/profile-refresh/reel-03-weekly-checkin.mp4",
+      "cover_path": "site/assets/social/profile-refresh/reel-03-weekly-checkin-cover.jpg",
+      "caption": "Sunday check-in.\n\nReview steps, protein, training, and sleep. Choose one lever. Run the week. Review again.\n\nSave this for Sunday. Link in bio: fitsek.com\n\n#deskworkerfitness #bodyrecomposition #fatlossbasics #walkingpad #highprotein #fitsek\n\nGeneral fitness education only. Results vary.",
+      "alt_text": "Faceless Fitsek lifestyle asset for general desk-worker fitness education.",
+      "source_photo": "site/assets/brand/photo-social-reset.jpg",
+      "duration_seconds": 6,
+      "status": "ready_for_publish_or_schedule"
+    }
+  ]
+}
