@@ -220,11 +220,23 @@ def wait_for_container(container_id: str, token: str, timeout_seconds: int = 120
 
 
 def publish_post(post: dict, ig_user_id: str, token: str, container_timeout: int) -> dict:
+    media_type = str(post.get("media_type") or "IMAGE").upper()
+    if media_type == "REELS":
+        payload = {
+            "media_type": "REELS",
+            "video_url": post["asset_url"],
+            "caption": post["caption"],
+            "share_to_feed": "true",
+        }
+    elif media_type == "IMAGE":
+        payload = {"image_url": post["asset_url"], "caption": post["caption"]}
+    else:
+        raise ValueError(f"Unsupported Instagram media_type for day {post.get('day')}: {media_type}")
     container = graph(
         "POST",
         f"{ig_user_id}/media",
         token,
-        data={"image_url": post["asset_url"], "caption": post["caption"]},
+        data=payload,
     )
     container_id = container.get("id")
     if not container_id:
