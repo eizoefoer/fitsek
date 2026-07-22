@@ -64,7 +64,8 @@ Meta does not provide a standard OAuth refresh token for this flow. `automation/
 - Facebook currently has 21 unpublished scheduled photo posts for 2026-07-09 through 2026-07-15. Verification found media attached to every scheduled post and no leaked `CTA:`/`Fitsek rule:` boilerplate.
 - Instagram Page linkage is API-visible: `@fitsek.wellness` (`17841443568404793`) is returned as the FitSek Page `instagram_business_account`.
 - Instagram uses a recurring no-agent due-check cron (`Fitsek IG Publish Due Check`, every 15 minutes) that runs `~/.hermes/scripts/fitsek_ig_publish_due.sh`. The publisher stays silent when no post is due and prints returned media IDs only when it publishes.
-- `Fitsek Social Publish Verification` runs `~/.hermes/scripts/fitsek_social_verify.sh` every 30 minutes. It is silent on OK and alerts if a due FB/IG post is missing after the grace window or Meta API verification fails. Instagram checks are intentionally limited to the configured rolling window (six hours in the cron wrapper), so historic published schedule entries are not compared with the recent-media response.
+- `Fitsek Social Publish Verification` runs `~/.hermes/scripts/fitsek_social_verify.sh` every 30 minutes. It is silent on OK and alerts if a due FB/IG post is missing after the grace window or Meta API verification fails.
+- For Instagram, verification treats the ignored local schedule as the publish ledger: a due post must have `status: published` and a `published_media_id`. The verifier cross-checks that media ID against the live `/media` response only for posts still inside the requested verification window, so old successfully published posts do not alert forever after they fall out of the recent-media window.
 
 ## Proper API path
 
