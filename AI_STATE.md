@@ -1,6 +1,6 @@
 # AI_STATE.md
 
-Last updated: 2026-07-18
+Last updated: 2026-07-22
 
 ## Brand
 Fitsek is a faceless desk-worker body recomposition brand: simple, practical, evidence-aware, direct, encouraging, and general wellness only.
@@ -38,7 +38,7 @@ Traffic → `fitsek.com` → free lead magnet → email/list → paid digital pr
 - `automation/meta_autopilot.py` prepares Meta social outbox with a copy-polish gate and can create FB Page drafts/scheduled posts once Meta grants `pages_manage_posts`.
 - `automation/social_copy.py` turns the raw calendar into public-facing social-manager copy and fails audits if internal labels such as `CTA:` leak into captions.
 - `automation/meta_ig_publisher.py` stores an approved IG schedule in ignored `var/meta_ig_schedule.json` and publishes due Instagram posts via Graph API from the recurring Hermes due-check cron.
-- `automation/verify_posts.py` checks FB/IG live publishing state and powers the silent verification cron.
+- `automation/verify_posts.py` checks FB/IG live publishing state and powers the silent verification cron. Its Instagram verification is a rolling-window health check, preventing historic published entries from false-alerting against a recent-media response.
 - `automation/meta_token_watch.py` validates/refreshes Meta tokens where Meta permits and alerts for manual re-auth; no tokens in git.
 - Cron jobs should be approval/report mode only; do not auto-post social content without explicit user approval.
 

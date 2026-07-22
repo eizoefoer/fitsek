@@ -135,7 +135,11 @@ def check_ig(token: str, ig_user_id: str, now: int, since: int, grace_seconds: i
     media_ids = {m.get("id") for m in media}
     for post in plan.get("posts", []):
         scheduled_ts = int(post.get("scheduled_publish_time_utc") or 0)
-        if not scheduled_ts or scheduled_ts + grace_seconds > now:
+        # This verifier is a rolling health check, not a historical audit.  The
+        # media endpoint is queried with ``since``; comparing its short window
+        # against every published schedule entry made all older posts look
+        # missing after the window elapsed.
+        if not scheduled_ts or scheduled_ts < since or scheduled_ts + grace_seconds > now:
             continue
         checked_due.append(post.get("title"))
         published_id = post.get("published_media_id")
