@@ -1,0 +1,58 @@
+{
+  "task_id": "t_61b0bbbc",
+  "project": "fitsek",
+  "objective": "Finish reopened Fitsek social presentation task: visual posts/reels plus Instagram profile avatar proof, while eBay scout refresh was already completed in earlier attempts.",
+  "current_status": "complete-pending-state-commit",
+  "completed_steps": [
+    "Confirmed prior eBay scout refresh and category fix were completed/merged in earlier attempts.",
+    "Confirmed prior Fitsek profile/reel assets and publishing were completed: PRs #4/#5 merged, Pages deploys passed, photographic/reel posts published.",
+    "Uploaded Instagram profile avatar from site/assets/brand/fitsek-instagram-avatar.png through the authenticated Instagram browser tab.",
+    "Verified Graph API profile_picture_url for @fitsek.wellness: CDN leaf 753320135_18072593642452281_4462474257250171609_n.jpg, profile SHA256 261a9af3bf6b9d719ab9ab46f2e5294f75451280622b8a690d3477ecaa9ac197, mean RGB diff 0.61 vs source resize.",
+    "Verified recent IG media includes current reel 17961703493964896, prior reel 17886647832607574, and prior photo 18088193189136622; no missing due posts."
+  ],
+  "current_step": "Commit/push state-only evidence update and finish kanban handoff.",
+  "next_actions": [
+    "Monitor existing social verification/token watchdogs; no manual avatar/profile update remains."
+  ],
+  "blockers": [],
+  "assumptions": [
+    "Instagram profile-photo updates remain unavailable via Graph API; browser UI upload was the safe path because the account was already authenticated."
+  ],
+  "decisions_made": [
+    "Used CDP DOM.setFileInputFiles on the existing Instagram tab instead of typing credentials or interacting with any 2FA/password prompt."
+  ],
+  "relevant_files": [
+    "site/assets/brand/fitsek-instagram-avatar.png",
+    "docs/operations/profile-refresh-assets.md",
+    "AI_STATE.md",
+    ".agents/project-memory.json",
+    ".agents/task-log.jsonl",
+    ".agents/job-ledger.jsonl"
+  ],
+  "relevant_commands": [
+    "python3 automation/meta_autopilot.py check",
+    "python3 automation/meta_autopilot.py permissions",
+    "python3 scripts/validate_site.py",
+    "python3 automation/social_copy.py audit --days 21",
+    "python3 automation/verify_posts.py --window-hours 120 --json"
+  ],
+  "branch_or_worktree": "main @ /home/ubuntu/fitsek",
+  "tests_last_run": [
+    "meta_check: passed",
+    "meta_permissions: ready",
+    "site_validation: passed",
+    "social_copy_audit: 21 checked / 0 issues",
+    "verify_posts_120h: errors=[] missing_due=[]",
+    "profile_image_compare: mean RGB diff 0.61"
+  ],
+  "last_known_good_commit": "6681278",
+  "artifacts": [
+    "/tmp/fitsek_ig_profile_picture_after.jpg"
+  ],
+  "risks": [
+    "Instagram CDN URLs expire/change; use the stored CDN leaf/hash/timestamp plus Graph API re-query for durable verification."
+  ],
+  "owner_worker": "Hermes Agent coder",
+  "last_updated": "2026-07-22T09:50:58Z",
+  "resume_instructions": "If reopened, first rerun Graph API profile_picture_url check for @fitsek.wellness and compare against site/assets/brand/fitsek-instagram-avatar.png; do not ask for credentials or alter posting cadence unless user explicitly approves."
+}
