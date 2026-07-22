@@ -33,7 +33,7 @@ GitHub Pages deploys `site/` after `scripts/validate_site.py` passes. Pull reque
 
 ## Meta automation
 
-Meta/Facebook/Instagram automation remains approval-first. See `docs/operations/meta-api-workflow.md` for the current Graph API path, required App Review permissions, token refresh commands, social-copy polish gate, Instagram due-post publisher, and verification watchdog.
+Meta/Facebook/Instagram automation remains approval-first. See `docs/operations/meta-api-workflow.md` for the current Graph API path, required App Review permissions, token refresh commands, social-copy polish gate, Instagram due-post publisher, and verification watchdog. The verification watchdog compares only posts scheduled inside its configured recent-media window; historic published posts are retained in the schedule for audit but are not reclassified as missing because the Graph media query is intentionally bounded.
 
 ### VM browser login bridge
 

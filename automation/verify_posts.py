@@ -135,7 +135,11 @@ def check_ig(token: str, ig_user_id: str, now: int, since: int, grace_seconds: i
     media_ids = {m.get("id") for m in media}
     for post in plan.get("posts", []):
         scheduled_ts = int(post.get("scheduled_publish_time_utc") or 0)
-        if not scheduled_ts or scheduled_ts + grace_seconds > now:
+        # ``/media?since=`` is intentionally a bounded verification window.
+        # Historic posts are no longer guaranteed to be returned by that API
+        # response, so comparing every historical schedule item to only recent
+        # media produces a false outage after the window has moved on.
+        if not scheduled_ts or scheduled_ts < since or scheduled_ts + grace_seconds > now:
             continue
         checked_due.append(post.get("title"))
         published_id = post.get("published_media_id")

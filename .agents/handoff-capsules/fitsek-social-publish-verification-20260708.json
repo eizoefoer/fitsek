@@ -11,17 +11,19 @@
   "completed_steps": [
     "Added social copy polish gate before Meta scheduling.",
     "Created 21 polished Facebook scheduled photo posts at 09:00/13:00/17:00 AEST.",
-    "Created recurring Instagram due publisher and social verification scripts."
+    "Created recurring Instagram due publisher and social verification scripts.",
+    "Corrected Instagram verification-window handling: only schedule entries inside the Graph media window are compared to recent media, while a recent missing due post remains a real failure."
   ],
-  "current_status": "active-monitoring",
-  "current_step": "Recurring verification cron checks due FB/IG posts and alerts on API failures or missing due posts.",
+  "current_status": "fix-ready-for-review",
+  "current_step": "Review the isolated verification-window branch; after approval, deploy the commit and observe one scheduled successful verification run.",
   "decisions_made": [
     "Use recurring due-check publisher for Instagram because durable IG draft scheduling is not available via Graph API."
   ],
-  "last_known_good_commit": "b225513",
-  "last_updated": "2026-07-08T15:39:37Z",
+  "last_known_good_commit": "b3e2b42",
+  "last_updated": "2026-07-22T03:20:00Z",
   "next_actions": [
-    "After the next publish window, run python3 automation/verify_posts.py and inspect cron output if any alert fires.",
+    "Run the unit tests and site validation, then submit the isolated branch for review without merging or deploying automatically.",
+    "After the approved change is deployed, observe the next social verification run; notify only for a genuine current-window gap or API failure.",
     "If copy or media is wrong publicly, pause publishing before regenerating/scheduling replacements."
   ],
   "objective": "Verify scheduled Facebook and Instagram posts publish with polished copy, attached media, and expected public visibility.",
@@ -29,7 +31,8 @@
   "project": "fitsek",
   "relevant_commands": [
     "python3 automation/social_copy.py audit --days 21",
-    "python3 automation/verify_posts.py"
+    "python3 automation/verify_posts.py",
+    "python3 -m unittest discover -s tests -p test_verify_posts.py -v"
   ],
   "relevant_files": [
     "automation/social_copy.py",
