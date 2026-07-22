@@ -9,6 +9,8 @@ Created for the reopened social-profile deliverable after a live Instagram audit
 - `site/assets/social/profile-reels/meal-prep.png` — faceless meal-prep photograph.
 - `site/assets/social/profile-reels/gym-progression.png` — faceless gym-progression photograph.
 - Matching `*-reel.mp4` files — eight-second 1080×1920 H.264 motion reels derived from the matching approved photographs.
+- `with-audio/*-reel-vo.mp4` — matching reels with short original FitSek voice-over audio. They use no third-party track and are ready for Graph API publishing. Instagram-native audio may also be selected when creating future reels in Meta Business Suite.
+- `site/assets/social/fitsek-facebook-cover.png` — branded 1640×624 Facebook cover artwork with FitSek logo, clear tagline, and a faceless desk-worker wellness scene.
 
 ## Publishing guard
 
