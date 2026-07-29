@@ -146,6 +146,8 @@ def check_ig(token: str, ig_user_id: str, now: int, since: int, grace_seconds: i
             missing_reason = "missing_published_media_id"
         elif scheduled_ts >= since and published_id not in media_ids:
             missing_reason = "published_media_id_not_in_recent_media"
+        elif post.get("comment") and not post.get("comment_id"):
+            missing_reason = "comment_not_posted" if not post.get("comment_error") else "comment_post_failed"
         if missing_reason:
             missing_due.append({
                 "day": post.get("day"),

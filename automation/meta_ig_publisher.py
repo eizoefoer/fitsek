@@ -20,6 +20,8 @@ import urllib.parse
 import urllib.request
 from pathlib import Path
 
+import social_copy
+
 ROOT = Path(__file__).resolve().parents[1]
 AUTOMATION_DIR = ROOT / "automation"
 ENV_PATH = Path.home() / ".hermes" / ".env"
@@ -152,14 +154,28 @@ def make_plan(days: int, overwrite: bool = False, posts_per_day: int = 3) -> dic
     }
     for item in posts:
         ts = int(item["suggested_scheduled_publish_time_utc"])
+        day = int(item["day"])
+        # Instagram does not render caption URLs as reliably as a bio/comment link.
+        # Keep a clean link-in-bio CTA in every caption and post a tracked direct
+        # link as the first comment after the media is live.
+        caption = str(item["instagram_caption"])
+        if "link in bio" not in caption.lower():
+            caption = f"{caption}\n\nMore desk-worker fitness tools: Link in bio: fitsek.com"
+        slug = social_copy.slugify(str(item.get("title") or f"fitsek-day-{day}"))
+        comment = (
+            "Start here → "
+            f"https://fitsek.com/?utm_source=instagram&utm_medium=comment&utm_campaign=day{day:02d}_{slug}"
+        )
         plan["posts"].append(
             {
-                "day": int(item["day"]),
+                "day": day,
                 "title": item.get("title"),
                 "asset_url": instagram_asset_url(item),
                 "source_asset_url": item["asset_url"],
                 "asset_path": item.get("asset_path"),
-                "caption": item["instagram_caption"],
+                "caption": caption,
+                "link_in_bio": "https://fitsek.com/",
+                "comment": comment,
                 "scheduled_publish_time_utc": ts,
                 "scheduled_publish_time_iso_utc": iso_utc(ts),
                 "scheduled_publish_time_aest": iso_aest(ts),
@@ -253,8 +269,29 @@ def publish_post(post: dict, ig_user_id: str, token: str, container_timeout: int
         raise RuntimeError(f"Meta did not return a published Instagram media id for day {post.get('day')}: {published}")
     post["published_media_id"] = media_id
     post["published_at"] = dt.datetime.now(dt.timezone.utc).isoformat()
+    comment_id = None
+    comment = str(post.get("comment") or "").strip()
+    if comment:
+        try:
+            posted_comment = graph("POST", f"{media_id}/comments", token, data={"message": comment})
+            comment_id = posted_comment.get("id")
+            if not comment_id:
+                raise RuntimeError(f"Meta did not return an Instagram comment id: {posted_comment}")
+            post["comment_id"] = comment_id
+            post["comment_posted_at"] = dt.datetime.now(dt.timezone.utc).isoformat()
+        except Exception as exc:
+            # The media itself is live. Preserve the retryable comment failure rather
+            # than marking the content unpublished or attempting a duplicate publish.
+            post["comment_error"] = str(exc)
+            post["comment_error_at"] = dt.datetime.now(dt.timezone.utc).isoformat()
     post["status"] = "published"
-    return {"day": post.get("day"), "title": post.get("title"), "container_id": container_id, "published_media_id": media_id}
+    return {
+        "day": post.get("day"),
+        "title": post.get("title"),
+        "container_id": container_id,
+        "published_media_id": media_id,
+        "comment_id": comment_id,
+    }
 
 
 def publish_due(confirm: bool, wait_seconds: int, container_timeout: int, verbose: bool = False) -> int:
