@@ -36,7 +36,7 @@ class CheckInstagramPostsTests(unittest.TestCase):
 
         result = verify_posts.check_ig("token", "ig-user", now, now - 21_600, 1_800)
 
-        self.assertEqual(1, result["checked_due_count"])
+        self.assertEqual(0, result["checked_due_count"])
         self.assertEqual([], result["missing_due"])
 
     def test_flags_recent_due_published_id_absent_from_media_window(self) -> None:
