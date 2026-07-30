@@ -132,7 +132,7 @@ def check_ig(token: str, ig_user_id: str, now: int, since: int, grace_seconds: i
     plan = load_json(IG_SCHEDULE_PATH, {"posts": []})
     missing_due = []
     checked_due = []
-    media_ids = {m.get("id") for m in media}
+    media_ids = {m.get("id") for m in media if m.get("id")}
     for post in plan.get("posts", []):
         scheduled_ts = int(post.get("scheduled_publish_time_utc") or 0)
         # ``/media?since=`` is intentionally a bounded verification window.
@@ -143,13 +143,23 @@ def check_ig(token: str, ig_user_id: str, now: int, since: int, grace_seconds: i
             continue
         checked_due.append(post.get("title"))
         published_id = post.get("published_media_id")
-        if post.get("status") != "published" or (published_id and published_id not in media_ids):
+        missing_reason = None
+        if post.get("status") != "published":
+            missing_reason = "not_marked_published"
+        elif not published_id:
+            missing_reason = "missing_published_media_id"
+        elif scheduled_ts >= since and published_id not in media_ids:
+            missing_reason = "published_media_id_not_in_recent_media"
+        elif post.get("comment") and not post.get("comment_id"):
+            missing_reason = "comment_not_posted" if not post.get("comment_error") else "comment_post_failed"
+        if missing_reason:
             missing_due.append({
                 "day": post.get("day"),
                 "title": post.get("title"),
                 "scheduled_aest": ts_to_aest(scheduled_ts),
                 "status": post.get("status"),
                 "published_media_id": published_id,
+                "reason": missing_reason,
             })
     return {
         "schedule_count": len(plan.get("posts", [])),

@@ -1,6 +1,6 @@
 # AI_STATE.md
 
-Last updated: 2026-07-18
+Last updated: 2026-07-22
 
 ## Brand
 Fitsek is a faceless desk-worker body recomposition brand: simple, practical, evidence-aware, direct, encouraging, and general wellness only.
@@ -23,7 +23,8 @@ Traffic → `fitsek.com` → free lead magnet → email/list → paid digital pr
 
 ## Brand/assets
 - 2026-07-10: Added Fitsek SVG logo/favicon/web manifest plus faceless photorealistic website/social images under `site/assets/photoreal/`, `site/assets/social/`, and derivative `site/assets/brand/` paths. Provenance lives in `docs/brand-image-provenance.md`, `docs/assets/photoreal-faceless-image-set-2026-07-10.md`, and `docs/assets/prompts/photoreal-faceless/`. These images are synthetic brand/lifestyle visuals and must not be represented as real customer proof, testimonials, before/after results, or medical evidence.
-- 2026-07-19: The live Instagram audit found the actual profile still had a default avatar and a text-only feed despite earlier website assets. The profile/reels refresh branch adds a dedicated high-legibility avatar, three faceless photographic social images, and three 1080×1920 eight-second H.264 reels under `site/assets/social/profile-reels/`. Repository assets are not proof of a live profile update; Meta profile/avatar and media publishing must be verified after the branch is deployed.
+- 2026-07-22: Added three original short voice-over reel variants under `site/assets/social/profile-reels/with-audio/` and a branded 1640×624 Facebook cover at `site/assets/social/fitsek-facebook-cover.png`. The published API reels before this update were silent; publish new voice-over variants after the GitHub Pages deploy and verify their media IDs/audio. Instagram-native licensed audio remains available when creating future reels in Business Suite.
+- 2026-07-22: Instagram profile avatar was updated through the authenticated Instagram browser tab using `site/assets/brand/fitsek-instagram-avatar.png`. Graph API now returns `profile_picture_url` for `@fitsek.wellness` (`17841443568404793`) with CDN leaf `753320135_18072593642452281_4462474257250171609_n.jpg`; downloaded avatar SHA256 `261a9af3bf6b9d719ab9ab46f2e5294f75451280622b8a690d3477ecaa9ac197` visually matches the source avatar SHA256 `55875c4b486daf555fd0f8d564bb1dccc718b8f551ccc2ea0f329e80243d18e0` after resize (mean RGB difference 0.61).
 
 ## Analytics / measurement
 - 2026-07-10: Cloudflare Web Analytics is installed on every public page. `site/app.js` also emits first-party `page_view`, `click`, `outbound_intent`, `section_view`, `scroll_depth`, and signup outcome events to `https://leads.fitsek.com/event`; heatmap-style reporting is aggregate-only via `automation/heatmap_report.py`, with no session recording enabled.
@@ -38,7 +39,7 @@ Traffic → `fitsek.com` → free lead magnet → email/list → paid digital pr
 - `automation/meta_autopilot.py` prepares Meta social outbox with a copy-polish gate and can create FB Page drafts/scheduled posts once Meta grants `pages_manage_posts`.
 - `automation/social_copy.py` turns the raw calendar into public-facing social-manager copy and fails audits if internal labels such as `CTA:` leak into captions.
 - `automation/meta_ig_publisher.py` stores an approved IG schedule in ignored `var/meta_ig_schedule.json` and publishes due Instagram posts via Graph API from the recurring Hermes due-check cron.
-- `automation/verify_posts.py` checks FB/IG live publishing state and powers the silent verification cron.
+- `automation/verify_posts.py` checks FB/IG live publishing state and powers the silent verification cron. Its Instagram verification treats the ignored schedule as the publish ledger: due posts require `status: published` plus `published_media_id`, while live `/media` ID membership is enforced only inside the rolling verification window.
 - `automation/meta_token_watch.py` validates/refreshes Meta tokens where Meta permits and alerts for manual re-auth; no tokens in git.
 - Cron jobs should be approval/report mode only; do not auto-post social content without explicit user approval.
 
