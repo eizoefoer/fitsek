@@ -136,3 +136,7 @@ SDLC rules: prefer vertical slices, small logical commits, descriptive commit me
 IaC rules: prefer scripts/config/IaC for VM, app, service, cron, tunnel, DNS and deployment changes. For VM/service changes, record commands, config files, validation and rollback steps. Never expose secrets; use env-var templates and secret references.
 
 Human collaboration rules: a human must be able to continue from the capsule, job ledger, branch/worktree, recent commits and validation results. Human changes are worker output too; record a `worker_type: human` job-ledger row before accepting them. Hermes must not overwrite human work without checking git status and conflicts.
+
+## Obsidian synthesis and retrieval
+
+Use `/home/ubuntu/vault/projects/managed/fitsek-1bece4fb.md` for concise cross-project storage and retrieval. Read it before meaningful work, then use this repository's `.agents/` files as authoritative task state. Update repository state first; update the vault only when it improves durable cross-project retrieval. Shared policy: `/home/ubuntu/vault/system/project-obsidian-memory.md`.

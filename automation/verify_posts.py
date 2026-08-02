@@ -131,6 +131,7 @@ def check_ig(token: str, ig_user_id: str, now: int, since: int, grace_seconds: i
     ).get("data", [])
     plan = load_json(IG_SCHEDULE_PATH, {"posts": []})
     missing_due = []
+    link_issues = []
     checked_due = []
     media_ids = {m.get("id") for m in media if m.get("id")}
     for post in plan.get("posts", []):
@@ -150,8 +151,6 @@ def check_ig(token: str, ig_user_id: str, now: int, since: int, grace_seconds: i
             missing_reason = "missing_published_media_id"
         elif scheduled_ts >= since and published_id not in media_ids:
             missing_reason = "published_media_id_not_in_recent_media"
-        elif post.get("comment") and not post.get("comment_id"):
-            missing_reason = "comment_not_posted" if not post.get("comment_error") else "comment_post_failed"
         if missing_reason:
             missing_due.append({
                 "day": post.get("day"),
@@ -161,11 +160,25 @@ def check_ig(token: str, ig_user_id: str, now: int, since: int, grace_seconds: i
                 "published_media_id": published_id,
                 "reason": missing_reason,
             })
+        elif post.get("comment") and not post.get("comment_id"):
+            # A comment is link enrichment, not proof that the underlying media
+            # failed to publish. Keep it visible in reports without making the
+            # high-frequency post-delivery watchdog fail forever when Meta denies
+            # optional instagram_manage_comments access.
+            link_issues.append({
+                "day": post.get("day"),
+                "title": post.get("title"),
+                "scheduled_aest": ts_to_aest(scheduled_ts),
+                "published_media_id": published_id,
+                "reason": "comment_not_posted" if not post.get("comment_error") else "comment_post_failed",
+                "error": post.get("comment_error"),
+            })
     return {
         "schedule_count": len(plan.get("posts", [])),
         "recent_count": len(media),
         "checked_due_count": len(checked_due),
         "missing_due": missing_due,
+        "link_issues": link_issues,
         "recent": [
             {"id": m.get("id"), "timestamp": m.get("timestamp"), "media_type": m.get("media_type"), "caption_preview": (m.get("caption") or "")[:120], "permalink": m.get("permalink")}
             for m in media[:10]
