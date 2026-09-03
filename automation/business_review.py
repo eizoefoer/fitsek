@@ -91,6 +91,8 @@ def build_report(period: str) -> str:
     by_post.sort(key=lambda x:x[0], reverse=True)
     url_checks=[(u,*check_url(u)) for u in URLS]
     product_clicks=sum(1 for e in events if 'product' in str(e.get('href','')) or e.get('label','').startswith('cta_product'))
+    checkout_starts=event_counts.get('checkout_start', 0)
+    completed_sales=event_counts.get('checkout_complete', 0)
     section_views=Counter(str(e.get('section','unknown')) for e in events if e.get('type') == 'section_view')
     scroll_depths=Counter(str(e.get('depth','unknown')) for e in events if e.get('type') == 'scroll_depth')
     signup_rate=(len(leads)/max(1,event_counts.get('page_view',0)))*100
@@ -99,6 +101,9 @@ def build_report(period: str) -> str:
     if event_counts.get('click',0) == 0 and event_counts.get('page_view',0) > 20: recommendations.append('Posts/landing may need stronger CTA bridge; clicks are low vs visits.')
     if event_counts.get('click',0) > 0 and len(leads) == 0: recommendations.append('Improve lead magnet promise/form placement; clicks exist but signups are absent.')
     if len(leads) > 0 and product_clicks == 0: recommendations.append('Strengthen paid product bridge in email/page copy.')
+    if product_clicks > 0 and checkout_starts == 0: recommendations.append('No checkout starts: make the purchase CTA, price, and Stripe link more prominent.')
+    if checkout_starts > 0 and completed_sales == 0: recommendations.append('Checkout starts without sales: review price, offer clarity, and Stripe checkout friction.')
+    if completed_sales > 0: recommendations.append('Completed sales recorded: ask buyers for compliant feedback and expand the winning acquisition channel.')
     if not recommendations: recommendations.append('Keep publishing; next improvement: A/B test hook style on the next 3 posts.')
     lines=[
         f'# Fitsek {period.title()} Business Review — {now}', '',
@@ -110,6 +115,8 @@ def build_report(period: str) -> str:
         f'- Email leads: {len(leads)}',
         f'- Signup conversion estimate: {signup_rate:.1f}%',
         f'- Product intent clicks/events: {product_clicks}',
+        f'- Checkout-start events: {checkout_starts}',
+        f'- Completed-sale events: {completed_sales}',
         f'- Section-view events: {sum(section_views.values())} ({dict(section_views.most_common(5))})',
         f'- Scroll-depth events: {sum(scroll_depths.values())} ({dict(scroll_depths.most_common(5))})',
         f'- Traffic sources seen: {dict(source_counts.most_common(8))}', '',

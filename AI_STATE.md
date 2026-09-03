@@ -19,7 +19,7 @@ Traffic → `fitsek.com` → free lead magnet → email/list → paid digital pr
 - Custom domain: `fitsek.com`; `www.fitsek.com` CNAME to GitHub Pages.
 - 2026-07-10: GitHub Pages custom domain HTTPS was re-triggered by clearing/re-adding `fitsek.com`; `https_enforced` is now `true`, `https://fitsek.com/` returns `200`, and `https://www.fitsek.com/` redirects to the apex.
 - Lead/event API: `server/lead_api.py`, systemd service `fitsek-leads.service`, proxied by Caddy as `leads.fitsek.com`.
-- No payment checkout is connected yet. Use no-monthly-fee option when user sets account: Stripe Payment Link, Gumroad, Payhip, Lemon Squeezy, or Ko-fi.
+- No payment checkout is connected yet. Stripe Payment Link is the selected no-monthly-fee checkout; the public `buy.stripe.com` URL must be supplied before the checkout CTA can be activated.
 
 ## Brand/assets
 - 2026-07-10: Added Fitsek SVG logo/favicon/web manifest plus faceless photorealistic website/social images under `site/assets/photoreal/`, `site/assets/social/`, and derivative `site/assets/brand/` paths. Provenance lives in `docs/brand-image-provenance.md`, `docs/assets/photoreal-faceless-image-set-2026-07-10.md`, and `docs/assets/prompts/photoreal-faceless/`. These images are synthetic brand/lifestyle visuals and must not be represented as real customer proof, testimonials, before/after results, or medical evidence.

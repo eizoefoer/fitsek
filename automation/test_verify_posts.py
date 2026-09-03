@@ -81,6 +81,24 @@ class CheckInstagramPostsTests(unittest.TestCase):
             ["not_marked_published", "missing_published_media_id"],
             [item["reason"] for item in result["missing_due"]],
         )
+    def test_due_post_with_optional_comment_failure_still_verifies_as_published(self) -> None:
+        now = 10_000
+        self.schedule_path.write_text(json.dumps({"posts": [{
+            "day": 5,
+            "title": "Published with bio-link fallback",
+            "scheduled_publish_time_utc": now - 3_600,
+            "status": "published",
+            "published_media_id": "published-media",
+            "comment": "https://fitsek.com/?utm_source=instagram",
+            "comment_error": "Meta permission missing",
+        }]}))
+        verify_posts.graph_get = lambda *_args, **_kwargs: {"data": [{"id": "published-media"}]}
+
+        result = verify_posts.check_ig("token", "ig-user", now, now - 21_600, 1_800)
+
+        self.assertEqual([], result["missing_due"])
+        self.assertEqual(1, len(result["link_issues"]))
+        self.assertEqual("comment_post_failed", result["link_issues"][0]["reason"])
 
 
 if __name__ == "__main__":
