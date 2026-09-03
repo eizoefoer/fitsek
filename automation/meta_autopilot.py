@@ -266,6 +266,9 @@ def fb_create(mode, days, confirm=False, posts_per_day=1):
     for item in posts:
         data={'url':item['asset_url'],'caption':item['facebook_caption'],'published':'false'}
         if mode=='scheduled':
+            # Meta's Page Photos edge requires this explicit state alongside the
+            # Unix timestamp; omitting it returns '(#100) scheduled publish time was invalid'.
+            data['unpublished_content_type']='SCHEDULED'
             data['scheduled_publish_time']=str(item['suggested_scheduled_publish_time_utc'])
         res=graph('POST',f'{page["id"]}/photos',page_access,data=data)
         created.append({'day':item['day'],'title':item.get('title'),'id':res.get('id') or res.get('post_id'),'mode':mode,'scheduled_publish_time_utc':item.get('suggested_scheduled_publish_time_utc'),'scheduled_publish_time_aest':item.get('suggested_scheduled_publish_time_aest'),'asset_url':item['asset_url']})
