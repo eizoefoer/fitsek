@@ -17,7 +17,10 @@ sys.path.insert(0, str(ROOT / 'automation'))
 import meta_autopilot as meta  # noqa: E402
 
 STATE = ROOT / 'var/meta_token_watch.json'
-GRAPH = 'https://graph.facebook.com/v19.0'
+
+
+def graph_url(path: str) -> str:
+    return f'https://graph.facebook.com/{meta.graph_version()}/{path.lstrip("/")}'
 
 
 def app_access_token() -> str:
@@ -29,7 +32,7 @@ def app_access_token() -> str:
 
 def debug_token(token: str) -> dict:
     params = urllib.parse.urlencode({'input_token': token, 'access_token': app_access_token()})
-    req = urllib.request.Request(f'{GRAPH}/debug_token?{params}')
+    req = urllib.request.Request(f'{graph_url("debug_token")}?{params}')
     try:
         with urllib.request.urlopen(req, timeout=45) as r:
             return json.loads(r.read().decode() or '{}').get('data', {})

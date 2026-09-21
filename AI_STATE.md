@@ -1,6 +1,6 @@
 # AI_STATE.md
 
-Last updated: 2026-07-22
+Last updated: 2026-09-21
 
 ## Brand
 Fitsek is a faceless desk-worker body recomposition brand: simple, practical, evidence-aware, direct, encouraging, and general wellness only.
@@ -29,6 +29,7 @@ Traffic → `fitsek.com` → free lead magnet → email/list → paid digital pr
 ## Analytics / measurement
 - 2026-07-10: Cloudflare Web Analytics is installed on every public page. `site/app.js` also emits first-party `page_view`, `click`, `outbound_intent`, `section_view`, `scroll_depth`, and signup outcome events to `https://leads.fitsek.com/event`; heatmap-style reporting is aggregate-only via `automation/heatmap_report.py`, with no session recording enabled.
 - 2026-07-18: Site refresh PR #3 merged to `main`; GitHub Actions run `29652456060` passed validate+deploy, live `https://fitsek.com/` served the new photoreal hero/assets and Cloudflare beacon, and `https://leads.fitsek.com/event` accepted curl/browser live-check events with HTTP 202.
+- 2026-09-21: First-party event capture persists section and scroll-depth metadata; daily/weekly/monthly business reviews use 24-hour/7-day/30-day timestamped windows so historical events are not reported as current funnel performance.
 
 ## Agent/CI state
 - 2026-07-09: Agent harness policies include SDLC/IaC/CI/human-collaboration rules in `system/sdlc-iac-ci.md`; meaningful repo work should use feature/fix/agent branches or worktrees, existing CI first, IaC/rollback records for infra changes, and human worker job-ledger rows for accepted human changes.
@@ -41,6 +42,7 @@ Traffic → `fitsek.com` → free lead magnet → email/list → paid digital pr
 - `automation/meta_ig_publisher.py` stores an approved IG schedule in ignored `var/meta_ig_schedule.json` and publishes due Instagram posts via Graph API from the recurring Hermes due-check cron.
 - `automation/verify_posts.py` checks FB/IG live publishing state and powers the silent verification cron. Its Instagram verification treats the ignored schedule as the publish ledger: due posts require `status: published` plus `published_media_id`, while live `/media` ID membership is enforced only inside the rolling verification window.
 - `automation/meta_token_watch.py` validates/refreshes Meta tokens where Meta permits and alerts for manual re-auth; no tokens in git.
+- 2026-09-21: Meta token-watch debug calls use the configured active Graph API version. Live `meta_autopilot.py check` confirmed the FitSek Page and linked Instagram account with all required Facebook/Instagram publishing permissions; no posting or scheduling mutation was made.
 - Cron jobs should be approval/report mode only; do not auto-post social content without explicit user approval.
 
 ## Meta state

@@ -53,7 +53,7 @@ python3 automation/verify_posts.py --json --window-hours 6     # check live/sche
 
 ## Token/watchdog note
 
-Meta does not provide a standard OAuth refresh token for this flow. `automation/meta_token_watch.py` keeps the saved long-lived user/page tokens validated, attempts allowed token exchange when Meta permits it, and alerts before/manual re-auth is required. Hermes cron job `Fitsek Meta Token Watch` runs this daily and stays silent while healthy.
+Meta does not provide a standard OAuth refresh token for this flow. `automation/meta_token_watch.py` keeps the saved long-lived user/page tokens validated, attempts allowed token exchange when Meta permits it, and alerts before/manual re-auth is required. Its token-debug request follows `META_GRAPH_VERSION` (defaulting to the same current Graph API version as the publisher) rather than a stale hard-coded version. Hermes cron job `Fitsek Meta Token Watch` runs this daily and stays silent while healthy.
 
 ## Current verified state (2026-07-08)
 

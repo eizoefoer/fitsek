@@ -1,0 +1,52 @@
+{
+  "artifacts": [],
+  "assumptions": [],
+  "blockers": [],
+  "branch_or_worktree": "fix/fitsek/analytics-meta-auth-t_e5729901 @ /home/ubuntu/worktrees/fitsek-analytics-meta-auth-t_e5729901",
+  "completed_steps": [
+    "TDD RED tests failed for section/depth persistence, daily-window filtering, and v25 token-debug routing; minimal implementations made all pass.",
+    "Validated the complete Python regression suite, site validation, social copy audit, py_compile, safe Meta authorization checks, current business review, state validation, priority validation, diff check, and secret scan."
+  ],
+  "current_status": "validation_complete_pending_ci",
+  "current_step": "Commit the reviewed diff, push a focused PR, and verify GitHub Actions before merging.",
+  "decisions_made": [
+    "Do not schedule or publish Meta content: live authorization is valid, while Facebook scheduled-photo creation remains an upstream API/Business Suite fallback issue requiring explicit scheduling approval."
+  ],
+  "last_known_good_commit": "4fdd85ac516a6ab3a8cbcecf8d2b802290d2c0c8",
+  "last_updated": "2026-09-21T09:18:44Z",
+  "next_actions": [
+    "Implement minimal fixes after the regression tests fail, then run deterministic and live read-only checks.",
+    "Open PR and wait for regression-test plus static-site CI."
+  ],
+  "objective": "Restore trustworthy first-party analytics fields and reporting windows, and keep Meta token authorization checks on the configured supported Graph API version.",
+  "owner_worker": "hermes-agent/coder",
+  "project": "fitsek",
+  "relevant_commands": [
+    "git diff --check",
+    "project_agent_state.py validate --strict",
+    "project_agent_priority.py validate --strict"
+  ],
+  "relevant_files": [
+    "server/lead_api.py",
+    "automation/business_review.py",
+    "automation/meta_token_watch.py",
+    ".github/workflows/pages.yml",
+    "server/test_lead_api.py",
+    "automation/test_business_review.py",
+    "automation/test_meta_token_watch.py"
+  ],
+  "resume_instructions": "Continue only in the isolated worktree. Preserve the dirty /home/ubuntu/fitsek changes; do not call Meta publishing endpoints without approval.",
+  "risks": [
+    "Production lead API must be independently deployed after a merged source change; its runtime source is /home/ubuntu/fitsek, which currently contains unrelated uncommitted user changes."
+  ],
+  "task_id": "t_e5729901",
+  "tests_last_run": [
+    "PYTHONPATH=. python3 server/test_lead_api.py: passed",
+    "PYTHONPATH=. python3 automation/test_business_review.py: passed",
+    "PYTHONPATH=. python3 automation/test_meta_token_watch.py: passed",
+    "Full six-file Python regression suite: passed (11 tests)",
+    "scripts/validate_site.py: site validation ok",
+    "social_copy.py audit --days 21: 21 checked, 0 issues",
+    "Live/read-only: Fitsek pages + lead API health 200; Meta check has no missing required permissions; token watch and social verifier silent exit 0"
+  ]
+}
