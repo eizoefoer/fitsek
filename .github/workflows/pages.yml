@@ -21,6 +21,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Run Python regression tests
+        run: |
+          PYTHONPATH=. python3 server/test_lead_api.py
+          PYTHONPATH=. python3 automation/test_business_review.py
+          PYTHONPATH=. python3 automation/test_meta_token_watch.py
+          PYTHONPATH=. python3 automation/test_meta_autopilot.py
+          PYTHONPATH=. python3 automation/test_verify_posts.py
+          PYTHONPATH=. python3 automation/test_first_sale_funnel.py
       - uses: actions/configure-pages@v5
       - run: python3 scripts/validate_site.py
       - uses: actions/upload-pages-artifact@v3

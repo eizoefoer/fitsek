@@ -1,6 +1,6 @@
 # Fitsek analytics and heatmap operating plan
 
-Last updated: 2026-07-10
+Last updated: 2026-09-21
 
 ## Current measurement stack
 
@@ -22,6 +22,12 @@ Last updated: 2026-07-10
 - `signup_success` / `signup_error`
 
 This gives enough signal to answer: where do visitors drop, which sections get seen, and which CTAs get clicked.
+
+The event API persists the `section` and `depth` fields for `section_view` and
+`scroll_depth` events. Business reviews use timestamped rolling windows: 24
+hours for daily, 7 days for weekly, and 30 days for monthly reports. Records
+without a usable event timestamp are excluded rather than presented as current
+traffic.
 
 ## Heatmap stance
 

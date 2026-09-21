@@ -2,7 +2,7 @@
 from __future__ import annotations
 import argparse, csv, json, os, urllib.parse, urllib.request, urllib.error
 from collections import Counter, defaultdict
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -10,6 +10,7 @@ DATA_DIR = Path(os.environ.get('FITSEK_DATA_DIR', '/var/lib/fitsek'))
 REPORT_DIR = ROOT / 'analytics' / 'reports'
 
 URLS = ['https://fitsek.com/', 'https://fitsek.com/product.html', 'https://fitsek.com/lead-magnet.html', 'https://leads.fitsek.com/healthz']
+WINDOWS = {'daily': timedelta(days=1), 'weekly': timedelta(days=7), 'monthly': timedelta(days=30)}
 
 def read_jsonl(path: Path):
     if not path.exists(): return []
@@ -76,10 +77,27 @@ def num(v):
     try: return float(v or 0)
     except Exception: return 0.0
 
+
+def received_at(record: dict) -> datetime | None:
+    raw = str(record.get('received_at') or record.get('ts') or '').strip()
+    if not raw:
+        return None
+    try:
+        parsed = datetime.fromisoformat(raw.replace('Z', '+00:00'))
+    except ValueError:
+        return None
+    return parsed.replace(tzinfo=timezone.utc) if parsed.tzinfo is None else parsed.astimezone(timezone.utc)
+
+
+def in_reporting_window(records: list[dict], start: datetime) -> list[dict]:
+    return [record for record in records if (timestamp := received_at(record)) is not None and timestamp >= start]
+
 def build_report(period: str) -> str:
-    now=datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC')
-    events=read_jsonl(DATA_DIR/'events.jsonl')
-    leads=read_jsonl(DATA_DIR/'leads.jsonl')
+    now_dt = datetime.now(timezone.utc)
+    window_start = now_dt - WINDOWS[period]
+    now = now_dt.strftime('%Y-%m-%d %H:%M UTC')
+    events=in_reporting_window(read_jsonl(DATA_DIR/'events.jsonl'), window_start)
+    leads=in_reporting_window(read_jsonl(DATA_DIR/'leads.jsonl'), window_start)
     event_counts=Counter(e.get('type','unknown') for e in events)
     source_counts=Counter((e.get('utm') or {}).get('utm_source','direct/unknown') for e in events)
     post_count, approved=social_queue()
@@ -109,6 +127,8 @@ def build_report(period: str) -> str:
         f'# Fitsek {period.title()} Business Review — {now}', '',
         '## Health checks',
         *[f'- {u}: {"OK" if ok else "FAIL"} ({detail})' for u,ok,detail in url_checks], '',
+        '## Reporting window',
+        f'- {window_start.strftime("%Y-%m-%d %H:%M UTC")} to {now}', '',
         '## Funnel metrics',
         f'- Website/page events: {event_counts.get("page_view",0)}',
         f'- CTA/click events: {event_counts.get("click",0)}',

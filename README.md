@@ -23,6 +23,9 @@ python3 scripts/validate_site.py
 python3 automation/social_copy.py audit --days 21
 python3 automation/business_review.py --period daily --write
 python3 automation/heatmap_report.py --write
+PYTHONPATH=. python3 server/test_lead_api.py
+PYTHONPATH=. python3 automation/test_business_review.py
+PYTHONPATH=. python3 automation/test_meta_token_watch.py
 ~/.hermes/scripts/project_agent_sdlc.py detect --repo . --format text
 python3 -m http.server 8080 -d site
 ```

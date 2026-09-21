@@ -88,7 +88,15 @@ class Handler(BaseHTTPRequestHandler):
         if self.path == '/event':
             event_type = str(data.get('type', 'event'))[:80]
             label = str(data.get('label', ''))[:160]
-            self._append('events.jsonl', {**base, 'type': event_type, 'label': label, 'href': str(data.get('href',''))[:500]})
+            event = {
+                **base,
+                'type': event_type,
+                'label': label,
+                'href': str(data.get('href', ''))[:500],
+                'section': str(data.get('section', ''))[:160],
+                'depth': data.get('depth'),
+            }
+            self._append('events.jsonl', event)
             self._headers(202); self.wfile.write(b'{"ok":true}'); return
         email = str(data.get('email', '')).strip().lower()
         if data.get('company'):
