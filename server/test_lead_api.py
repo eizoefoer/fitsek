@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import os
 import sys
 import tempfile
 import threading
@@ -11,6 +12,10 @@ import urllib.request
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+# Avoid importing the production service with its privileged /var/lib default in
+# an unprivileged CI runner. The test swaps DATA_DIR to its own temp directory
+# before issuing requests.
+os.environ.setdefault("FITSEK_DATA_DIR", str(ROOT / "var" / "test-lead-api-import"))
 sys.path.insert(0, str(ROOT / "server"))
 import lead_api
 
