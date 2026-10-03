@@ -22,6 +22,10 @@ AEST = dt.timezone(dt.timedelta(hours=10), name="AEST")
 DEFAULT_SLOTS = [(9, 0), (13, 0), (17, 0)]
 DISCLAIMER = "General fitness education only. Results vary."
 HASHTAGS = "#deskworkerfitness #bodyrecomposition #fatlossbasics #walkingpad #highprotein #fitsek"
+# These first-party routes preserve source attribution without relying on a third-party
+# link shortener or an Instagram comment that the current Meta permission set cannot post.
+INSTAGRAM_BIO_URL = "https://fitsek.com/go"
+FACEBOOK_SOCIAL_URL = "https://fitsek.com/go/fb"
 
 BODY_COPY: dict[str, str] = {
     "Desk Worker Recomp Mistake": """Your week has meetings, commutes, late meals and low-energy days. The plan has to fit that, not fight it.
@@ -146,7 +150,7 @@ CTA_COPY: dict[str, str] = {
     "join": "Join the Fitsek list:",
     "waitlist": "Join the 12-week system waitlist:",
     "save": "Save this for your next check-in.",
-    "comment": "Want the starter reset? Comment RESET.",
+    "comment": "The starter reset is ready when you are:",
     "share": "Share this with a desk worker who needs a simpler plan.",
 }
 
@@ -156,6 +160,8 @@ BAD_PUBLIC_PATTERNS = [
     re.compile(r"honest tracking\s*—\s*not perfection", re.I),
     re.compile(r"I would not", re.I),
     re.compile(r"\(Posted at \d{2}:\d{2} AEST\)", re.I),
+    re.compile(r"tinyurl\.com", re.I),
+    re.compile(r"comment\s+reset", re.I),
 ]
 
 
@@ -176,10 +182,13 @@ def slugify(value: str) -> str:
 
 
 def destination_url(row: dict[str, str], platform: str) -> str:
-    day = int(row.get("day") or 0)
-    slug = slugify(title_key(row))
-    source = "instagram" if platform.lower().startswith("inst") else "facebook"
-    return f"https://fitsek.com/?utm_source={source}&utm_medium=social&utm_campaign=day{day:02d}_{slug}"
+    """Return the public, attributed destination appropriate to each platform.
+
+    Instagram captions deliberately use the real bio route because caption links are
+    not reliably clickable. Facebook gets the equivalent first-party short route,
+    which adds its source UTM marker before sending the visitor to the funnel.
+    """
+    return INSTAGRAM_BIO_URL if platform.lower().startswith("inst") else FACEBOOK_SOCIAL_URL
 
 
 def cta_key(raw: str) -> str:
@@ -203,13 +212,10 @@ def cta_text(row: dict[str, str], platform: str) -> str:
     key = cta_key(row.get("cta", ""))
     line = CTA_COPY[key]
     if platform.lower().startswith("inst"):
-        if key in {"download", "join", "waitlist"}:
-            return f"{line}\nLink in bio: fitsek.com"
-        return line
-    if key in {"download", "join", "waitlist"}:
-        return f"{line}\n{destination_url(row, platform)}"
-    # For social actions, still leave a clean path for high-intent readers.
-    return f"{line}\nfitsek.com"
+        # Keep every Instagram post aligned to a bio destination. Never promise a
+        # comment reply because current permissions cannot safely automate it.
+        return f"{line}\nLink in bio: fitsek.com/go"
+    return f"{line}\n{destination_url(row, platform)}"
 
 
 def visual_hook(row: dict[str, str]) -> str:
