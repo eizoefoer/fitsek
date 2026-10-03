@@ -36,7 +36,7 @@ GitHub Pages deploys `site/` after `scripts/validate_site.py` passes. Pull reque
 
 ## Meta automation
 
-Meta/Facebook/Instagram automation remains approval-first. See `docs/operations/meta-api-workflow.md` for the current Graph API path, required App Review permissions, token refresh commands, social-copy polish gate, Instagram due-post publisher, and verification watchdog. The verification watchdog compares only posts scheduled inside its configured recent-media window; historic published posts are retained in the schedule for audit but are not reclassified as missing because the Graph media query is intentionally bounded.
+Meta/Facebook/Instagram automation remains approval-first. See `docs/operations/meta-api-workflow.md` for the current Graph API path, required App Review permissions, token refresh commands, social-copy polish gate, Instagram due-post publisher, and verification watchdog. The verification watchdog compares only posts scheduled inside its configured recent-media window; historic published posts are retained in the schedule for audit but are not reclassified as missing because the Graph media query is intentionally bounded. The mixed-format ledger is automatically replenished before its future feed horizon runs low; it contains feed images, Reels, and explicit Story companions. Meta's Content Publishing API does not support Story publishing, so Stories remain visible Business Suite actions rather than falsely reported as API-published.
 
 ### VM browser login bridge
 

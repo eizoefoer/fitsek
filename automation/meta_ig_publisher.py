@@ -155,27 +155,24 @@ def make_plan(days: int, overwrite: bool = False, posts_per_day: int = 3) -> dic
     for item in posts:
         ts = int(item["suggested_scheduled_publish_time_utc"])
         day = int(item["day"])
-        # Instagram does not render caption URLs as reliably as a bio/comment link.
-        # Keep a clean link-in-bio CTA in every caption and post a tracked direct
-        # link as the first comment after the media is live.
+        # Caption URLs are not reliably clickable on Instagram. Keep every post
+        # aligned to the real first-party bio route and do not promise a comment
+        # reply: current Meta permissions do not grant safe comment publishing.
         caption = str(item["instagram_caption"])
-        if "link in bio" not in caption.lower():
-            caption = f"{caption}\n\nMore desk-worker fitness tools: Link in bio: fitsek.com"
-        slug = social_copy.slugify(str(item.get("title") or f"fitsek-day-{day}"))
-        comment = (
-            "Start here → "
-            f"https://fitsek.com/?utm_source=instagram&utm_medium=comment&utm_campaign=day{day:02d}_{slug}"
-        )
+        if "fitsek.com/go" not in caption.lower():
+            caption = f"{caption}\n\nLink in bio: fitsek.com/go"
         plan["posts"].append(
             {
                 "day": day,
                 "title": item.get("title"),
+                "format": "feed_image",
+                "media_type": "IMAGE",
+                "publication_mode": "instagram_graph_api",
                 "asset_url": instagram_asset_url(item),
                 "source_asset_url": item["asset_url"],
                 "asset_path": item.get("asset_path"),
                 "caption": caption,
-                "link_in_bio": "https://fitsek.com/",
-                "comment": comment,
+                "link_in_bio": social_copy.INSTAGRAM_BIO_URL,
                 "scheduled_publish_time_utc": ts,
                 "scheduled_publish_time_iso_utc": iso_utc(ts),
                 "scheduled_publish_time_aest": iso_aest(ts),
@@ -184,6 +181,73 @@ def make_plan(days: int, overwrite: bool = False, posts_per_day: int = 3) -> dic
         )
     write_json(SCHEDULE_PATH, plan)
     return plan
+
+
+def make_mixed_plan(days: int, start_date: str | None = None, asset_base_url: str | None = None, overwrite: bool = False) -> dict:
+    """Write the deliberate image/Reel/Story plan consumed by the publishing cron."""
+    load_env()
+    if SCHEDULE_PATH.exists() and not overwrite:
+        return json.loads(SCHEDULE_PATH.read_text())
+    import mixed_social_plan
+
+    start = dt.date.fromisoformat(start_date) if start_date else dt.datetime.now(AEST).date() + dt.timedelta(days=1)
+    plan = mixed_social_plan.build_plan(days, start, asset_base_url or mixed_social_plan.DEFAULT_ASSET_BASE)
+    plan.update(
+        {
+            "ig_user_id": discover_ig_user_id(),
+            "graph_version": graph_version(),
+            "schedule_path": str(SCHEDULE_PATH),
+            "copy_polished": True,
+            "note": "IG image/Reel rows publish at their scheduled time. Story rows are Business Suite work because the Instagram Content Publishing API does not support Stories.",
+        }
+    )
+    write_json(SCHEDULE_PATH, plan)
+    return plan
+
+
+def scheduled_date(post: dict) -> dt.date | None:
+    raw = str(post.get("scheduled_publish_time_aest") or "")
+    try:
+        return dt.datetime.fromisoformat(raw).date()
+    except ValueError:
+        return None
+
+
+def replenish_mixed_plan(days: int = 14, minimum_future_days: int = 7) -> tuple[dict, bool]:
+    """Extend the live mixed-format ledger before its feed horizon expires.
+
+    Existing rows are preserved so published media IDs and manually scheduled
+    Story work stay auditable. Only future capacity is appended.
+    """
+    load_env()
+    today = dt.datetime.now(AEST).date()
+    if not SCHEDULE_PATH.exists():
+        return make_mixed_plan(days=days, start_date=today.isoformat(), overwrite=True), True
+    plan = json.loads(SCHEDULE_PATH.read_text())
+    if plan.get("mode") != "mixed_format_funnel_v1":
+        raise RuntimeError("Refusing to replace a non-mixed live schedule; use plan-mixed --overwrite explicitly.")
+    pending_feed_dates = [
+        date
+        for post in plan.get("posts", [])
+        if post.get("status") == "scheduled"
+        and post.get("publication_mode", "instagram_graph_api") == "instagram_graph_api"
+        and (date := scheduled_date(post)) is not None
+        and date >= today
+    ]
+    latest_feed_date = max(pending_feed_dates, default=today - dt.timedelta(days=1))
+    future_days = max(0, (latest_feed_date - today).days + 1)
+    if future_days > minimum_future_days:
+        return plan, False
+    import mixed_social_plan
+    existing_dates = [date for post in plan.get("posts", []) if (date := scheduled_date(post)) is not None]
+    start = max(existing_dates, default=today - dt.timedelta(days=1)) + dt.timedelta(days=1)
+    extension = mixed_social_plan.build_plan(days, start)
+    plan["posts"].extend(extension["posts"])
+    plan["calendar_days"] = len(plan["posts"])
+    plan["replenished_at"] = dt.datetime.now(dt.timezone.utc).isoformat()
+    plan["replenishment"] = {"days_added": days, "minimum_future_days": minimum_future_days, "future_feed_days_before": future_days, "extension_start_aest": start.isoformat()}
+    save_plan(plan)
+    return plan, True
 
 
 def load_plan() -> dict:
@@ -201,18 +265,29 @@ def save_plan(plan: dict) -> None:
 def summarize(plan: dict) -> dict:
     posts = plan.get("posts", [])
     counts: dict[str, int] = {}
+    formats: dict[str, int] = {}
+    modes: dict[str, int] = {}
     for post in posts:
-        counts[post.get("status", "unknown")] = counts.get(post.get("status", "unknown"), 0) + 1
+        status = str(post.get("status", "unknown"))
+        counts[status] = counts.get(status, 0) + 1
+        format_name = str(post.get("format", post.get("media_type", "unknown")).lower())
+        formats[format_name] = formats.get(format_name, 0) + 1
+        mode = str(post.get("publication_mode", "instagram_graph_api"))
+        modes[mode] = modes.get(mode, 0) + 1
     return {
         "mode": plan.get("mode"),
         "ig_user_id": plan.get("ig_user_id"),
         "schedule_path": str(SCHEDULE_PATH),
         "count": len(posts),
         "counts": counts,
+        "formats": formats,
+        "publication_modes": modes,
         "posts": [
             {
                 "day": p.get("day"),
                 "title": p.get("title"),
+                "format": p.get("format", p.get("media_type", "IMAGE").lower()),
+                "publication_mode": p.get("publication_mode", "instagram_graph_api"),
                 "scheduled_publish_time_aest": p.get("scheduled_publish_time_aest"),
                 "status": p.get("status"),
                 "published_media_id": p.get("published_media_id"),
@@ -269,28 +344,13 @@ def publish_post(post: dict, ig_user_id: str, token: str, container_timeout: int
         raise RuntimeError(f"Meta did not return a published Instagram media id for day {post.get('day')}: {published}")
     post["published_media_id"] = media_id
     post["published_at"] = dt.datetime.now(dt.timezone.utc).isoformat()
-    comment_id = None
-    comment = str(post.get("comment") or "").strip()
-    if comment:
-        try:
-            posted_comment = graph("POST", f"{media_id}/comments", token, data={"message": comment})
-            comment_id = posted_comment.get("id")
-            if not comment_id:
-                raise RuntimeError(f"Meta did not return an Instagram comment id: {posted_comment}")
-            post["comment_id"] = comment_id
-            post["comment_posted_at"] = dt.datetime.now(dt.timezone.utc).isoformat()
-        except Exception as exc:
-            # The media itself is live. Preserve the retryable comment failure rather
-            # than marking the content unpublished or attempting a duplicate publish.
-            post["comment_error"] = str(exc)
-            post["comment_error_at"] = dt.datetime.now(dt.timezone.utc).isoformat()
     post["status"] = "published"
     return {
         "day": post.get("day"),
         "title": post.get("title"),
+        "format": post.get("format", media_type.lower()),
         "container_id": container_id,
         "published_media_id": media_id,
-        "comment_id": comment_id,
     }
 
 
@@ -299,7 +359,13 @@ def publish_due(confirm: bool, wait_seconds: int, container_timeout: int, verbos
     ig_user_id = str(plan.get("ig_user_id") or discover_ig_user_id())
     token = publish_token()
     now = int(time.time())
-    pending = [p for p in plan.get("posts", []) if p.get("status") != "published"]
+    # Stories deliberately never enter the Graph API queue: Meta's documented
+    # Content Publishing API does not support them. They remain visible to the
+    # verifier as manual Business Suite work instead of becoming false failures.
+    pending = [
+        p for p in plan.get("posts", [])
+        if p.get("status") == "scheduled" and p.get("publication_mode", "instagram_graph_api") == "instagram_graph_api"
+    ]
     due = [p for p in pending if int(p["scheduled_publish_time_utc"]) <= now]
     if not due and wait_seconds > 0:
         future = sorted(pending, key=lambda p: int(p["scheduled_publish_time_utc"]))
@@ -341,6 +407,14 @@ def main() -> int:
     p.add_argument("--days", type=int, default=7, help="Calendar days to schedule")
     p.add_argument("--posts-per-day", type=int, default=3)
     p.add_argument("--overwrite", action="store_true")
+    p = sub.add_parser("plan-mixed", help="write one daily feed/Reel plus a Story companion")
+    p.add_argument("--days", type=int, default=14)
+    p.add_argument("--start-date", help="YYYY-MM-DD in AEST; defaults to tomorrow")
+    p.add_argument("--asset-base-url", help="public base URL for Meta-fetchable media")
+    p.add_argument("--overwrite", action="store_true")
+    p = sub.add_parser("replenish-mixed", help="extend a mixed ledger when its future feed horizon is low")
+    p.add_argument("--days", type=int, default=14)
+    p.add_argument("--minimum-future-days", type=int, default=7)
     sub.add_parser("status")
     p = sub.add_parser("publish-due")
     p.add_argument("--confirm", action="store_true")
@@ -350,6 +424,15 @@ def main() -> int:
     args = parser.parse_args()
     if args.cmd == "plan":
         print(json.dumps(summarize(make_plan(args.days, overwrite=args.overwrite, posts_per_day=args.posts_per_day)), indent=2))
+        return 0
+    if args.cmd == "plan-mixed":
+        print(json.dumps(summarize(make_mixed_plan(args.days, args.start_date, args.asset_base_url, args.overwrite)), indent=2))
+        return 0
+    if args.cmd == "replenish-mixed":
+        plan, changed = replenish_mixed_plan(args.days, args.minimum_future_days)
+        result = summarize(plan)
+        result["replenished"] = changed
+        print(json.dumps(result, indent=2))
         return 0
     if args.cmd == "status":
         print(json.dumps(summarize(load_plan()), indent=2))
