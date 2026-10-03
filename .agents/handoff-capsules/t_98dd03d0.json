@@ -1,0 +1,56 @@
+{
+  "task_id": "t_98dd03d0",
+  "project": "fitsek",
+  "objective": "Restore a deliberate faceless social mix, fix Instagram link routing, make format-aware publishing and verification durable, and add a weekly format/funnel readout.",
+  "current_status": "running",
+  "completed_steps": [
+    "Read repository state, live Meta preflight, existing runtime schedules, cron state, and official Meta publishing documentation.",
+    "Paused Fitsek IG Publish Due Check at 2026-08-01T10:18:57Z to prevent the stale image-only queue from publishing during the redesign.",
+    "Created isolated branch fix/fitsek/social-format-funnel-20260801 at b264fe4."
+  ],
+  "current_step": "Implement the mixed-format plan, branded link routing, format-aware publisher/verifier, and weekly readout.",
+  "next_actions": [
+    "Implement and test the plan and workflow in this worktree.",
+    "Publish a reviewed mixed-format runtime schedule and restore the due-check cron under the user standing authorization.",
+    "Push, verify CI and deployed/live behavior, and update project state."
+  ],
+  "blockers": [],
+  "assumptions": [
+    "Instagram API content publishing supports image/video/reel/carousel posts but not Stories; Stories require the authenticated Business Suite route.",
+    "The standing user authorization permits organic content scheduling and publishing with existing permissions but excludes paid spend, credentials, policy bypasses, and medical/guaranteed-result claims."
+  ],
+  "decisions_made": [
+    "Use a branded short-route design and tracked URLs where links are clickable; do not depend on auto-posted Instagram comments because the required permission is absent.",
+    "Treat Stories as manual Business Suite items with explicit verification/reminders rather than falsely claiming Graph API can publish them."
+  ],
+  "relevant_files": [
+    "automation/social_copy.py",
+    "automation/meta_ig_publisher.py",
+    "automation/verify_posts.py",
+    "automation/business_review.py",
+    "site/",
+    "docs/operations/meta-api-workflow.md",
+    "/home/ubuntu/.hermes/scripts/fitsek_ig_publish_due.sh",
+    "/home/ubuntu/.hermes/scripts/fitsek_social_verify.sh"
+  ],
+  "relevant_commands": [
+    "python3 scripts/validate_site.py",
+    "python3 automation/social_copy.py audit --days 30",
+    "python3 -m unittest discover -s tests -p 'test_*.py' -v",
+    "python3 automation/meta_autopilot.py check",
+    "python3 automation/verify_posts.py --window-hours 120 --json"
+  ],
+  "branch_or_worktree": "fix/fitsek/social-format-funnel-20260801 @ /home/ubuntu/.hermes/kanban/boards/fitsek/workspaces/t_98dd03d0/fitsek",
+  "tests_last_run": [
+    "python3 -m unittest discover -s automation -p 'test_*.py' -v (3 passed)"
+  ],
+  "last_known_good_commit": "b264fe4",
+  "artifacts": [],
+  "risks": [
+    "Meta API cannot publish Stories according to its June 2026 documentation; the authenticated Business Suite path is required for Story publication.",
+    "Existing scheduled Facebook photo posts and Instagram image-only runtime queue were created before the mixed-format redesign."
+  ],
+  "owner_worker": "coder",
+  "last_updated": "2026-08-01T10:22:48Z",
+  "resume_instructions": "Read AGENTS.md, project memory, this capsule, then task log. Preserve user-owned root-worktree edits; work only in this isolated worktree."
+}
