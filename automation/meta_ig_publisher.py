@@ -205,6 +205,51 @@ def make_mixed_plan(days: int, start_date: str | None = None, asset_base_url: st
     return plan
 
 
+def scheduled_date(post: dict) -> dt.date | None:
+    raw = str(post.get("scheduled_publish_time_aest") or "")
+    try:
+        return dt.datetime.fromisoformat(raw).date()
+    except ValueError:
+        return None
+
+
+def replenish_mixed_plan(days: int = 14, minimum_future_days: int = 7) -> tuple[dict, bool]:
+    """Extend the live mixed-format ledger before its feed horizon expires.
+
+    Existing rows are preserved so published media IDs and manually scheduled
+    Story work stay auditable. Only future capacity is appended.
+    """
+    load_env()
+    today = dt.datetime.now(AEST).date()
+    if not SCHEDULE_PATH.exists():
+        return make_mixed_plan(days=days, start_date=today.isoformat(), overwrite=True), True
+    plan = json.loads(SCHEDULE_PATH.read_text())
+    if plan.get("mode") != "mixed_format_funnel_v1":
+        raise RuntimeError("Refusing to replace a non-mixed live schedule; use plan-mixed --overwrite explicitly.")
+    pending_feed_dates = [
+        date
+        for post in plan.get("posts", [])
+        if post.get("status") == "scheduled"
+        and post.get("publication_mode", "instagram_graph_api") == "instagram_graph_api"
+        and (date := scheduled_date(post)) is not None
+        and date >= today
+    ]
+    latest_feed_date = max(pending_feed_dates, default=today - dt.timedelta(days=1))
+    future_days = max(0, (latest_feed_date - today).days + 1)
+    if future_days > minimum_future_days:
+        return plan, False
+    import mixed_social_plan
+    existing_dates = [date for post in plan.get("posts", []) if (date := scheduled_date(post)) is not None]
+    start = max(existing_dates, default=today - dt.timedelta(days=1)) + dt.timedelta(days=1)
+    extension = mixed_social_plan.build_plan(days, start)
+    plan["posts"].extend(extension["posts"])
+    plan["calendar_days"] = len(plan["posts"])
+    plan["replenished_at"] = dt.datetime.now(dt.timezone.utc).isoformat()
+    plan["replenishment"] = {"days_added": days, "minimum_future_days": minimum_future_days, "future_feed_days_before": future_days, "extension_start_aest": start.isoformat()}
+    save_plan(plan)
+    return plan, True
+
+
 def load_plan() -> dict:
     load_env()
     if not SCHEDULE_PATH.exists():
@@ -367,6 +412,9 @@ def main() -> int:
     p.add_argument("--start-date", help="YYYY-MM-DD in AEST; defaults to tomorrow")
     p.add_argument("--asset-base-url", help="public base URL for Meta-fetchable media")
     p.add_argument("--overwrite", action="store_true")
+    p = sub.add_parser("replenish-mixed", help="extend a mixed ledger when its future feed horizon is low")
+    p.add_argument("--days", type=int, default=14)
+    p.add_argument("--minimum-future-days", type=int, default=7)
     sub.add_parser("status")
     p = sub.add_parser("publish-due")
     p.add_argument("--confirm", action="store_true")
@@ -379,6 +427,12 @@ def main() -> int:
         return 0
     if args.cmd == "plan-mixed":
         print(json.dumps(summarize(make_mixed_plan(args.days, args.start_date, args.asset_base_url, args.overwrite)), indent=2))
+        return 0
+    if args.cmd == "replenish-mixed":
+        plan, changed = replenish_mixed_plan(args.days, args.minimum_future_days)
+        result = summarize(plan)
+        result["replenished"] = changed
+        print(json.dumps(result, indent=2))
         return 0
     if args.cmd == "status":
         print(json.dumps(summarize(load_plan()), indent=2))

@@ -2,17 +2,19 @@
   "task_id": "t_98dd03d0",
   "project": "fitsek",
   "objective": "Restore a deliberate faceless social mix, fix Instagram link routing, make format-aware publishing and verification durable, and add a weekly format/funnel readout.",
-  "current_status": "running",
+  "current_status": "validation_complete_pending_deploy",
   "completed_steps": [
     "Read repository state, live Meta preflight, existing runtime schedules, cron state, and official Meta publishing documentation.",
     "Paused Fitsek IG Publish Due Check at 2026-08-01T10:18:57Z to prevent the stale image-only queue from publishing during the redesign.",
     "Created isolated branch fix/fitsek/social-format-funnel-20260801 at b264fe4."
+    ,"Merged PR #17 for the tracked short routes, mixed image/Reel/Story ledger, format-aware publisher, and weekly readout; generated the first 14-day production ledger."
+    ,"Added and locally validated a non-destructive replenisher that extends the mixed ledger before its future Graph-published feed horizon expires."
   ],
-  "current_step": "Implement the mixed-format plan, branded link routing, format-aware publisher/verifier, and weekly readout.",
+  "current_step": "Deploy the replenisher, register/verify its daily cron, then confirm the first due Reel publishes and is measured.",
   "next_actions": [
-    "Implement and test the plan and workflow in this worktree.",
-    "Publish a reviewed mixed-format runtime schedule and restore the due-check cron under the user standing authorization.",
-    "Push, verify CI and deployed/live behavior, and update project state."
+    "Push and deploy the replenisher.",
+    "Register the deterministic daily replenishment cron and confirm it is silent with a healthy horizon.",
+    "Verify the first due Reel publishes, then inspect verification and business-report evidence."
   ],
   "blockers": [],
   "assumptions": [
@@ -44,13 +46,13 @@
   "tests_last_run": [
     "python3 -m unittest discover -s automation -p 'test_*.py' -v (3 passed)"
   ],
-  "last_known_good_commit": "b264fe4",
+  "last_known_good_commit": "601737280012a70650cb9fe13a030dc464f15534",
   "artifacts": [],
   "risks": [
     "Meta API cannot publish Stories according to its June 2026 documentation; the authenticated Business Suite path is required for Story publication.",
     "Existing scheduled Facebook photo posts and Instagram image-only runtime queue were created before the mixed-format redesign."
   ],
   "owner_worker": "coder",
-  "last_updated": "2026-08-01T10:22:48Z",
-  "resume_instructions": "Read AGENTS.md, project memory, this capsule, then task log. Preserve user-owned root-worktree edits; work only in this isolated worktree."
+  "last_updated": "2026-10-03T10:41:00Z",
+  "resume_instructions": "Run from /home/ubuntu/fitsek on the runtime/fitsek-live branch after reading AGENTS.md/project memory. PR #17 is deployed and the production ledger exists in ignored var/. Finish the replenishment PR and daily no-agent cron before relying on the revenue loop."
 }
