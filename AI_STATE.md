@@ -43,7 +43,8 @@ Traffic → `fitsek.com` → free lead magnet → email/list → paid digital pr
 - `automation/verify_posts.py` checks FB/IG live publishing state and powers the silent verification cron. Its Instagram verification treats the ignored schedule as the publish ledger: due posts require `status: published` plus `published_media_id`, while live `/media` ID membership is enforced only inside the rolling verification window.
 - `automation/meta_token_watch.py` validates/refreshes Meta tokens where Meta permits and alerts for manual re-auth; no tokens in git.
 - 2026-09-21: Meta token-watch debug calls use the configured active Graph API version. Live `meta_autopilot.py check` confirmed the FitSek Page and linked Instagram account with all required Facebook/Instagram publishing permissions; no posting or scheduling mutation was made.
-- Cron jobs should be approval/report mode only; do not auto-post social content without explicit user approval.
+- 2026-10-03: The production mixed-format Instagram ledger has 14 Graph-published feed/Reel slots plus 14 explicit Story companions. The publisher can replenish its future feed horizon without replacing published ledger rows; a daily deterministic cron performs that check. Stories remain Business Suite work because Meta's Content Publishing API does not support them.
+- Cron jobs should be approval/report mode only unless the user has explicitly authorized autonomous publishing.
 
 ## Meta state
 - FB Page verified by API: `FitSek` (`100185022163250`), category `Shopping & retail`, Page tasks include `CREATE_CONTENT`.
