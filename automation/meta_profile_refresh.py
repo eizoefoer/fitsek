@@ -161,11 +161,11 @@ def publish_entry(entry: dict[str, Any], base_url: str, token: str, timeout_seco
     media_url = public_url(entry, base_url)
     data: dict[str, Any]
     if kind == "photo":
-        data = {"image_url": media_url, "caption": entry.get("caption"), "alt_text": entry.get("alt_text")}
+        data = {"image_url": media_url, "caption": entry.get("caption"), "alt_text": entry.get("alt_text"), "is_ai_generated": "true"}
     elif kind == "reel":
-        data = {"media_type": "REELS", "video_url": media_url, "caption": entry.get("caption"), "share_to_feed": "true"}
+        data = {"media_type": "REELS", "video_url": media_url, "caption": entry.get("caption"), "share_to_feed": "true", "is_ai_generated": "true"}
     elif kind == "story_image":
-        data = {"media_type": "STORIES", "image_url": media_url}
+        data = {"media_type": "STORIES", "image_url": media_url, "is_ai_generated": "true"}
     else:
         raise RuntimeError(f"Unsupported publish kind: {kind}")
     container = graph("POST", f"{ig_user_id()}/media", token, data=data)
@@ -218,7 +218,7 @@ def cmd_print_urls(args: argparse.Namespace) -> int:
 
 def cmd_publish_ig(args: argparse.Namespace) -> int:
     load_env()
-    selected = entries_by_id(args.ids, set(args.kinds) if args.kinds else {"photo", "reel"})
+    selected = entries_by_id(args.ids, set(args.kinds) if args.kinds else {"photo", "reel", "story_image"})
     preview = [{"id": e.get("id"), "kind": e.get("kind"), "surface": e.get("surface"), "url": public_url(e, args.base_url)} for e in selected]
     if not args.confirm:
         print(json.dumps({"dry_run": True, "would_publish": preview, "note": "Add --confirm only after the profile/feed/reels publishing step is approved/authorised."}, indent=2))
@@ -243,13 +243,28 @@ def cmd_verify(args: argparse.Namespace) -> int:
     token = publish_token()
     state = load_state()
     expected = [p for p in state.get("published", []) if p.get("published_media_id")]
-    expected_ids = {str(p["published_media_id"]) for p in expected}
+    expected_ids = [str(p["published_media_id"]) for p in expected]
     recent = graph("GET", f"{ig_user_id()}/media", token, params={"fields": "id,media_type,media_product_type,timestamp,permalink,caption,thumbnail_url,media_url", "limit": args.limit})
     rows = recent.get("data", [])
     seen = {str(row.get("id")) for row in rows}
-    matches = [row for row in rows if str(row.get("id")) in expected_ids]
-    missing = sorted(expected_ids - seen)
-    print(json.dumps({"expected_count": len(expected_ids), "matched_count": len(matches), "missing_from_recent_window": missing, "matches": matches, "recent_count": len(rows)}, indent=2))
+    matches = [row for row in rows if str(row.get("id")) in set(expected_ids)]
+    verified = []
+    missing = []
+    for media_id in expected_ids:
+        try:
+            obj = graph("GET", media_id, token, params={"fields": "id,media_type,media_product_type,timestamp,permalink,caption,thumbnail_url,media_url,username"})
+            obj["seen_in_recent_window"] = media_id in seen
+            verified.append(obj)
+        except Exception as exc:
+            missing.append({"id": media_id, "error": str(exc)})
+    print(json.dumps({
+        "expected_count": len(expected_ids),
+        "recent_window_matches": len(matches),
+        "recent_window_ids": sorted(seen),
+        "verified": verified,
+        "missing": missing,
+        "recent_count": len(rows)
+    }, indent=2))
     return 1 if missing else 0
 
 
