@@ -1,6 +1,6 @@
 # AI_STATE.md
 
-Last updated: 2026-09-21
+Last updated: 2026-07-18
 
 ## Brand
 Fitsek is a faceless desk-worker body recomposition brand: simple, practical, evidence-aware, direct, encouraging, and general wellness only.
@@ -19,17 +19,15 @@ Traffic → `fitsek.com` → free lead magnet → email/list → paid digital pr
 - Custom domain: `fitsek.com`; `www.fitsek.com` CNAME to GitHub Pages.
 - 2026-07-10: GitHub Pages custom domain HTTPS was re-triggered by clearing/re-adding `fitsek.com`; `https_enforced` is now `true`, `https://fitsek.com/` returns `200`, and `https://www.fitsek.com/` redirects to the apex.
 - Lead/event API: `server/lead_api.py`, systemd service `fitsek-leads.service`, proxied by Caddy as `leads.fitsek.com`.
-- No payment checkout is connected yet. Stripe Payment Link is the selected no-monthly-fee checkout; the public `buy.stripe.com` URL must be supplied before the checkout CTA can be activated.
+- No payment checkout is connected yet. Use no-monthly-fee option when user sets account: Stripe Payment Link, Gumroad, Payhip, Lemon Squeezy, or Ko-fi.
 
 ## Brand/assets
 - 2026-07-10: Added Fitsek SVG logo/favicon/web manifest plus faceless photorealistic website/social images under `site/assets/photoreal/`, `site/assets/social/`, and derivative `site/assets/brand/` paths. Provenance lives in `docs/brand-image-provenance.md`, `docs/assets/photoreal-faceless-image-set-2026-07-10.md`, and `docs/assets/prompts/photoreal-faceless/`. These images are synthetic brand/lifestyle visuals and must not be represented as real customer proof, testimonials, before/after results, or medical evidence.
-- 2026-07-22: Added three original short voice-over reel variants under `site/assets/social/profile-reels/with-audio/` and a branded 1640×624 Facebook cover at `site/assets/social/fitsek-facebook-cover.png`. The published API reels before this update were silent; publish new voice-over variants after the GitHub Pages deploy and verify their media IDs/audio. Instagram-native licensed audio remains available when creating future reels in Business Suite.
-- 2026-07-22: Instagram profile avatar was updated through the authenticated Instagram browser tab using `site/assets/brand/fitsek-instagram-avatar.png`. Graph API now returns `profile_picture_url` for `@fitsek.wellness` (`17841443568404793`) with CDN leaf `753320135_18072593642452281_4462474257250171609_n.jpg`; downloaded avatar SHA256 `261a9af3bf6b9d719ab9ab46f2e5294f75451280622b8a690d3477ecaa9ac197` visually matches the source avatar SHA256 `55875c4b486daf555fd0f8d564bb1dccc718b8f551ccc2ea0f329e80243d18e0` after resize (mean RGB difference 0.61).
+- 2026-07-19: The profile refresh work generated a high-legibility avatar, Facebook cover asset, six faceless photoreal social images, three 1080×1920 story frames, and three short H.264 reels under `site/assets/social/profile-refresh/`, with renderer/publisher helpers at `automation/render_profile_social_refresh.py` and `automation/meta_profile_refresh.py`. Live Meta proof now exists for one current-bundle feed photo (`18143794588533388` / `https://www.instagram.com/p/Da9xywelAUq/`), one story (`18108293060515272` / `https://www.instagram.com/stories/fitsek.wellness/3944528020434590668`), one reel (`17992466984816632` / `https://www.instagram.com/reel/Da9yGPDjUbj/`), and a Facebook Page profile-picture refresh (`POST /{page-id}/picture` changed the legacy asset id `443126631246073` to `1424554879769905`). The Instagram account still reports `has_profile_pic=false`; the IG User object is read-only, so the Instagram avatar itself still requires an authenticated manual UI step.
 
 ## Analytics / measurement
 - 2026-07-10: Cloudflare Web Analytics is installed on every public page. `site/app.js` also emits first-party `page_view`, `click`, `outbound_intent`, `section_view`, `scroll_depth`, and signup outcome events to `https://leads.fitsek.com/event`; heatmap-style reporting is aggregate-only via `automation/heatmap_report.py`, with no session recording enabled.
 - 2026-07-18: Site refresh PR #3 merged to `main`; GitHub Actions run `29652456060` passed validate+deploy, live `https://fitsek.com/` served the new photoreal hero/assets and Cloudflare beacon, and `https://leads.fitsek.com/event` accepted curl/browser live-check events with HTTP 202.
-- 2026-09-21: First-party event capture persists section and scroll-depth metadata; daily/weekly/monthly business reviews use 24-hour/7-day/30-day timestamped windows so historical events are not reported as current funnel performance.
 
 ## Agent/CI state
 - 2026-07-09: Agent harness policies include SDLC/IaC/CI/human-collaboration rules in `system/sdlc-iac-ci.md`; meaningful repo work should use feature/fix/agent branches or worktrees, existing CI first, IaC/rollback records for infra changes, and human worker job-ledger rows for accepted human changes.
@@ -40,11 +38,9 @@ Traffic → `fitsek.com` → free lead magnet → email/list → paid digital pr
 - `automation/meta_autopilot.py` prepares Meta social outbox with a copy-polish gate and can create FB Page drafts/scheduled posts once Meta grants `pages_manage_posts`.
 - `automation/social_copy.py` turns the raw calendar into public-facing social-manager copy and fails audits if internal labels such as `CTA:` leak into captions.
 - `automation/meta_ig_publisher.py` stores an approved IG schedule in ignored `var/meta_ig_schedule.json` and publishes due Instagram posts via Graph API from the recurring Hermes due-check cron.
-- `automation/verify_posts.py` checks FB/IG live publishing state and powers the silent verification cron. Its Instagram verification treats the ignored schedule as the publish ledger: due posts require `status: published` plus `published_media_id`, while live `/media` ID membership is enforced only inside the rolling verification window.
+- `automation/verify_posts.py` checks FB/IG live publishing state and powers the silent verification cron.
 - `automation/meta_token_watch.py` validates/refreshes Meta tokens where Meta permits and alerts for manual re-auth; no tokens in git.
-- 2026-09-21: Meta token-watch debug calls use the configured active Graph API version. Live `meta_autopilot.py check` confirmed the FitSek Page and linked Instagram account with all required Facebook/Instagram publishing permissions; no posting or scheduling mutation was made.
-- 2026-10-03: The production mixed-format Instagram ledger has 14 Graph-published feed/Reel slots plus 14 explicit Story companions. The publisher can replenish its future feed horizon without replacing published ledger rows; a daily deterministic cron performs that check. Stories remain Business Suite work because Meta's Content Publishing API does not support them.
-- Cron jobs should be approval/report mode only unless the user has explicitly authorized autonomous publishing.
+- Cron jobs should be approval/report mode only; do not auto-post social content without explicit user approval.
 
 ## Meta state
 - FB Page verified by API: `FitSek` (`100185022163250`), category `Shopping & retail`, Page tasks include `CREATE_CONTENT`.

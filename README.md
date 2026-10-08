@@ -23,9 +23,6 @@ python3 scripts/validate_site.py
 python3 automation/social_copy.py audit --days 21
 python3 automation/business_review.py --period daily --write
 python3 automation/heatmap_report.py --write
-python3 server/test_lead_api.py
-python3 automation/test_business_review.py
-python3 automation/test_meta_token_watch.py
 ~/.hermes/scripts/project_agent_sdlc.py detect --repo . --format text
 python3 -m http.server 8080 -d site
 ```
@@ -36,7 +33,7 @@ GitHub Pages deploys `site/` after `scripts/validate_site.py` passes. Pull reque
 
 ## Meta automation
 
-Meta/Facebook/Instagram automation remains approval-first. See `docs/operations/meta-api-workflow.md` for the current Graph API path, required App Review permissions, token refresh commands, social-copy polish gate, Instagram due-post publisher, and verification watchdog. The verification watchdog compares only posts scheduled inside its configured recent-media window; historic published posts are retained in the schedule for audit but are not reclassified as missing because the Graph media query is intentionally bounded. The mixed-format ledger is automatically replenished before its future feed horizon runs low; it contains feed images, Reels, and explicit Story companions. Meta's Content Publishing API does not support Story publishing, so Stories remain visible Business Suite actions rather than falsely reported as API-published.
+Meta/Facebook/Instagram automation remains approval-first. See `docs/operations/meta-api-workflow.md` for the current Graph API path, required App Review permissions, token refresh commands, social-copy polish gate, Instagram due-post publisher, profile-refresh renderer/publisher (`automation/render_profile_social_refresh.py`, `automation/meta_profile_refresh.py`), and verification watchdog.
 
 ### VM browser login bridge
 
@@ -58,6 +55,8 @@ http://127.0.0.1:6082/vnc.html?host=127.0.0.1&port=6082&autoconnect=true&resize=
 ```
 
 Log in to Meta Business Suite or the Meta Developer Dashboard in that browser. After login, ask Hermes to continue through the VM browser; it uses `http://127.0.0.1:9222` internally.
+
+Important limitation: the Instagram Graph `IG User` object is read-only (`Creating/Updating/Deleting` are unsupported). Fitsek can publish feed/reels/stories by API, and the Facebook Page profile picture can be changed by API, but the Instagram profile avatar still requires an authenticated manual UI step if `has_profile_pic` is `false`.
 
 To check or restart the browser bridge on the VM:
 

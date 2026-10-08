@@ -44,28 +44,35 @@ python3 automation/meta_autopilot.py prepare --days 21 --posts-per-day 3
 python3 automation/social_copy.py audit --days 21
 python3 automation/meta_autopilot.py fb-draft --days 21 --posts-per-day 3        # dry run
 python3 automation/meta_autopilot.py fb-schedule --days 21 --posts-per-day 3    # dry run
-python3 automation/meta_autopilot.py ig-plan --days 7 --posts-per-day 3
 python3 automation/meta_ig_publisher.py plan --days 7 --posts-per-day 3 --overwrite
 python3 automation/meta_ig_publisher.py status
 python3 automation/meta_ig_publisher.py publish-due --confirm  # cron/wrapper path; publishes only due IG posts
+python3 automation/render_profile_social_refresh.py           # generate avatar/photo/story/reel bundle
+python3 automation/meta_profile_refresh.py check
+python3 automation/meta_profile_refresh.py print-urls --base-url "$META_FITSEK_ASSET_BASE_URL" --probe
+python3 automation/meta_profile_refresh.py publish-ig --base-url "$META_FITSEK_ASSET_BASE_URL" --ids photo-protein-anchors story-steps reel-walking-pad --confirm
+python3 automation/meta_profile_refresh.py verify --limit 20
 python3 automation/verify_posts.py --json --window-hours 6     # check live/scheduled FB + IG state
 ```
 
 ## Token/watchdog note
 
-Meta does not provide a standard OAuth refresh token for this flow. `automation/meta_token_watch.py` keeps the saved long-lived user/page tokens validated, attempts allowed token exchange when Meta permits it, and alerts before/manual re-auth is required. Its token-debug request follows `META_GRAPH_VERSION` (defaulting to the same current Graph API version as the publisher) rather than a stale hard-coded version. Hermes cron job `Fitsek Meta Token Watch` runs this daily and stays silent while healthy.
+Meta does not provide a standard OAuth refresh token for this flow. `automation/meta_token_watch.py` keeps the saved long-lived user/page tokens validated, attempts allowed token exchange when Meta permits it, and alerts before/manual re-auth is required. Hermes cron job `Fitsek Meta Token Watch` runs this daily and stays silent while healthy.
 
-## Current verified state (2026-07-08)
+## Current verified state (2026-07-19)
 
 - Facebook Page found: `FitSek` (`100185022163250`), category `Shopping & retail`, Page tasks include `CREATE_CONTENT`.
 - Current token grants all required Facebook/Instagram publish permissions checked by the script: `pages_show_list`, `pages_read_engagement`, `pages_manage_posts`, `instagram_basic`, and `instagram_content_publish`.
 - Public copy is generated through `automation/social_copy.py`; `python3 automation/social_copy.py audit --days 21` must pass before Meta scheduling. This prevents internal labels such as `CTA:` and repetitive boilerplate from reaching public posts.
-- Current weekly social-manager rhythm: 3 unique posts per day at 09:00, 13:00, and 17:00 AEST, using the first 21 calendar rows for the 7-day batch.
-- Facebook currently has 21 unpublished scheduled photo posts for 2026-07-09 through 2026-07-15. Verification found media attached to every scheduled post and no leaked `CTA:`/`Fitsek rule:` boilerplate.
 - Instagram Page linkage is API-visible: `@fitsek.wellness` (`17841443568404793`) is returned as the FitSek Page `instagram_business_account`.
-- Instagram uses a recurring no-agent due-check cron (`Fitsek IG Publish Due Check`, every 15 minutes) that runs `~/.hermes/scripts/fitsek_ig_publish_due.sh`. The publisher stays silent when no post is due and prints returned media IDs only when it publishes. Every new scheduled post has a `Link in bio: fitsek.com` caption CTA plus a tracked direct Fitsek URL that the publisher attempts to post as the first Instagram comment after `media_publish`. A missing comment is reported as non-fatal link enrichment (`link_issues`), while the high-frequency verifier fails only for an actual missing/failed post; Meta requires the optional `instagram_manage_comments` permission for automated comments.
-- `Fitsek Social Publish Verification` runs `~/.hermes/scripts/fitsek_social_verify.sh` every 30 minutes. It is silent on OK and alerts if a due FB/IG post is missing after the grace window or Meta API verification fails.
-- For Instagram, verification treats the ignored local schedule as the publish ledger: a due post must have `status: published` and a `published_media_id`. The verifier cross-checks that media ID against the live `/media` response only for posts still inside the requested verification window, so old successfully published posts do not alert forever after they fall out of the recent-media window.
+- The recurring no-agent due-check cron (`Fitsek IG Publish Due Check`, every 15 minutes) and verification cron (`Fitsek Social Publish Verification`) remain the batch-scheduling path for approved future posts.
+- 2026-07-19 profile refresh work added `automation/render_profile_social_refresh.py` and `automation/meta_profile_refresh.py`, generated public-ready assets under `site/assets/social/profile-refresh/`, and verified raw GitHub URLs as Meta-fetchable HTTPS media.
+- 2026-07-19 live publish proof from the profile-refresh bundle:
+  - feed photo `photo-protein-anchors` → IG media `18143794588533388` → `https://www.instagram.com/p/Da9xywelAUq/`
+  - story `story-steps` → IG media `18108293060515272` → `https://www.instagram.com/stories/fitsek.wellness/3944528020434590668`
+  - reel `reel-walking-pad` → IG media `17992466984816632` → `https://www.instagram.com/reel/Da9yGPDjUbj/`
+- 2026-07-19 live Facebook profile refresh proof: `POST /{page-id}/picture` succeeded and changed the Page profile image from legacy asset id `443126631246073` to refreshed asset id `1424554879769905`.
+- Current IG account state still reports `has_profile_pic=false`; the IG User object supports reading `profile_picture_url` but `Creating/Updating/Deleting` are unsupported, so the Instagram avatar itself still needs an authenticated manual UI step.
 
 ## Proper API path
 
@@ -83,6 +90,8 @@ Until `pages_manage_posts` is granted, `fb-draft --confirm` intentionally fails 
 ## Meta API limitation
 
 The public Instagram Graph API can publish media, but it does not create persistent future-scheduled Instagram drafts inside Meta Business Suite. For approved future publishing, keep `var/meta_ig_schedule.json` as ignored runtime state and run a recurring due-check cron (`fitsek_ig_publish_due.sh`) every 15 minutes. The publisher creates the IG media container only when a scheduled post is due, then calls `media_publish`, avoiding container expiry. The publisher prefers committed `.jpg` siblings for generated `.png` social assets because Instagram's content publishing path is stricter about image media than Facebook.
+
+Verification note: stories may not appear in a simple `/{ig-user-id}/media` recent window even when they are live. `automation/meta_profile_refresh.py verify` therefore re-queries each returned media id directly so stories can still be proven by `media_product_type=STORY` plus permalink/timestamp.
 
 Do **not** create one cron entry per calendar slot with five-field cron expressions such as `0 13 15 7 3`: cron can treat day-of-month and day-of-week as OR, which can fire on unintended dates. Use ISO one-shot schedules or the recurring due-check publisher instead.
 
