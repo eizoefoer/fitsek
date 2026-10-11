@@ -186,6 +186,13 @@ def check_ig(token: str, ig_user_id: str, now: int, since: int, grace_seconds: i
     }
 
 
+def verification_exit_code(errors: list[dict], missing: list[dict], fail_on_missing_due: bool) -> int:
+    """Keep actionable missing-post alerts distinct from verifier/API failure."""
+    if errors:
+        return 2
+    return 1 if fail_on_missing_due and missing else 0
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--window-hours", type=float, default=4)
@@ -234,8 +241,8 @@ def main() -> int:
         "missing_due": missing,
     }
 
-    should_fail = bool(errors) or (args.fail_on_missing_due and bool(missing))
-    if args.quiet and not should_fail:
+    exit_code = verification_exit_code(errors, missing, args.fail_on_missing_due)
+    if args.quiet and exit_code == 0:
         return 0
     if args.json or args.quiet:
         print(json.dumps(report, indent=2, ensure_ascii=False))
@@ -254,7 +261,7 @@ def main() -> int:
             print("Errors:")
             for error in errors:
                 print(f"- {error}")
-    return 1 if should_fail else 0
+    return exit_code
 
 
 if __name__ == "__main__":

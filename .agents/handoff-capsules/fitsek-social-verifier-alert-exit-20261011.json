@@ -1,0 +1,28 @@
+{
+  "artifacts": [],
+  "assumptions": [],
+  "blockers": [],
+  "branch_or_worktree": "fix/fitsek-social-verifier-alert-exit",
+  "completed_steps": [
+    "Added distinct verifier exit codes and tracked cron wrapper; locally validated alert-vs-error behavior."
+  ],
+  "current_status": "complete",
+  "current_step": "",
+  "decisions_made": [],
+  "last_known_good_commit": "df50838",
+  "last_updated": "2026-10-11T13:14:49Z",
+  "next_actions": [
+    "Merge/deploy this fix, then trigger and verify cron job f454c41e2278."
+  ],
+  "objective": "",
+  "owner_worker": "hermes-agent",
+  "project": "fitsek-social-verifier",
+  "relevant_commands": [],
+  "relevant_files": [],
+  "resume_instructions": "Read AGENTS.md, .agents/project-memory.json, .agents/context-bullets.jsonl, this capsule, then tail .agents/task-log.jsonl before continuing.",
+  "risks": [],
+  "task_id": "fitsek-social-verifier-alert-exit-20261011",
+  "tests_last_run": [
+    "7 verifier unit tests passed; wrapper missing alert exits 0; API error exits 2."
+  ]
+}
