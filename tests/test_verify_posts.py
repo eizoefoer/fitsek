@@ -14,6 +14,13 @@ SPEC.loader.exec_module(verify_posts)
 
 
 class VerifyPostsTests(unittest.TestCase):
+    def test_verification_exit_code_keeps_missing_post_alerts_distinct_from_api_failure(self) -> None:
+        self.assertEqual(0, verify_posts.verification_exit_code([], [], True))
+        self.assertEqual(0, verify_posts.verification_exit_code([], [{"title": "due"}], False))
+        self.assertEqual(1, verify_posts.verification_exit_code([], [{"title": "due"}], True))
+        self.assertEqual(2, verify_posts.verification_exit_code([{"platform": "instagram", "error": "unavailable"}], [], True))
+        self.assertEqual(2, verify_posts.verification_exit_code([{"platform": "instagram", "error": "unavailable"}], [{"title": "due"}], True))
+
     def test_instagram_ignores_published_posts_outside_recent_verification_window(self) -> None:
         plan = {
             "posts": [
@@ -58,5 +65,6 @@ class VerifyPostsTests(unittest.TestCase):
                 "scheduled_aest": verify_posts.ts_to_aest(900),
                 "status": "published",
                 "published_media_id": "missing-media",
+                "reason": "published_media_id_not_in_recent_media",
             }
         ])
