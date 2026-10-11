@@ -4,7 +4,9 @@
 # delivered, then exit 0. Meta/API verifier errors remain non-zero.
 set -euo pipefail
 export PATH="$HOME/bin:/usr/local/bin:/usr/bin:/bin:$PATH"
-ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+# A deployed Hermes cron script lives outside the repo; default to the canonical
+# checkout but allow a worktree path for local validation.
+ROOT="${FITSEK_ROOT:-/home/ubuntu/fitsek}"
 cd "$ROOT"
 
 PYTHON_BIN="${PYTHON_BIN:-python3}"
