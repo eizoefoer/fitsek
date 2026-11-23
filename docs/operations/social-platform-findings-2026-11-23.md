@@ -19,7 +19,7 @@
 
 ## Autonomy, feedback loop, and safety
 
-1. Prefer organic, compliant actions; do not publish, schedule, delete, or spend without the required explicit approval and channel-specific authorization.
+1. Prefer organic, compliant actions within the user's authorized autonomous scope and channel-specific permissions. Follow applicable repository and platform approval requirements; do not invent a blanket per-post approval requirement. Paid activity requires explicit authorization.
 2. Keep a clear separation between drafts, scheduled items, publish receipts, and independently verified live posts. Local state is useful operational evidence, not proof by itself.
 3. Measure outcomes with privacy-minimizing aggregate signals. Do not use synthetic tests that write into production signup/event data. A synthetic test was recorded at `2026-11-23T12:32:02Z`; treat it as contamination when interpreting production signup/event counts. **Do not delete the record/data**; label/exclude it analytically where safe and documented.
 4. Close the loop: compare expected actions with independent platform state and aggregate outcomes; diagnose discrepancies; make a reversible, minimal correction; validate it; and retain an audit trail. Do not automatically repeat a failed publish attempt without checking for an already-live post, since retries can duplicate content.
